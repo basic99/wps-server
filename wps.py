@@ -5,6 +5,7 @@ import time
 import gevent
 from flask import copy_current_request_context, g
 import psycopg2
+import nchuc12
 
 from gevent import monkey
 monkey.patch_all()
@@ -25,11 +26,14 @@ def teardown_request(exception):
         db.close()
         
 @app.route('/wps', methods=['POST', ])
-def hello_world():
-    cur = g.db.cursor()
+def post_aoi():
     
-    return request.form['gml']
-    #return "rest wps process"
+    huc = nchuc12.NCHuc12()
+    huc.aoi_desc = request.form['text']
+    huc.gml = request.form['gml']
+    aoi_id = huc.execute()
+    
+    return aoi_id
 
 if __name__ == '__main__':
     app.run(debug = True)
