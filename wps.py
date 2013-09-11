@@ -6,6 +6,7 @@ import gevent
 from flask import copy_current_request_context, g
 import psycopg2
 import nchuc12
+import json
 
 from gevent import monkey
 monkey.patch_all()
@@ -33,7 +34,7 @@ def post_aoi():
     huc.gml = request.form['gml']
     aoi_id = huc.execute()
     
-    return aoi_id
+    return json.dumps({'aoi_id': aoi_id})
 
 if __name__ == '__main__':
     app.run(debug = True)
