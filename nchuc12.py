@@ -43,14 +43,21 @@ class NCHuc12():
         digest.update(str(time.time()))
         ident = digest.hexdigest()
         with g.db.cursor() as cur:
-            cur.execute("insert into aoi_lookup(identifier) values (%s)", (ident, ))
             for b in input_geoms:
-                cur.execute("insert into aoi(identifier, the_geom) values (%s, ST_GeomFromText(%s, 4326))", (ident , b))
+                cur.execute("insert into aoi(identifier, the_geom) values (%s, ST_GeomFromText(%s, 4326))"
+                            , (ident , b))
             cur.execute("select aoitohuc(%s)", (ident,))
             self.calculations(ident)
+            cur.execute("select huc12 from results where identifier = %s", (ident,))
+            for row in cur:
+                huc12s.append(row[0])
+            huc12_str = ",".join(huc12s)
+            cur.execute("insert into aoi_results(identifier, huc12s, description, date) values (%s, %s, %s, now()) returning pk", 
+                        (ident,huc12_str,self.aoi_desc ))
+            aoi_id = cur.fetchone()[0]
             g.db.commit()
             
-        return ident
+        return (ident, aoi_id)
         
 
 

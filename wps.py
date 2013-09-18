@@ -34,7 +34,14 @@ def post_aoi():
     huc.gml = request.form['gml']
     aoi_id = huc.execute()
     
-    return json.dumps({'aoi_id': aoi_id})
+    resource = url_for('read_entry', id=aoi_id[1])
+    #print resource
+    
+    return json.dumps({'aoi_id': aoi_id[0]})
+
+@app.route('/wps/<int:id>', methods=['GET',])
+def read_entry(id):
+    return "reading entry %d" % id
 
 if __name__ == '__main__':
     app.run(debug = True)
