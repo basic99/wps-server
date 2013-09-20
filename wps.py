@@ -45,7 +45,6 @@ def post_aoi():
 
 @app.route('/wps/<int:id>', methods=['GET',])
 def resource_aoi(id):
-    results = dict()
     with g.db.cursor(cursor_factory=psycopg2.extras.DictCursor) as cur:
         cur.execute("select * from aoi_results where pk = %s", (id, ))
         rec = cur.fetchone()
