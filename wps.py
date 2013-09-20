@@ -1,10 +1,12 @@
 from flask import Flask
 from flask import request
 from flask import url_for
+from flask import copy_current_request_context, g, render_template
+
 import time
 import gevent
-from flask import copy_current_request_context, g
 import psycopg2
+import psycopg2.extras
 import nchuc12
 import json
 
@@ -34,14 +36,20 @@ def post_aoi():
     huc.gml = request.form['gml']
     aoi_id = huc.execute()
     
-    resource = url_for('read_entry', id=aoi_id[1])
-    #print resource
+    resource = url_for('resource_aoi', id=aoi_id[1])
+    headers = dict()
+    headers['Location'] = resource
+    headers['Content-Type'] = 'application/json'
     
-    return json.dumps({'aoi_id': aoi_id[0]})
+    return (json.dumps({'aoi_id': aoi_id[0]}), 201, headers)
 
 @app.route('/wps/<int:id>', methods=['GET',])
-def read_entry(id):
-    return "reading entry %d" % id
+def resource_aoi(id):
+    results = dict()
+    with g.db.cursor(cursor_factory=psycopg2.extras.DictCursor) as cur:
+        cur.execute("select * from aoi_results where pk = %s", (id, ))
+        rec = cur.fetchone()
+    return render_template('aoi_resource.html', aoi=dict(rec))
 
 if __name__ == '__main__':
     app.run(debug = True)

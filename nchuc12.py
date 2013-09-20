@@ -51,7 +51,7 @@ class NCHuc12():
             cur.execute("select huc12 from results where identifier = %s", (ident,))
             for row in cur:
                 huc12s.append(row[0])
-            huc12_str = ",".join(huc12s)
+            huc12_str = ", ".join(huc12s)
             cur.execute("insert into aoi_results(identifier, huc12s, description, date) values (%s, %s, %s, now()) returning pk", 
                         (ident,huc12_str,self.aoi_desc ))
             aoi_id = cur.fetchone()[0]
