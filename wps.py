@@ -4,14 +4,14 @@ from flask import url_for
 from flask import copy_current_request_context, g, render_template
 
 import time
-import gevent
+#import gevent
 import psycopg2
 import psycopg2.extras
 import nchuc12
 import json
 
-from gevent import monkey
-monkey.patch_all()
+#from gevent import monkey
+#monkey.patch_all()
 
 def connect_db():
     return psycopg2.connect("dbname=ncthreats user=postgres")
@@ -28,7 +28,7 @@ def teardown_request(exception):
     if db is not None:
         db.close()
         
-@app.route('/wps', methods=['POST', ])
+@app.route('/', methods=['POST', ])
 def post_aoi():
     
     huc = nchuc12.NCHuc12()
@@ -43,7 +43,7 @@ def post_aoi():
     
     return (json.dumps({'aoi_id': aoi_id[0]}), 201, headers)
 
-@app.route('/wps/<int:id>', methods=['GET',])
+@app.route('/<int:id>', methods=['GET',])
 def resource_aoi(id):
     with g.db.cursor(cursor_factory=psycopg2.extras.DictCursor) as cur:
         cur.execute("select * from aoi_results where pk = %s", (id, ))

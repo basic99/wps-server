@@ -52,8 +52,16 @@ class NCHuc12():
             for row in cur:
                 huc12s.append(row[0])
             huc12_str = ", ".join(huc12s)
-            cur.execute("insert into aoi_results(identifier, huc12s, description, date) values (%s, %s, %s, now()) returning pk", 
-                        (ident,huc12_str,self.aoi_desc ))
+            cur.execute("select max(st_xmax(the_geom)) from results where identifier = %s", (ident,))
+            xmax = cur.fetchone()[0]
+            cur.execute("select min(st_xmin(the_geom)) from results where identifier = %s", (ident,))
+            xmin = cur.fetchone()[0]
+            cur.execute("select max(st_ymax(the_geom)) from results where identifier = %s", (ident,))
+            ymax = cur.fetchone()[0]
+            cur.execute("select min(st_ymin(the_geom)) from results where identifier = %s", (ident,))
+            ymin = cur.fetchone()[0]            
+            cur.execute("insert into aoi_results(identifier, huc12s, description, date, x_max, x_min, y_max, y_min) values (%s, %s, %s, now(), %s, %s, %s, %s) returning pk", 
+                        (ident,huc12_str,self.aoi_desc, xmax, xmin, ymax, ymin ))
             aoi_id = cur.fetchone()[0]
             g.db.commit()
             
