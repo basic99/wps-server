@@ -64,8 +64,9 @@ class NCHuc12():
                         (ident,huc12_str,self.aoi_desc, xmax, xmin, ymax, ymin ))
             aoi_id = cur.fetchone()[0]
             g.db.commit()
+            extent = [xmin, ymin, xmax, ymax]
             
-        return (ident, aoi_id)
+        return (ident, aoi_id, extent)
         
 
 

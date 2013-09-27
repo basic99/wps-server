@@ -28,7 +28,7 @@ def teardown_request(exception):
     if db is not None:
         db.close()
         
-@app.route('/', methods=['POST', ])
+@app.route('/wps', methods=['POST', ])
 def post_aoi():
     
     huc = nchuc12.NCHuc12()
@@ -41,9 +41,9 @@ def post_aoi():
     headers['Location'] = resource
     headers['Content-Type'] = 'application/json'
     
-    return (json.dumps({'aoi_id': aoi_id[0]}), 201, headers)
+    return (json.dumps({'aoi_id': aoi_id[0], 'extent': aoi_id[2]}), 201, headers)
 
-@app.route('/<int:id>', methods=['GET',])
+@app.route('/wps/<int:id>', methods=['GET',])
 def resource_aoi(id):
     with g.db.cursor(cursor_factory=psycopg2.extras.DictCursor) as cur:
         cur.execute("select * from aoi_results where pk = %s", (id, ))
