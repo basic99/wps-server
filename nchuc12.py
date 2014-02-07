@@ -9,10 +9,14 @@ import logging
 import os
 
 cwd = os.path.dirname(os.path.realpath(__file__))
-logging.basicConfig(filename=cwd + '/logs/logs.log',
-                    level=logging.INFO,
-                    format='%(asctime)s %(levelname)s:%(message)s',
-                    datefmt='%m/%d/%Y %I:%M:%S %p')
+logger = logging.getLogger(__name__)
+logger.setLevel(logging.INFO)
+fh = logging.FileHandler(cwd + '/logs/logs.log')
+formatter = logging.Formatter(
+    '%(asctime)s - %(name)s - %(levelname)s - %(message)s'
+    )
+fh.setFormatter(formatter)
+logger.addHandler(fh)
 
 
 class NCHuc12():
@@ -39,7 +43,7 @@ class NCHuc12():
                 cur.execute("select st_astext(st_geomfromgml(%s))",
                             (gml_fragment,))
                 geom_list.append(cur.fetchone()[0])
-        logging.debug("returning %s polygons as WKT" % len(polygons))
+        logger.debug("returning %s polygons as WKT" % len(polygons))
         return geom_list
 
     def calculations(self, aoiname):
@@ -74,8 +78,8 @@ class NCHuc12():
         extent - list of extents for huc12 for this aoi
 
         """
-        logging.info("aoi description is %s" % self.aoi_desc)
-        logging.debug(self.gml[:1000])
+        logger.info("aoi description is %s" % self.aoi_desc)
+        logger.debug(self.gml[:1000])
         huc12s = list()
         input_geoms = self.mkgeom()
         digest = hashlib.md5()
@@ -117,9 +121,9 @@ class NCHuc12():
             aoi_id = cur.fetchone()[0]
             g.db.commit()
             extent = [xmin, ymin, xmax, ymax]
-            logging.info("md5 identifier is %s" % ident)
-            logging.info("pk in table aoi_results is %s" % aoi_id)
-            logging.info("extent of huc12s is %s, %s, %s, %s" %
+            logger.info("md5 identifier is %s" % ident)
+            logger.info("pk in table aoi_results is %s" % aoi_id)
+            logger.info("extent of huc12s is %s, %s, %s, %s" %
                          (extent[0], extent[1], extent[2], extent[3]))
 
         return (ident, aoi_id, extent)

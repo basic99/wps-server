@@ -15,14 +15,26 @@ from flask import url_for
 from flask import copy_current_request_context, g, render_template
 
 #import time
-import gevent
+# import gevent
 import psycopg2
 import psycopg2.extras
 import nchuc12
 import json
+import os
+import logging
 
-from gevent import monkey
-monkey.patch_all()
+# from gevent import monkey
+# monkey.patch_all()
+
+cwd = os.path.dirname(os.path.realpath(__file__))
+logger = logging.getLogger(__name__)
+logger.setLevel(logging.INFO)
+fh = logging.FileHandler(cwd + '/logs/logs.log')
+formatter = logging.Formatter(
+    '%(asctime)s - %(name)s - %(levelname)s - %(message)s'
+    )
+fh.setFormatter(formatter)
+logger.addHandler(fh)
 
 
 def connect_db():
@@ -74,6 +86,14 @@ def resource_aoi(id):
         cur.execute("select * from aoi_results where pk = %s", (id, ))
         rec = cur.fetchone()
     return render_template('aoi_resource.html', aoi=dict(rec))
+
+
+@app.route('/wps/<int:id>/map', methods=['GET', ])
+def map_aoi(id):
+    logger.info("hello world1")
+    logger.debug("hello world2")
+    return "resource id is %d" % id
+
 
 if __name__ == '__main__':
     app.run(debug=True)
