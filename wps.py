@@ -28,7 +28,7 @@ import logging
 
 cwd = os.path.dirname(os.path.realpath(__file__))
 logger = logging.getLogger(__name__)
-logger.setLevel(logging.INFO)
+logger.setLevel(logging.DEBUG)
 fh = logging.FileHandler(cwd + '/logs/logs.log')
 formatter = logging.Formatter(
     '%(asctime)s - %(name)s - %(levelname)s - %(message)s'
@@ -90,8 +90,15 @@ def resource_aoi(id):
 
 @app.route('/wps/<int:id>/map', methods=['GET', ])
 def map_aoi(id):
-    logger.info("hello world1")
-    logger.debug("hello world2")
+    query = request.args
+    it = query.iteritems()
+    while True:
+        try:
+            k, v = it.next()
+            logger.debug(v)
+        except StopIteration:
+            break
+
     return "resource id is %d" % id
 
 
