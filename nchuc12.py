@@ -7,6 +7,7 @@ import time
 import random
 import logging
 import os
+import json
 
 cwd = os.path.dirname(os.path.realpath(__file__))
 logger = logging.getLogger(__name__)
@@ -60,6 +61,34 @@ class NCHuc12():
                             (level, pk))
             g.db.commit()
 
+    def getgeojson(self, huc12_str):
+        list_features = []
+        huc12s = huc12_str.rsplit(", ")
+        # print huc12s
+        for huc12 in huc12s:
+            with g.db.cursor() as cur:
+                cur.execute(
+                    "select ST_AsGeoJSON(wkb_geometry) from nchuc12_100m\
+                    where huc_12 = %s",
+                    (huc12, )
+                )
+                the_geom = cur.fetchone()
+                the_geom = (json.loads(the_geom[0]))
+
+                new_feature = {
+                    "type": "Feature",
+                    "geometry": the_geom,
+                    "properties": {
+                        "huc12": huc12,
+                        "threat": 2}
+                    }
+                list_features.append(new_feature)
+            dict_for_json = {
+                "type": "FeatureCollection", "features": list_features
+                }
+        return dict_for_json
+
+
     def execute(self):
         """Function to run calculations, called from wps.py.
 
@@ -95,7 +124,7 @@ class NCHuc12():
             #Identifier column is used by geoserver cql filter.
             cur.execute("select aoitohuc(%s)", (ident,))
             #insert random results
-            self.calculations(ident)
+            # self.calculations(ident)
             cur.execute("select huc12 from results where identifier = %s",
                         (ident,))
             for row in cur:
@@ -113,6 +142,7 @@ class NCHuc12():
             cur.execute("select min(st_ymin(the_geom)) from results where\
              identifier = %s", (ident,))
             ymin = cur.fetchone()[0]
+            g.db.rollback()
             cur.execute("insert into aoi_results(identifier, huc12s,\
              description, date, x_max, x_min, y_max, y_min) values\
               (%s, %s, %s, now(), %s, %s, %s, %s) returning pk",
@@ -120,13 +150,16 @@ class NCHuc12():
                          ymax, ymin))
             aoi_id = cur.fetchone()[0]
             g.db.commit()
+            geojson = self.getgeojson(huc12_str)
             extent = [xmin, ymin, xmax, ymax]
             logger.info("md5 identifier is %s" % ident)
             logger.info("pk in table aoi_results is %s" % aoi_id)
-            logger.info("extent of huc12s is %s, %s, %s, %s" %
-                         (extent[0], extent[1], extent[2], extent[3]))
+            logger.info(
+                "extent of huc12s is %s, %s, %s, %s" %
+                (extent[0], extent[1], extent[2], extent[3])
+                )
 
-        return (ident, aoi_id, extent)
+        return (ident, aoi_id, extent, geojson)
 
 
 

@@ -69,14 +69,21 @@ def post_aoi():
     huc.aoi_desc = request.form['text']
     huc.gml = request.form['gml']
     aoi_id = huc.execute()
+    logger.debug(aoi_id[3])
 
     resource = url_for('resource_aoi', id=aoi_id[1])
     headers = dict()
     headers['Location'] = resource
     headers['Content-Type'] = 'application/json'
 
-    return (json.dumps({'aoi_id': aoi_id[0], 'extent': aoi_id[2]}),
-            201, headers)
+    return (
+        json.dumps({
+            # 'aoi_id': aoi_id[0],
+            'extent': aoi_id[2],
+            'geojson': aoi_id[3]
+            }),
+        201, headers
+        )
 
 
 @app.route('/wps/<int:id>', methods=['GET', ])
