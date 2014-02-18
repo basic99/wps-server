@@ -69,9 +69,9 @@ def post_aoi():
     huc.aoi_desc = request.form['text']
     huc.gml = request.form['gml']
     aoi_id = huc.execute()
-    logger.debug(aoi_id[3])
+    logger.debug(aoi_id[2])
 
-    resource = url_for('resource_aoi', id=aoi_id[1])
+    resource = url_for('resource_aoi', id=aoi_id[0])
     headers = dict()
     headers['Location'] = resource
     headers['Content-Type'] = 'application/json'
@@ -79,8 +79,8 @@ def post_aoi():
     return (
         json.dumps({
             # 'aoi_id': aoi_id[0],
-            'extent': aoi_id[2],
-            'geojson': aoi_id[3]
+            'extent': aoi_id[1],
+            'geojson': aoi_id[2]
             }),
         201, headers
         )

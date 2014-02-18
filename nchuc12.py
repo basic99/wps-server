@@ -3,7 +3,7 @@
 from flask import g
 import xml.dom.minidom
 import hashlib
-import time
+# import time
 import random
 import logging
 import os
@@ -47,19 +47,19 @@ class NCHuc12():
         logger.debug("returning %s polygons as WKT" % len(polygons))
         return geom_list
 
-    def calculations(self, aoiname):
-        """Placeholder for actual calculations to be added later. """
-        hucs = list()
-        with g.db.cursor() as cur:
-            cur.execute("select pk from results where identifier = %s",
-                        (aoiname,))
-            for pk in cur:
-                hucs.append(pk[0])
-            for pk in hucs:
-                level = random.randint(1, 3)
-                cur.execute("update results set resultcode = %s where pk = %s",
-                            (level, pk))
-            g.db.commit()
+    # def calculations(self, aoiname):
+    #     """Placeholder for actual calculations to be added later. """
+    #     hucs = list()
+    #     with g.db.cursor() as cur:
+    #         cur.execute("select pk from results where identifier = %s",
+    #                     (aoiname,))
+    #         for pk in cur:
+    #             hucs.append(pk[0])
+    #         for pk in hucs:
+    #             level = random.randint(1, 3)
+    #             cur.execute("update results set resultcode = %s where pk = %s",
+    #                         (level, pk))
+    #         g.db.commit()
 
     def getgeojson(self, huc12_str):
         list_features = []
@@ -113,7 +113,7 @@ class NCHuc12():
         input_geoms = self.mkgeom()
         digest = hashlib.md5()
         digest.update(str(random.randint(10000000, 99999999)))
-        digest.update(str(time.time()))
+        # digest.update(str(time.time()))
         ident = digest.hexdigest()
         with g.db.cursor() as cur:
             for b in input_geoms:
@@ -159,7 +159,7 @@ class NCHuc12():
                 (extent[0], extent[1], extent[2], extent[3])
                 )
 
-        return (ident, aoi_id, extent, geojson)
+        return (aoi_id, extent, geojson)
 
 
 
