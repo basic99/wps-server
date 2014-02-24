@@ -105,7 +105,9 @@ def map_aoi(id):
     huc12_str = rec['huc12s']
     results = nchuc12.getgeojson(huc12_str)
     for huc12 in results["features"]:
-        huc12["properties"]["threat"] = get_threat(huc12["properties"]["huc12"], request.args)
+        huc12["properties"]["threat"] = get_threat(
+            huc12["properties"]["huc12"], request.args
+            )
 
     return json.dumps({"message": message, "results": results})
 
@@ -113,15 +115,52 @@ def map_aoi(id):
 def get_threat(huc12, query):
     num_factors = len(query.keys()) - 1
     year = query.get('year')
-    logger.debug(huc12)
+    logger.debug(num_factors)
+    threat = 0
     if(query.get('urb', default='off') == 'on'):
         with g.db.cursor(cursor_factory=psycopg2.extras.DictCursor) as cur:
             cur.execute(
                 "select * from nc_urb_mean where huc_12 = %s", (huc12, )
                 )
             rec = cur.fetchone()
-            threat = rec["yr" + year] / 200 + 1
-            if threat == 6:
+            threat += rec["yr" + year]
+
+    if(query.get('frag', default='off') == 'on'):
+        with g.db.cursor(cursor_factory=psycopg2.extras.DictCursor) as cur:
+            cur.execute(
+                "select * from data_frag where huc_12 = %s", (huc12, )
+                )
+            rec = cur.fetchone()
+            threat += rec["yr" + year]
+
+    with g.db.cursor(cursor_factory=psycopg2.extras.DictCursor) as cur:
+            cur.execute(
+                "select * from data_static where huc_12 = %s", (huc12, )
+                )
+            rec = cur.fetchone()
+            if(query.get('polu1', default='off') == 'on'):
+                threat += rec['polu1']
+            if(query.get('polu2', default='off') == 'on'):
+                threat += rec['polu2']
+            if(query.get('dise1', default='off') == 'on'):
+                threat += rec['dise1']
+            if(query.get('dise2', default='off') == 'on'):
+                threat += rec['dise2']
+            if(query.get('slr', default='off') == 'on'):
+                threat += rec['slr']
+            if(query.get('frp', default='off') == 'on'):
+                threat += rec['frp']
+            if(query.get('firs', default='off') == 'on'):
+                threat += rec['firs']
+            if(query.get('trans', default='off') == 'on'):
+                threat += rec['trans']
+
+    try:
+        threat = threat / (num_factors * 200) + 1
+    except ZeroDivisionError:
+        threat = 1
+        pass
+    if threat == 6:
                 threat = 5
     return threat
 

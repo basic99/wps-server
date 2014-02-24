@@ -27,7 +27,7 @@ def getgeojson(huc12_str):
         for huc12 in huc12s:
             with g.db.cursor() as cur:
                 cur.execute(
-                    "select ST_AsGeoJSON(wkb_geometry) from nchuc12_100m\
+                    "select ST_AsGeoJSON(wkb_geometry, 6) from nchuc12_100m\
                     where huc_12 = %s",
                     (huc12, )
                 )
