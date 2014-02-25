@@ -1,3 +1,6 @@
+"""model threat """
+
+
 import logging
 import psycopg2
 import psycopg2.extras
@@ -26,7 +29,10 @@ def get_threat(huc12, query):
                 "select * from nc_urb_mean where huc_12 = %s", (huc12, )
                 )
             rec = cur.fetchone()
-            threat += rec["yr" + year]
+            try:
+                threat += rec["yr" + year]
+            except KeyError:
+                return 1
 
     if(query.get('frag', default='off') == 'on'):
         with g.db.cursor(cursor_factory=psycopg2.extras.DictCursor) as cur:
@@ -34,7 +40,10 @@ def get_threat(huc12, query):
                 "select * from data_frag where huc_12 = %s", (huc12, )
                 )
             rec = cur.fetchone()
-            threat += rec["yr" + year]
+            try:
+                threat += rec["yr" + year]
+            except KeyError:
+                return 1
 
     with g.db.cursor(cursor_factory=psycopg2.extras.DictCursor) as cur:
             cur.execute(
@@ -64,5 +73,5 @@ def get_threat(huc12, query):
         threat = 1
         pass
     if threat == 6:
-                threat = 5
+        threat = 5
     return threat
