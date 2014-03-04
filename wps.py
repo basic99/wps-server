@@ -10,6 +10,7 @@ Allow access to this resource.
 """
 
 from flask import Flask
+from flask import send_from_directory
 from flask import request
 from flask import url_for
 from flask import g, render_template
@@ -23,6 +24,9 @@ import model
 import json
 import os
 import logging
+import subprocess
+import random
+import tempfile
 
 # from gevent import monkey
 # monkey.patch_all()
@@ -111,6 +115,27 @@ def map_aoi(id):
 
     return json.dumps({"message": message, "results": results})
 
+
+@app.route('/wps/pdf', methods=['POST', ])
+def make_pdf():
+    htmlseg = request.form["htmlseg"].encode('ascii', 'ignore')
+    cmd1 = "/usr/local/wkhtmltox/bin/wkhtmltopdf"
+    fname = tempfile.NamedTemporaryFile(
+        delete=False, suffix=".pdf", dir='/tmp', prefix='ncthreats'
+        )
+    with tempfile.NamedTemporaryFile(delete=False, suffix=".html") as temp:
+        temp.write(htmlseg)
+        temp.flush()
+    subprocess.call([cmd1, temp.name, fname.name])
+    headers = dict()
+    headers['Location'] = url_for('get_pdf', fname=fname.name[5:])
+    return ('', 201, headers)
+
+
+@app.route('/wps/pdf/<path:fname>')
+def get_pdf(fname):
+    return send_from_directory('/tmp', fname, as_attachment=True)
+    pass
 
 if __name__ == '__main__':
     app.run(debug=True)
