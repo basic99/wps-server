@@ -126,7 +126,9 @@ def make_pdf():
     with tempfile.NamedTemporaryFile(delete=False, suffix=".html") as temp:
         temp.write(htmlseg)
         temp.flush()
-    subprocess.call([cmd1, temp.name, fname.name])
+    subprocess.call([
+        cmd1, '-O', 'Landscape', temp.name, fname.name
+        ])
     headers = dict()
     headers['Location'] = url_for('get_pdf', fname=fname.name[5:])
     return ('', 201, headers)
