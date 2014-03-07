@@ -119,6 +119,8 @@ def map_aoi(id):
 @app.route('/wps/pdf', methods=['POST', ])
 def make_pdf():
     htmlseg = request.form["htmlseg"].encode('ascii', 'ignore')
+    logger.debug(request.form["text"])
+    logger.debug(request.form["orient"])
     cmd1 = "/usr/local/wkhtmltox/bin/wkhtmltopdf"
     fname = tempfile.NamedTemporaryFile(
         delete=False, suffix=".pdf", dir='/tmp', prefix='ncthreats'
@@ -127,7 +129,8 @@ def make_pdf():
         temp.write(htmlseg)
         temp.flush()
     subprocess.call([
-        cmd1, '-O', 'Landscape', temp.name, fname.name
+        cmd1, '-O', request.form["orient"],
+        temp.name, fname.name
         ])
     headers = dict()
     headers['Location'] = url_for('get_pdf', fname=fname.name[5:])
