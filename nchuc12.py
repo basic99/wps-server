@@ -59,7 +59,7 @@ class NCHuc12():
 
     def __init__(self):
         self.gml = ''
-        self.aoi_desc = ''
+        # self.aoi_desc = ''
 
     def mkgeom(self):
         """ Convert GML into list of Well-Known Text representations."""
@@ -74,23 +74,6 @@ class NCHuc12():
                 geom_list.append(cur.fetchone()[0])
         logger.debug("returning %s polygons as WKT" % len(polygons))
         return geom_list
-
-    # def calculations(self, aoiname):
-    #     """Placeholder for actual calculations to be added later. """
-    #     hucs = list()
-    #     with g.db.cursor() as cur:
-    #         cur.execute("select pk from results where identifier = %s",
-    #                     (aoiname,))
-    #         for pk in cur:
-    #             hucs.append(pk[0])
-    #         for pk in hucs:
-    #             level = random.randint(1, 3)
-    #             cur.execute("update results set resultcode = %s where pk = %s",
-    #                         (level, pk))
-    #         g.db.commit()
-
-
-
 
     def execute(self):
         """Function to run calculations, called from wps.py.
@@ -110,7 +93,7 @@ class NCHuc12():
         extent - list of extents for huc12 for this aoi
 
         """
-        logger.info("aoi description is %s" % self.aoi_desc)
+        logger.debug("aoi description is %s" % self.aoi_desc)
         logger.debug(self.gml[:1000])
         huc12s = list()
         input_geoms = self.mkgeom()
@@ -147,17 +130,17 @@ class NCHuc12():
             ymin = cur.fetchone()[0]
             g.db.rollback()
             cur.execute("insert into aoi_results(identifier, huc12s,\
-             description, date, x_max, x_min, y_max, y_min) values\
-              (%s, %s, %s, now(), %s, %s, %s, %s) returning pk",
-                        (ident, huc12_str, self.aoi_desc, xmax, xmin,
+              date, x_max, x_min, y_max, y_min) values\
+              (%s, %s,  now(), %s, %s, %s, %s) returning pk",
+                        (ident, huc12_str, xmax, xmin,
                          ymax, ymin))
             aoi_id = cur.fetchone()[0]
             g.db.commit()
             geojson = getgeojson(huc12_str)
             extent = [xmin, ymin, xmax, ymax]
-            logger.info("md5 identifier is %s" % ident)
-            logger.info("pk in table aoi_results is %s" % aoi_id)
-            logger.info(
+            logger.debug("md5 identifier is %s" % ident)
+            logger.debug("pk in table aoi_results is %s" % aoi_id)
+            logger.debug(
                 "extent of huc12s is %s, %s, %s, %s" %
                 (extent[0], extent[1], extent[2], extent[3])
                 )

@@ -14,22 +14,23 @@ from flask import send_from_directory
 from flask import request
 from flask import url_for
 from flask import g, render_template
-# from flask import copy_current_request_context
-#import time
-# import gevent
+
 import psycopg2
 import psycopg2.extras
-import nchuc12
-import model
 import json
 import os
 import logging
 import subprocess
-import random
 import tempfile
+
+#modules for this app
+import nchuc12
+import model
 
 # from gevent import monkey
 # monkey.patch_all()
+# from flask import copy_current_request_context
+# import gevent
 
 cwd = os.path.dirname(os.path.realpath(__file__))
 logger = logging.getLogger(__name__)
@@ -102,7 +103,7 @@ def resource_aoi(id):
 
 @app.route('/wps/<int:id>/map', methods=['GET', ])
 def map_aoi(id):
-    message = "resource id is %d" % id
+    """fl """
     with g.db.cursor(cursor_factory=psycopg2.extras.DictCursor) as cur:
         cur.execute("select * from aoi_results where pk = %s", (id, ))
         rec = cur.fetchone()
@@ -113,14 +114,14 @@ def map_aoi(id):
             huc12["properties"]["huc12"], request.args
             )
 
-    return json.dumps({"message": message, "results": results})
+    return json.dumps({"results": results})
 
 
 @app.route('/wps/pdf', methods=['POST', ])
 def make_pdf():
     htmlseg = request.form["htmlseg"].encode('ascii', 'ignore')
     logger.debug(request.form["text"])
-    logger.debug(request.form["orient"])
+    # logger.debug(request.form["orient"])
     cmd1 = "/usr/local/wkhtmltox/bin/wkhtmltopdf"
     fname = tempfile.NamedTemporaryFile(
         delete=False, suffix=".pdf", dir='/tmp', prefix='ncthreats'
@@ -129,7 +130,7 @@ def make_pdf():
         temp.write(htmlseg)
         temp.flush()
     subprocess.call([
-        cmd1, '-O', request.form["orient"],
+        cmd1, '-O', "Portrait",
         temp.name, fname.name
         ])
     headers = dict()
@@ -140,7 +141,6 @@ def make_pdf():
 @app.route('/wps/pdf/<path:fname>')
 def get_pdf(fname):
     return send_from_directory('/tmp', fname, as_attachment=True)
-    pass
 
 if __name__ == '__main__':
     app.run(debug=True)

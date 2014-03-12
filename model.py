@@ -19,9 +19,14 @@ logger.addHandler(fh)
 
 
 def get_threat(huc12, query):
+    """Given huc12 and query string calculate threat
+
+    input
+    huc12 - string
+    query - werkzeug.datastructures.ImmutableMultiDict
+     """
     num_factors = len(query.keys()) - 1
     year = query.get('year')
-    logger.debug(num_factors)
     threat = 0
     if(query.get('urb', default='off') == 'on'):
         with g.db.cursor(cursor_factory=psycopg2.extras.DictCursor) as cur:
