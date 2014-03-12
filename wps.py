@@ -63,30 +63,26 @@ def teardown_request(exception):
 
 @app.route('/wps', methods=['POST', ])
 def post_aoi():
-    """Create a new resource with post request.
+    """Create a new AOI resource with post request of GML.
 
     Create nchuc12 object to make the calculations and
-    pass the post data of gml and text description.
-    Return identifier and extent as json, an http response of 201
+    pass the post data of gml.
+    Return geojson and extent as json, an http response of 201
     and location header with resource location.
 
     """
     huc = nchuc12.NCHuc12()
-    huc.aoi_desc = request.form['text']
     huc.gml = request.form['gml']
-    aoi_id = huc.execute()
-    # logger.debug(aoi_id[2])
-
-    resource = url_for('resource_aoi', id=aoi_id[0])
+    new_aoi = huc.execute()
+    resource = url_for('resource_aoi', id=new_aoi[0])
     headers = dict()
     headers['Location'] = resource
-    headers['Content-Type'] = 'application/json'
+    # headers['Content-Type'] = 'application/json'
 
     return (
         json.dumps({
-            # 'aoi_id': aoi_id[0],
-            'extent': aoi_id[1],
-            'geojson': aoi_id[2]
+            'extent': new_aoi[1],
+            'geojson': new_aoi[2]
             }),
         201, headers
         )
@@ -103,7 +99,11 @@ def resource_aoi(id):
 
 @app.route('/wps/<int:id>/map', methods=['GET', ])
 def map_aoi(id):
-    """fl """
+    """Run model on AOI to create map.
+
+    Get geojson for AOI with threat as 1. Loop through huc12s,
+    running model on each, set threat result, return geojson.
+    """
     with g.db.cursor(cursor_factory=psycopg2.extras.DictCursor) as cur:
         cur.execute("select * from aoi_results where pk = %s", (id, ))
         rec = cur.fetchone()
@@ -117,11 +117,20 @@ def map_aoi(id):
     return json.dumps({"results": results})
 
 
+@app.route('/wps/<int:id>/report', methods=['GET', ])
+def report_aoi(id):
+    with g.db.cursor(cursor_factory=psycopg2.extras.DictCursor) as cur:
+        cur.execute("select * from aoi_results where pk = %s", (id, ))
+        rec = cur.fetchone()
+    huc12_str = rec['huc12s']
+    report_results = model.get_threat_report(huc12_str, request.args)
+    return json.dumps({'message': 'hello world'})
+
+
 @app.route('/wps/pdf', methods=['POST', ])
 def make_pdf():
+    """Create PDF resource and return in location header. """
     htmlseg = request.form["htmlseg"].encode('ascii', 'ignore')
-    logger.debug(request.form["text"])
-    # logger.debug(request.form["orient"])
     cmd1 = "/usr/local/wkhtmltox/bin/wkhtmltopdf"
     fname = tempfile.NamedTemporaryFile(
         delete=False, suffix=".pdf", dir='/tmp', prefix='ncthreats'
@@ -140,6 +149,7 @@ def make_pdf():
 
 @app.route('/wps/pdf/<path:fname>')
 def get_pdf(fname):
+    """Get PDF resource. """
     return send_from_directory('/tmp', fname, as_attachment=True)
 
 if __name__ == '__main__':

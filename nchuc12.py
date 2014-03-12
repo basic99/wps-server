@@ -21,31 +21,35 @@ logger.addHandler(fh)
 
 
 def getgeojson(huc12_str):
-        list_features = []
-        huc12s = huc12_str.rsplit(", ")
-        # print huc12s
-        for huc12 in huc12s:
-            with g.db.cursor() as cur:
-                cur.execute(
-                    "select ST_AsGeoJSON(wkb_geometry, 6) from nchuc12_100m\
-                    where huc_12 = %s",
-                    (huc12, )
-                )
-                the_geom = cur.fetchone()
-                the_geom = (json.loads(the_geom[0]))
+    """Convert sting of comma separated huc12s to a dict representing
+    geojson, properties huc12 set and threat set to 1.
 
-                new_feature = {
-                    "type": "Feature",
-                    "geometry": the_geom,
-                    "properties": {
-                        "huc12": huc12,
-                        "threat": 1}
-                    }
-                list_features.append(new_feature)
-            dict_for_json = {
-                "type": "FeatureCollection", "features": list_features
+    """
+    list_features = []
+    huc12s = huc12_str.rsplit(", ")
+    # print huc12s
+    for huc12 in huc12s:
+        with g.db.cursor() as cur:
+            cur.execute(
+                "select ST_AsGeoJSON(wkb_geometry, 6) from nchuc12_100m\
+                where huc_12 = %s",
+                (huc12, )
+            )
+            the_geom = cur.fetchone()
+            the_geom = (json.loads(the_geom[0]))
+
+            new_feature = {
+                "type": "Feature",
+                "geometry": the_geom,
+                "properties": {
+                    "huc12": huc12,
+                    "threat": 1}
                 }
-        return dict_for_json
+            list_features.append(new_feature)
+        dict_for_json = {
+            "type": "FeatureCollection", "features": list_features
+            }
+    return dict_for_json
 
 
 class NCHuc12():
@@ -79,7 +83,7 @@ class NCHuc12():
         """Function to run calculations, called from wps.py.
 
         Call mkgeom to convert GML to list of polygons as WKT.
-        Create identifier using time, random and md5.
+        Create identifier using  random and md5.
         Insert into table aoi row for each polygon of input.
         Call stored procedure with identifier to calculate overlap with
         huc12 layer and update table results with rows for each huc12.
@@ -88,12 +92,11 @@ class NCHuc12():
         extent, and identifier, returning the id of inserted row.
 
         Returns:
-        ident - generated md5 string
+        geojson - dict representing geojson
         aoi_id - id of row in table aoi_results for this aoi
         extent - list of extents for huc12 for this aoi
 
         """
-        logger.debug("aoi description is %s" % self.aoi_desc)
         logger.debug(self.gml[:1000])
         huc12s = list()
         input_geoms = self.mkgeom()

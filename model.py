@@ -80,3 +80,11 @@ def get_threat(huc12, query):
     if threat == 6:
         threat = 5
     return threat
+
+def get_threat_report(huc12_str, query):
+    logger.debug(query)
+    col_hdrs = []
+    for col_hdr in query.keys():
+        if col_hdr != 'year':
+            col_hdrs.append(col_hdr)
+    logger.debug(col_hdrs)
