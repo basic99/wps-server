@@ -73,9 +73,9 @@ def post_aoi():
     """
     huc = nchuc12.NCHuc12()
     huc.gml = request.form['gml']
-    # logger.debug(request.form)
     huc.aoi_list = request.form.getlist('aoi_list[]')
     huc.predef_type = request.form['predef_type']
+    huc.sel_type = request.form['sel_type']
     new_aoi = huc.execute()
     resource = url_for('resource_aoi', id=new_aoi[0])
     headers = dict()

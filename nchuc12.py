@@ -8,6 +8,7 @@ import random
 import logging
 import os
 import json
+import psycopg2.extras
 
 cwd = os.path.dirname(os.path.realpath(__file__))
 logger = logging.getLogger(__name__)
@@ -31,9 +32,8 @@ def getgeojson(huc12_str):
     for huc12 in huc12s:
         with g.db.cursor() as cur:
             cur.execute(
-                "select ST_AsGeoJSON(wkb_geometry, 6) from nchuc12_100m\
-                where huc_12 = %s",
-                (huc12, )
+                """select ST_AsGeoJSON(wkb_geometry, 6) from nchuc12_100m
+                where huc_12 = %s""", (huc12, )
             )
             the_geom = cur.fetchone()
             the_geom = (json.loads(the_geom[0]))
@@ -64,7 +64,9 @@ class NCHuc12():
     def __init__(self):
         self.gml = ''
         self.aoi_list = []
+        self.huc12s = []
         self.predef_type = ''
+        self.sel_type = ''
 
     def mkgeom(self):
         """ Convert GML into list of Well-Known Text representations."""
@@ -79,6 +81,58 @@ class NCHuc12():
                 geom_list.append(cur.fetchone()[0])
         logger.debug("returning %s polygons as WKT" % len(polygons))
         return geom_list
+
+    def gethucsfromhucs(self, ident):
+        col_crswalk = {
+            'NC HUC 4': 'huc_4',
+            'NC HUC 6': 'huc_6',
+            'NC HUC 8': 'huc_8',
+            'NC HUC 10': 'huc_10'
+            }
+        if self.predef_type == 'NC HUC 12':
+            with g.db.cursor() as cur:
+                for huc12 in self.aoi_list:
+                    logger.debug("in gethucsfromhucs " + huc12)
+                    cur.execute(
+                        """select wkb_geometry from huc12nc where huc_12 =
+                         %s""", (huc12,)
+                        )
+                    rec = cur.fetchone()
+                    the_geom = rec[0]
+                    cur.execute(
+                        """insert into results (huc12, identifier, the_geom,
+                         date_added) values (%s, %s, %s, now()) """,
+                        (huc12, ident, the_geom)
+                        )
+        elif self.predef_type == 'NC HUC 2':
+            pass
+        else:
+            logger.debug(col_crswalk[self.predef_type])
+            query_str = (
+                "select wkb_geometry, huc_12 from huc12nc where " +
+                col_crswalk[self.predef_type] + " = %s"
+                )
+            logger.debug(query_str)
+            with g.db.cursor(cursor_factory=psycopg2.extras.DictCursor) as cur:
+                for huc in self.aoi_list:
+                    cur.execute(
+                        query_str, (huc,)
+                        )
+                    recs = cur.fetchall()
+                    for rec in recs:
+                        the_geom = rec['wkb_geometry']
+                        huc12 = rec['huc_12']
+                        cur.execute(
+                            """insert into results (huc12, identifier,
+                             the_geom, date_added)
+                             values (%s, %s, %s, now()) """,
+                            (huc12, ident, the_geom)
+                            )
+            # with g.db.cursor() as cur:
+
+
+        for huc in self.aoi_list:
+            logger.debug(huc)
 
     def execute(self):
         """Function to run calculations, called from wps.py.
@@ -101,22 +155,36 @@ class NCHuc12():
         # logger.debug(self.gml[:1000])
         logger.debug(self.aoi_list)
         logger.debug(self.predef_type)
+        logger.debug(self.sel_type)
+
         huc12s = list()
-        input_geoms = self.mkgeom()
+
         digest = hashlib.md5()
         digest.update(str(random.randint(10000000, 99999999)))
         # digest.update(str(time.time()))
         ident = digest.hexdigest()
         with g.db.cursor() as cur:
-            for b in input_geoms:
-                cur.execute("insert into aoi(identifier, the_geom) values\
-                 (%s, ST_GeomFromText(%s, 4326))", (ident, b))
-            #Stored PL/PGSQL procedure. Use PostGIS to calculate overlaps.
-            #Add row to table results for each huc12 with identifier.
-            #Identifier column is used by geoserver cql filter.
-            cur.execute("select aoitohuc(%s)", (ident,))
-            #insert random results
-            # self.calculations(ident)
+            if self.sel_type == 'predefined':
+                if 'Counties' in self.predef_type:
+                    logger.debug('type is county')
+                elif 'BCR' in self.predef_type:
+                    logger.debug('type is bcr')
+                elif 'HUC' in self.predef_type:
+                    logger.debug('type is huc')
+                    self.gethucsfromhucs(ident)
+                else:
+                    logger.debug('none type selected')
+
+            else:
+                input_geoms = self.mkgeom()
+                for b in input_geoms:
+                    cur.execute("insert into aoi(identifier, the_geom) values\
+                     (%s, ST_GeomFromText(%s, 4326))", (ident, b))
+                #Stored PL/PGSQL procedure. Use PostGIS to calculate overlaps.
+                #Add row to table results for each huc12 with identifier.
+                cur.execute("select aoitohuc(%s)", (ident,))
+                #insert random results
+                # self.calculations(ident)
             cur.execute("select huc12 from results where identifier = %s",
                         (ident,))
             for row in cur:
@@ -144,12 +212,12 @@ class NCHuc12():
             g.db.commit()
             geojson = getgeojson(huc12_str)
             extent = [xmin, ymin, xmax, ymax]
-            logger.debug("md5 identifier is %s" % ident)
-            logger.debug("pk in table aoi_results is %s" % aoi_id)
-            logger.debug(
-                "extent of huc12s is %s, %s, %s, %s" %
-                (extent[0], extent[1], extent[2], extent[3])
-                )
+            # logger.debug("md5 identifier is %s" % ident)
+            # logger.debug("pk in table aoi_results is %s" % aoi_id)
+            # logger.debug(
+            #     "extent of huc12s is %s, %s, %s, %s" %
+            #     (extent[0], extent[1], extent[2], extent[3])
+            #     )
 
         return (aoi_id, extent, geojson)
 
