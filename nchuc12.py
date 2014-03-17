@@ -11,7 +11,7 @@ import json
 
 cwd = os.path.dirname(os.path.realpath(__file__))
 logger = logging.getLogger(__name__)
-logger.setLevel(logging.INFO)
+logger.setLevel(logging.DEBUG)
 fh = logging.FileHandler(cwd + '/logs/logs.log')
 formatter = logging.Formatter(
     '%(asctime)s - %(name)s - %(levelname)s - %(message)s'
@@ -63,7 +63,8 @@ class NCHuc12():
 
     def __init__(self):
         self.gml = ''
-        # self.aoi_desc = ''
+        self.aoi_list = []
+        self.predef_type = ''
 
     def mkgeom(self):
         """ Convert GML into list of Well-Known Text representations."""
@@ -97,7 +98,9 @@ class NCHuc12():
         extent - list of extents for huc12 for this aoi
 
         """
-        logger.debug(self.gml[:1000])
+        # logger.debug(self.gml[:1000])
+        logger.debug(self.aoi_list)
+        logger.debug(self.predef_type)
         huc12s = list()
         input_geoms = self.mkgeom()
         digest = hashlib.md5()
