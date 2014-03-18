@@ -64,7 +64,7 @@ class NCHuc12():
     def __init__(self):
         self.gml = ''
         self.aoi_list = []
-        self.huc12s = []
+        # self.huc12s = []
         self.predef_type = ''
         self.sel_type = ''
 
@@ -87,25 +87,28 @@ class NCHuc12():
             'NC HUC 4': 'huc_4',
             'NC HUC 6': 'huc_6',
             'NC HUC 8': 'huc_8',
-            'NC HUC 10': 'huc_10'
+            'NC HUC 10': 'huc_10',
+            'NC HUC 12': 'huc_12'
             }
-        if self.predef_type == 'NC HUC 12':
-            with g.db.cursor() as cur:
-                for huc12 in self.aoi_list:
-                    logger.debug("in gethucsfromhucs " + huc12)
+
+        if self.predef_type == 'NC HUC 2':
+            query_str = """select wkb_geometry, huc_12 from huc12nc
+            where huc_12 like %s  """
+            with g.db.cursor(cursor_factory=psycopg2.extras.DictCursor) as cur:
+                for huc in self.aoi_list:
                     cur.execute(
-                        """select wkb_geometry from huc12nc where huc_12 =
-                         %s""", (huc12,)
+                        query_str, (huc + "%",)
                         )
-                    rec = cur.fetchone()
-                    the_geom = rec[0]
-                    cur.execute(
-                        """insert into results (huc12, identifier, the_geom,
-                         date_added) values (%s, %s, %s, now()) """,
-                        (huc12, ident, the_geom)
-                        )
-        elif self.predef_type == 'NC HUC 2':
-            pass
+                    recs = cur.fetchall()
+                    for rec in recs:
+                        the_geom = rec['wkb_geometry']
+                        huc12 = rec['huc_12']
+                        cur.execute(
+                            """insert into results (huc12, identifier,
+                             the_geom, date_added)
+                             values (%s, %s, %s, now()) """,
+                            (huc12, ident, the_geom)
+                            )
         else:
             logger.debug(col_crswalk[self.predef_type])
             query_str = (
@@ -128,11 +131,41 @@ class NCHuc12():
                              values (%s, %s, %s, now()) """,
                             (huc12, ident, the_geom)
                             )
-            # with g.db.cursor() as cur:
 
+    def gethucsfromcache(self, ident, layer):
+        query = "select huc12 from cache_huc12 where " + layer + " = %s"
+        huc12_list = []
+        with g.db.cursor(cursor_factory=psycopg2.extras.DictCursor) as cur:
+                for lyr_id in self.aoi_list:
+                    cur.execute(
+                        query, (lyr_id,)
+                        )
+                    recs = cur.fetchall()
+                    for rec in recs:
+                        huc12_list.append(rec['huc12'])
+        huc12s = set(huc12_list)
+        query_str = (
+            "select wkb_geometry, huc_12 from huc12nc where huc_12 = %s"
+            )
+        with g.db.cursor(cursor_factory=psycopg2.extras.DictCursor) as cur:
+            for huc in huc12s:
+                cur.execute(
+                    query_str, (huc,)
+                    )
+                recs = cur.fetchall()
+                for rec in recs:
+                    the_geom = rec['wkb_geometry']
+                    huc12 = rec['huc_12']
+                    try:
+                        cur.execute(
+                            """insert into results (huc12, identifier,
+                             the_geom, date_added)
+                             values (%s, %s, %s, now()) """,
+                            (huc12, ident, the_geom)
+                            )
+                    except Exception as e:
+                        logger.debug(e)
 
-        for huc in self.aoi_list:
-            logger.debug(huc)
 
     def execute(self):
         """Function to run calculations, called from wps.py.
@@ -166,9 +199,9 @@ class NCHuc12():
         with g.db.cursor() as cur:
             if self.sel_type == 'predefined':
                 if 'Counties' in self.predef_type:
-                    logger.debug('type is county')
+                    self.gethucsfromcache(ident, 'county')
                 elif 'BCR' in self.predef_type:
-                    logger.debug('type is bcr')
+                    self.gethucsfromcache(ident, 'bcr')
                 elif 'HUC' in self.predef_type:
                     logger.debug('type is huc')
                     self.gethucsfromhucs(ident)
@@ -178,36 +211,48 @@ class NCHuc12():
             else:
                 input_geoms = self.mkgeom()
                 for b in input_geoms:
-                    cur.execute("insert into aoi(identifier, the_geom) values\
-                     (%s, ST_GeomFromText(%s, 4326))", (ident, b))
+                    cur.execute(
+                        """insert into aoi(identifier, the_geom) values
+                        (%s, ST_GeomFromText(%s, 4326))""", (ident, b)
+                        )
                 #Stored PL/PGSQL procedure. Use PostGIS to calculate overlaps.
                 #Add row to table results for each huc12 with identifier.
                 cur.execute("select aoitohuc(%s)", (ident,))
                 #insert random results
                 # self.calculations(ident)
-            cur.execute("select huc12 from results where identifier = %s",
-                        (ident,))
+            cur.execute(
+                "select huc12 from results where identifier = %s", (ident,)
+                )
             for row in cur:
                 huc12s.append(row[0])
             huc12_str = ", ".join(huc12s)
-            cur.execute("select max(st_xmax(the_geom)) from results where\
-             identifier = %s", (ident,))
+            cur.execute(
+                """select max(st_xmax(the_geom)) from results where
+                identifier = %s""", (ident,)
+                )
             xmax = cur.fetchone()[0]
-            cur.execute("select min(st_xmin(the_geom)) from results where\
-             identifier = %s", (ident,))
+            cur.execute(
+                """select min(st_xmin(the_geom)) from results where
+                identifier = %s""", (ident,)
+                )
             xmin = cur.fetchone()[0]
-            cur.execute("select max(st_ymax(the_geom)) from results where\
-             identifier = %s", (ident,))
+            cur.execute(
+                """select max(st_ymax(the_geom)) from results where
+                identifier = %s""", (ident,)
+                )
             ymax = cur.fetchone()[0]
-            cur.execute("select min(st_ymin(the_geom)) from results where\
-             identifier = %s", (ident,))
+            cur.execute(
+                """select min(st_ymin(the_geom)) from results where
+                identifier = %s""", (ident,)
+                )
             ymin = cur.fetchone()[0]
             g.db.rollback()
-            cur.execute("insert into aoi_results(identifier, huc12s,\
-              date, x_max, x_min, y_max, y_min) values\
-              (%s, %s,  now(), %s, %s, %s, %s) returning pk",
-                        (ident, huc12_str, xmax, xmin,
-                         ymax, ymin))
+            cur.execute(
+                """insert into aoi_results(identifier, huc12s,
+                date, x_max, x_min, y_max, y_min) values
+                (%s, %s,  now(), %s, %s, %s, %s) returning pk""",
+                (ident, huc12_str, xmax, xmin, ymax, ymin)
+                )
             aoi_id = cur.fetchone()[0]
             g.db.commit()
             geojson = getgeojson(huc12_str)
