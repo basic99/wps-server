@@ -196,7 +196,7 @@ class NCHuc12():
         digest.update(str(random.randint(10000000, 99999999)))
         # digest.update(str(time.time()))
         ident = digest.hexdigest()
-        with g.db.cursor() as cur:
+        with g.db.cursor(cursor_factory=psycopg2.extras.DictCursor) as cur:
             if self.sel_type == 'predefined':
                 if 'Counties' in self.predef_type:
                     self.gethucsfromcache(ident, 'county')
@@ -208,7 +208,7 @@ class NCHuc12():
                 else:
                     logger.debug('none type selected')
 
-            else:
+            elif self.sel_type == 'custom':
                 input_geoms = self.mkgeom()
                 for b in input_geoms:
                     cur.execute(
@@ -218,8 +218,23 @@ class NCHuc12():
                 #Stored PL/PGSQL procedure. Use PostGIS to calculate overlaps.
                 #Add row to table results for each huc12 with identifier.
                 cur.execute("select aoitohuc(%s)", (ident,))
-                #insert random results
-                # self.calculations(ident)
+            else:
+                query = "select wkb_geometry, huc_12 from huc12nc"
+                cur.execute(query)
+                recs = cur.fetchall()
+                for rec in recs:
+                    the_geom = rec['wkb_geometry']
+                    huc12 = rec['huc_12']
+                    try:
+                        cur.execute(
+                            """insert into results (huc12, identifier,
+                             the_geom, date_added)
+                             values (%s, %s, %s, now()) """,
+                            (huc12, ident, the_geom)
+                            )
+                    except Exception as e:
+                        logger.debug(e)
+
             cur.execute(
                 "select huc12 from results where identifier = %s", (ident,)
                 )
