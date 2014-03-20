@@ -22,6 +22,8 @@ import os
 import logging
 import subprocess
 import tempfile
+import urllib
+import base64
 
 #modules for this app
 import nchuc12
@@ -154,6 +156,35 @@ def make_pdf():
 def get_pdf(fname):
     """Get PDF resource. """
     return send_from_directory('/tmp', fname, as_attachment=True)
+
+
+@app.route('/wps/shptojson', methods=['POST', ])
+def shptojson():
+    shp = {}
+    shp_dir = tempfile.mkdtemp()
+    logger.debug(shp_dir)
+    cmd1 = "/usr/local/bin/ogr2ogr"
+    fluff = "data:application/octet-stream;base64,"  # for firefox
+    fluff2 = "data:;base64,"  # for chrome
+    fluff3 = urllib.urlencode({'fluff': fluff2}).replace('fluff=', '')  # ie
+    for key, data in request.form.iterlists():
+        shp[key] = str(data[0])
+        shp[key] = shp[key].replace(fluff, '')
+        shp[key] = shp[key].replace(fluff2, '')
+        shp[key] = shp[key].replace(fluff3, '')
+        shp[key] = base64.b64decode(shp[key])
+        with open(shp_dir + "/shape." + key, "wb") as temp:
+            temp.write(shp[key])
+            temp.flush()
+
+    subprocess.call([
+        cmd1, "-f", "GeoJSON", "-t_srs", "EPSG:900913",
+        shp_dir + "/shape.json", shp_dir
+        ])
+
+    return send_from_directory(shp_dir, "shape.json")
+    # logger.debug(shp)
+
 
 if __name__ == '__main__':
     app.run(debug=True)
