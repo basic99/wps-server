@@ -185,7 +185,7 @@ class NCHuc12():
         extent - list of extents for huc12 for this aoi
 
         """
-        # logger.debug(self.gml[:1000])
+        logger.debug(self.gml[:1000])
         logger.debug(self.aoi_list)
         logger.debug(self.predef_type)
         logger.debug(self.sel_type)
@@ -209,15 +209,23 @@ class NCHuc12():
                     logger.debug('none type selected')
 
             elif self.sel_type == 'custom':
+
+                cust_huc12s = []
+                query = """select huc_12 from huc12nc where ST_Intersects(
+                    wkb_geometry, ST_GeomFromText(%s, 4326))"""
+
                 input_geoms = self.mkgeom()
                 for b in input_geoms:
-                    cur.execute(
-                        """insert into aoi(identifier, the_geom) values
-                        (%s, ST_GeomFromText(%s, 4326))""", (ident, b)
-                        )
-                #Stored PL/PGSQL procedure. Use PostGIS to calculate overlaps.
-                #Add row to table results for each huc12 with identifier.
-                cur.execute("select aoitohuc(%s)", (ident,))
+                    cur.execute(query, (b,))
+                    res = cur.fetchall()
+                    for huc in res:
+                        cust_huc12s.append(huc[0])
+                logger.debug(len(cust_huc12s))
+                logger.debug(len(set(cust_huc12s)))
+                self.aoi_list = list(set(cust_huc12s))
+                self.predef_type = 'NC HUC 12'
+                self.gethucsfromhucs(ident)
+
             else:
                 query = "select wkb_geometry, huc_12 from huc12nc"
                 cur.execute(query)
