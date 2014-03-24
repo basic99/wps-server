@@ -56,8 +56,19 @@ class NCHuc12():
 
     """Make GIS calculations to get huc12s.
 
-    Input GML file and text description. Run method
-    execute to do calculations.
+   Input:
+   gml - gml string for custom AOI, unused otherwise
+   aoi_list - list of ids for predefined types, can be hucs or other
+   predef_type - value of type from select list on form
+   sel_type - predefined, custom or statewide
+
+   For predefined hucs calculate from database or using start of huc string.
+   For predefined county or bcr use cache tables.
+   For custom and shapefiles calculate with postgis.
+
+   Put huc12s into table results and calculate extent, create csv string of
+   huc12 and insert with extents into table aoi_results returning pk as
+   resource identifier.
 
     """
 
@@ -83,6 +94,7 @@ class NCHuc12():
         return geom_list
 
     def gethucsfromhucs(self, ident):
+        """Get list of huc12 for huc predefined type. """
         col_crswalk = {
             'NC HUC 4': 'huc_4',
             'NC HUC 6': 'huc_6',
@@ -133,6 +145,7 @@ class NCHuc12():
                             )
 
     def gethucsfromcache(self, ident, layer):
+        """Get list of huc12s for predefined county and bcr. """
         query = "select huc12 from cache_huc12 where " + layer + " = %s"
         huc12_list = []
         with g.db.cursor(cursor_factory=psycopg2.extras.DictCursor) as cur:
@@ -194,7 +207,6 @@ class NCHuc12():
 
         digest = hashlib.md5()
         digest.update(str(random.randint(10000000, 99999999)))
-        # digest.update(str(time.time()))
         ident = digest.hexdigest()
         with g.db.cursor(cursor_factory=psycopg2.extras.DictCursor) as cur:
             if self.sel_type == 'predefined':
@@ -209,17 +221,16 @@ class NCHuc12():
                     logger.debug('none type selected')
 
             elif self.sel_type == 'custom':
-
+                # custom includes shapefile and drawn
                 cust_huc12s = []
                 query = """select huc_12 from huc12nc where ST_Intersects(
                     wkb_geometry, ST_GeomFromText(%s, 4326))"""
-
                 input_geoms = self.mkgeom()
                 for b in input_geoms:
                     cur.execute(query, (b,))
                     res = cur.fetchall()
-                    for huc in res:
-                        cust_huc12s.append(huc[0])
+                    for cust_huc in res:
+                        cust_huc12s.append(cust_huc[0])
                 logger.debug(len(cust_huc12s))
                 logger.debug(len(set(cust_huc12s)))
                 self.aoi_list = list(set(cust_huc12s))
@@ -227,6 +238,7 @@ class NCHuc12():
                 self.gethucsfromhucs(ident)
 
             else:
+                # statewide
                 query = "select wkb_geometry, huc_12 from huc12nc"
                 cur.execute(query)
                 recs = cur.fetchall()
