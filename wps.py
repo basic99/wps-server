@@ -44,11 +44,16 @@ formatter = logging.Formatter(
 fh.setFormatter(formatter)
 logger.addHandler(fh)
 
+app = Flask(__name__)
+
 
 def connect_db():
     return psycopg2.connect("dbname=ncthreats user=postgres")
 
-app = Flask(__name__)
+
+def proxy_url_for(endpoint, **values):
+    """Seems to be a bit of a hack, but it works. """
+    return "/wps" + url_for(endpoint, **values)
 
 
 @app.before_request
@@ -63,7 +68,7 @@ def teardown_request(exception):
         db.close()
 
 
-@app.route('/wps', methods=['POST', ])
+@app.route('/', methods=['POST', ])
 def post_aoi():
     """Create a new AOI resource with post request of GML.
 
@@ -79,7 +84,10 @@ def post_aoi():
     huc.predef_type = request.form['predef_type']
     huc.sel_type = request.form['sel_type']
     new_aoi = huc.execute()
-    resource = url_for('resource_aoi', id=new_aoi[0])
+    resource = proxy_url_for(
+        'resource_aoi',
+        id=new_aoi[0]
+        )
     headers = dict()
     headers['Location'] = resource
     # headers['Content-Type'] = 'application/json'
@@ -93,7 +101,7 @@ def post_aoi():
         )
 
 
-@app.route('/wps/<int:id>', methods=['GET', ])
+@app.route('/<int:id>', methods=['GET', ])
 def resource_aoi(id):
     """Method to get resource of huc12s returned as a web page. """
     with g.db.cursor(cursor_factory=psycopg2.extras.DictCursor) as cur:
@@ -102,7 +110,7 @@ def resource_aoi(id):
     return render_template('aoi_resource.html', aoi=dict(rec))
 
 
-@app.route('/wps/<int:id>/map', methods=['GET', ])
+@app.route('/<int:id>/map', methods=['GET', ])
 def map_aoi(id):
     """Run model on AOI to create map.
 
@@ -122,7 +130,7 @@ def map_aoi(id):
     return json.dumps({"results": results})
 
 
-@app.route('/wps/<int:id>/report', methods=['GET', ])
+@app.route('/<int:id>/report', methods=['GET', ])
 def report_aoi(id):
     with g.db.cursor(cursor_factory=psycopg2.extras.DictCursor) as cur:
         cur.execute("select * from aoi_results where pk = %s", (id, ))
@@ -134,7 +142,7 @@ def report_aoi(id):
     # return json.dumps(report_results)
 
 
-@app.route('/wps/pdf', methods=['POST', ])
+@app.route('/pdf', methods=['POST', ])
 def make_pdf():
     """Create PDF resource and return in location header. """
     htmlseg = request.form["htmlseg"].encode('ascii', 'ignore')
@@ -150,17 +158,17 @@ def make_pdf():
         temp.name, fname.name
         ])
     headers = dict()
-    headers['Location'] = url_for('get_pdf', fname=fname.name[5:])
+    headers['Location'] = proxy_url_for('get_pdf', fname=fname.name[5:])
     return ('', 201, headers)
 
 
-@app.route('/wps/pdf/<path:fname>')
+@app.route('/pdf/<path:fname>')
 def get_pdf(fname):
     """Get PDF resource. """
     return send_from_directory('/tmp', fname, as_attachment=True)
 
 
-@app.route('/wps/shptojson', methods=['POST', ])
+@app.route('/shptojson', methods=['POST', ])
 def shptojson():
     """Convert shapefile upload to geojson. """
     shp = {}
