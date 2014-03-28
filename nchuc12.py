@@ -181,16 +181,7 @@ class NCHuc12():
 
 
     def execute(self):
-        """Function to run calculations, called from wps.py.
-
-        Call mkgeom to convert GML to list of polygons as WKT.
-        Create identifier using  random and md5.
-        Insert into table aoi row for each polygon of input.
-        Call stored procedure with identifier to calculate overlap with
-        huc12 layer and update table results with rows for each huc12.
-        Calculate extents of huc12s.
-        Add row to table aoi_results string representation of huc12s,
-        extent, and identifier, returning the id of inserted row.
+        """Function to run calculations.
 
         Returns:
         geojson - dict representing geojson

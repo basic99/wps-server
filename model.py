@@ -171,6 +171,6 @@ def get_threat_report(huc12_str, query):
             threat = 5
         row['result'] = threat
 
-    logger.debug(nparray)
+    return {"res_arr": nparray.tolist(), "col_hdrs": nparray.dtype.names}
 
 

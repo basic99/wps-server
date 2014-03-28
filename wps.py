@@ -129,7 +129,9 @@ def report_aoi(id):
         rec = cur.fetchone()
     huc12_str = rec['huc12s']
     report_results = model.get_threat_report(huc12_str, request.args)
-    return json.dumps({'message': 'hello world'})
+    logger.debug(report_results)
+    return render_template('report.html')
+    # return json.dumps(report_results)
 
 
 @app.route('/wps/pdf', methods=['POST', ])
@@ -160,6 +162,7 @@ def get_pdf(fname):
 
 @app.route('/wps/shptojson', methods=['POST', ])
 def shptojson():
+    """Convert shapefile upload to geojson. """
     shp = {}
     shp_dir = tempfile.mkdtemp()
     logger.debug(shp_dir)
