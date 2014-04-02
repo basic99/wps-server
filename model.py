@@ -18,6 +18,21 @@ formatter = logging.Formatter(
 fh.setFormatter(formatter)
 logger.addHandler(fh)
 
+col_names = {
+    'polu1': 'Pollution 1',
+    'polu2': 'Pollution 2',
+    'dise1': 'Disease 1',
+    'dise2': 'Disease 2',
+    'slr': 'Sea Level Rise',
+    'firp': 'Fire Probability',
+    'firs': 'Fire Suppresion',
+    'tran': 'Transportation Corridors',
+    'frag': 'Fragmentation Index',
+    'urb': 'Urban Percentage',
+    'huc12': 'HUC 12',
+    'result': 'Result'
+}
+
 
 def get_threat(huc12, query):
     """Given huc12 and query string calculate threat
@@ -66,12 +81,12 @@ def get_threat(huc12, query):
                 threat += rec['dise2']
             if(query.get('slr', default='off') == 'on'):
                 threat += rec['slr']
-            if(query.get('frp', default='off') == 'on'):
-                threat += rec['frp']
+            if(query.get('firp', default='off') == 'on'):
+                threat += rec['firp']
             if(query.get('firs', default='off') == 'on'):
                 threat += rec['firs']
-            if(query.get('trans', default='off') == 'on'):
-                threat += rec['trans']
+            if(query.get('tran', default='off') == 'on'):
+                threat += rec['tran']
 
     try:
         threat = threat / (num_factors * 200) + 1
@@ -93,10 +108,13 @@ def get_threat_report(huc12_str, query):
             col_hdrs.append(col_hdr)
     col_hdrs.sort()
     col_hdrs.append("result")
+    logger.debug(col_hdr)
+
     col_len = len(huc12s)
     outputType.append(("huc12", "U20"))
     for col_hdr in col_hdrs:
         outputType.append((col_hdr, 'i4'))
+
     dtype = np.dtype(outputType)
     nparray = np.ones((col_len,), dtype=dtype)
 
@@ -152,15 +170,15 @@ def get_threat_report(huc12_str, query):
                 if(query.get('slr', default='off') == 'on'):
                     threat += rec['slr']
                     row['slr'] = rec['slr']
-                if(query.get('frp', default='off') == 'on'):
-                    threat += rec['frp']
-                    row['frp'] = rec['frp']
+                if(query.get('firp', default='off') == 'on'):
+                    threat += rec['firp']
+                    row['firp'] = rec['firp']
                 if(query.get('firs', default='off') == 'on'):
                     threat += rec['firs']
                     row['firs'] = rec['firs']
-                if(query.get('trans', default='off') == 'on'):
-                    threat += rec['trans']
-                    row['trans'] = rec['trans']
+                if(query.get('tran', default='off') == 'on'):
+                    threat += rec['tran']
+                    row['tran'] = rec['tran']
 
         try:
             threat = threat / (num_factors * 200) + 1
@@ -171,6 +189,13 @@ def get_threat_report(huc12_str, query):
             threat = 5
         row['result'] = threat
 
-    return {"res_arr": nparray.tolist(), "col_hdrs": nparray.dtype.names}
+    col_disp = []
+    for col in nparray.dtype.names:
+        col_disp.append(col_names[col])
 
+    return {
+        "res_arr": nparray.tolist(),
+        "col_hdrs": col_disp,
+        "year": year
+        }
 

@@ -14,6 +14,7 @@ from flask import send_from_directory
 from flask import request
 from flask import url_for
 from flask import g, render_template
+from jinja2 import Environment, PackageLoader
 
 import psycopg2
 import psycopg2.extras
@@ -45,6 +46,17 @@ fh.setFormatter(formatter)
 logger.addHandler(fh)
 
 app = Flask(__name__)
+app_proxy = '/wps'
+env = Environment(loader=PackageLoader('__main__', 'templates'))
+template = env.get_template('report.html')
+# logger.debug(template.render())
+
+
+
+def proxy_filter(url_str):
+    return app_proxy + url_str
+env.filters['proxy_filter'] = proxy_filter
+logger.debug(env.filters['proxy_filter'])
 
 
 def connect_db():
@@ -53,7 +65,8 @@ def connect_db():
 
 def proxy_url_for(endpoint, **values):
     """Seems to be a bit of a hack, but it works. """
-    return "/wps" + url_for(endpoint, **values)
+    return app_proxy + url_for(endpoint, **values)
+
 
 
 @app.before_request
@@ -138,7 +151,13 @@ def report_aoi(id):
     huc12_str = rec['huc12s']
     report_results = model.get_threat_report(huc12_str, request.args)
     logger.debug(report_results)
-    return render_template('report.html')
+    return render_template(
+        'report.html',
+        app_proxy=app_proxy,
+        col_hdrs=report_results['col_hdrs'],
+        res_arr=report_results['res_arr'],
+        year=report_results['year']
+        )
     # return json.dumps(report_results)
 
 
