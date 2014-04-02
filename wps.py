@@ -14,7 +14,6 @@ from flask import send_from_directory
 from flask import request
 from flask import url_for
 from flask import g, render_template
-from jinja2 import Environment, PackageLoader
 
 import psycopg2
 import psycopg2.extras
@@ -37,7 +36,7 @@ import model
 
 cwd = os.path.dirname(os.path.realpath(__file__))
 logger = logging.getLogger(__name__)
-logger.setLevel(logging.DEBUG)
+logger.setLevel(logging.INFO)
 fh = logging.FileHandler(cwd + '/logs/logs.log')
 formatter = logging.Formatter(
     '%(asctime)s - %(name)s - %(levelname)s - %(message)s'
@@ -47,16 +46,6 @@ logger.addHandler(fh)
 
 app = Flask(__name__)
 app_proxy = '/wps'
-env = Environment(loader=PackageLoader('__main__', 'templates'))
-template = env.get_template('report.html')
-# logger.debug(template.render())
-
-
-
-def proxy_filter(url_str):
-    return app_proxy + url_str
-env.filters['proxy_filter'] = proxy_filter
-logger.debug(env.filters['proxy_filter'])
 
 
 def connect_db():
@@ -66,7 +55,6 @@ def connect_db():
 def proxy_url_for(endpoint, **values):
     """Seems to be a bit of a hack, but it works. """
     return app_proxy + url_for(endpoint, **values)
-
 
 
 @app.before_request
@@ -120,7 +108,11 @@ def resource_aoi(id):
     with g.db.cursor(cursor_factory=psycopg2.extras.DictCursor) as cur:
         cur.execute("select * from aoi_results where pk = %s", (id, ))
         rec = cur.fetchone()
-    return render_template('aoi_resource.html', aoi=dict(rec))
+    return render_template(
+        'aoi_resource.html',
+        aoi=dict(rec),
+        app_proxy=app_proxy
+        )
 
 
 @app.route('/<int:id>/map', methods=['GET', ])
