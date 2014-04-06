@@ -14,7 +14,7 @@ from flask import send_from_directory
 from flask import request
 from flask import url_for
 from flask import g, render_template
-from jinja2 import Environment, PackageLoader
+# from jinja2 import Environment, PackageLoader
 
 import psycopg2
 import psycopg2.extras
@@ -37,7 +37,7 @@ import model
 
 cwd = os.path.dirname(os.path.realpath(__file__))
 logger = logging.getLogger(__name__)
-logger.setLevel(logging.INFO)
+logger.setLevel(logging.DEBUG)
 fh = logging.FileHandler(cwd + '/logs/logs.log')
 formatter = logging.Formatter(
     '%(asctime)s - %(name)s - %(levelname)s - %(message)s'
@@ -49,12 +49,15 @@ logger.addHandler(fh)
 class ReverseProxied(object):
     """Modified snippet.
     http://flask.pocoo.org/snippets/35/
+    See also:
+    http://flask.pocoo.org/docs/deploying/wsgi-standalone/#proxy-setups
 
     """
     def __init__(self, app):
         self.app = app
 
     def __call__(self, environ, start_response):
+        # logger.debug(environ)
         script_name = '/wps'
         environ['SCRIPT_NAME'] = script_name
 
@@ -153,7 +156,7 @@ def report_aoi(id):
         rec = cur.fetchone()
     huc12_str = rec['huc12s']
     report_results = model.get_threat_report(huc12_str, request.args)
-    logger.debug(report_results)
+    # logger.debug(report_results)
     return render_template(
         'report.html',
         col_hdrs=report_results['col_hdrs'],
@@ -194,7 +197,6 @@ def shptojson():
     """Convert shapefile upload to geojson. """
     shp = {}
     shp_dir = tempfile.mkdtemp()
-    logger.debug(shp_dir)
     cmd1 = "/usr/local/bin/ogr2ogr"
     fluff = "data:application/octet-stream;base64,"  # for firefox
     fluff2 = "data:;base64,"  # for chrome
@@ -215,7 +217,6 @@ def shptojson():
         ])
 
     return send_from_directory(shp_dir, "shape.json")
-    # logger.debug(shp)
 
 
 if __name__ == '__main__':
