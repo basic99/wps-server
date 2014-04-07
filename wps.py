@@ -14,6 +14,7 @@ from flask import send_from_directory
 from flask import request
 from flask import url_for
 from flask import g, render_template
+from jinja2 import Environment, PackageLoader
 
 import psycopg2
 import psycopg2.extras
@@ -44,17 +45,27 @@ formatter = logging.Formatter(
 fh.setFormatter(formatter)
 logger.addHandler(fh)
 
+
+class ReverseProxied(object):
+    """Modified snippet.
+    http://flask.pocoo.org/snippets/35/
+
+    """
+    def __init__(self, app):
+        self.app = app
+
+    def __call__(self, environ, start_response):
+        script_name = '/wps'
+        environ['SCRIPT_NAME'] = script_name
+
+        return self.app(environ, start_response)
+
 app = Flask(__name__)
-app_proxy = '/wps'
+app.wsgi_app = ReverseProxied(app.wsgi_app)
 
 
 def connect_db():
     return psycopg2.connect("dbname=ncthreats user=postgres")
-
-
-def proxy_url_for(endpoint, **values):
-    """Seems to be a bit of a hack, but it works. """
-    return app_proxy + url_for(endpoint, **values)
 
 
 @app.before_request
@@ -85,7 +96,8 @@ def post_aoi():
     huc.predef_type = request.form['predef_type']
     huc.sel_type = request.form['sel_type']
     new_aoi = huc.execute()
-    resource = proxy_url_for(
+
+    resource = url_for(
         'resource_aoi',
         id=new_aoi[0]
         )
@@ -110,8 +122,7 @@ def resource_aoi(id):
         rec = cur.fetchone()
     return render_template(
         'aoi_resource.html',
-        aoi=dict(rec),
-        app_proxy=app_proxy
+        aoi=dict(rec)
         )
 
 
@@ -156,7 +167,6 @@ def report_aoi(id):
     logger.debug(report_results)
     return render_template(
         'report.html',
-        app_proxy=app_proxy,
         col_hdrs=report_results['col_hdrs'],
         res_arr=report_results['res_arr'],
         year=report_results['year']
@@ -180,7 +190,7 @@ def make_pdf():
         temp.name, fname.name
         ])
     headers = dict()
-    headers['Location'] = proxy_url_for('get_pdf', fname=fname.name[5:])
+    headers['Location'] = url_for('get_pdf', fname=fname.name[5:])
     return ('', 201, headers)
 
 
