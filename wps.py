@@ -115,6 +115,17 @@ def resource_aoi(id):
         )
 
 
+@app.route('/<int:id>/saved', methods=['GET', ])
+def saved_aoi(id):
+
+    return (
+        json.dumps({
+            'extent': new_aoi[1],
+            'geojson': new_aoi[2]
+        })
+        )
+
+
 @app.route('/<int:id>/map', methods=['GET', ])
 def map_aoi(id):
     """Run model on AOI to create map.
