@@ -98,6 +98,8 @@ def post_aoi():
     huc.aoi_list = request.form.getlist('aoi_list[]')
     huc.predef_type = request.form['predef_type']
     huc.sel_type = request.form['sel_type']
+    huc.referer = request.environ['HTTP_REFERER']
+
     new_aoi = huc.execute()
 
     resource = url_for(
@@ -126,18 +128,29 @@ def resource_aoi(id):
     return render_template(
         'aoi_resource.html',
         aoi=dict(rec)
+        # permalink=permalink
         )
 
 
 @app.route('/<int:id>/saved', methods=['GET', ])
 def saved_aoi(id):
+    with g.db.cursor(cursor_factory=psycopg2.extras.DictCursor) as cur:
+        cur.execute("select * from aoi_results where pk = %s", (id, ))
+        rec = cur.fetchone()
+    results = nchuc12.getgeojson(rec['huc12s'])
+    extent = [
+        float(rec['x_min']),
+        float(rec['y_min']),
+        float(rec['x_max']),
+        float(rec['y_max']),
 
+    ]
     return (
         json.dumps({
-            'extent': new_aoi[1],
-            'geojson': new_aoi[2]
+            'extent': extent,
+            'geojson': results
         })
-        )
+    )
 
 
 @app.route('/<int:id>/map', methods=['GET', ])

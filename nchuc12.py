@@ -12,7 +12,7 @@ import psycopg2.extras
 
 cwd = os.path.dirname(os.path.realpath(__file__))
 logger = logging.getLogger(__name__)
-logger.setLevel(logging.INFO)
+logger.setLevel(logging.DEBUG)
 fh = logging.FileHandler(cwd + '/logs/logs.log')
 formatter = logging.Formatter(
     '%(asctime)s - %(name)s - %(levelname)s - %(message)s'
@@ -75,7 +75,7 @@ class NCHuc12():
     def __init__(self):
         self.gml = ''
         self.aoi_list = []
-        # self.huc12s = []
+        self.referer = ''
         self.predef_type = ''
         self.sel_type = ''
 
@@ -273,6 +273,7 @@ class NCHuc12():
                 )
             ymin = cur.fetchone()[0]
             g.db.rollback()
+
             cur.execute(
                 """insert into aoi_results(identifier, huc12s,
                 date, x_max, x_min, y_max, y_min) values
@@ -280,6 +281,12 @@ class NCHuc12():
                 (ident, huc12_str, xmax, xmin, ymax, ymin)
                 )
             aoi_id = cur.fetchone()[0]
+            permalink = self.referer + "#" + str(aoi_id)
+            cur.execute(
+                """update aoi_results set permalink = %s
+                where pk = %s""", (permalink, aoi_id)
+                )
+
             g.db.commit()
             geojson = getgeojson(huc12_str)
             extent = [xmin, ymin, xmax, ymax]
