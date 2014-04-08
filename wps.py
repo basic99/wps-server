@@ -25,6 +25,7 @@ import subprocess
 import tempfile
 import urllib
 import base64
+import csv
 
 #modules for this app
 import nchuc12
@@ -187,7 +188,35 @@ def report_aoi(id):
         res_arr=report_results['res_arr'],
         year=report_results['year']
         )
-    # return json.dumps(report_results)
+
+
+@app.route('/<int:id>/ssheet', methods=['GET', ])
+def ssheet_aoi(id):
+    with g.db.cursor(cursor_factory=psycopg2.extras.DictCursor) as cur:
+        cur.execute("select * from aoi_results where pk = %s", (id, ))
+        rec = cur.fetchone()
+    huc12_str = rec['huc12s']
+    report_results = model.get_threat_report(huc12_str, request.args)
+    with tempfile.NamedTemporaryFile(
+            delete=False,
+            suffix=".csv",
+            dir='/tmp',
+            prefix='ncthreats'
+            ) as temp:
+        csvwriter = csv.writer(temp)
+        csvwriter.writerow(["Year - " + str(report_results['year'])])
+        csvwriter.writerow(report_results['col_hdrs'])
+        for row in report_results['res_arr']:
+            csvwriter.writerow(row)
+    headers = dict()
+    headers['Location'] = url_for('get_ssheet', fname=temp.name[5:])
+    return ('', 201, headers)
+
+
+@app.route('/ssheet/<path:fname>')
+def get_ssheet(fname):
+    """Get PDF resource. """
+    return send_from_directory('/tmp', fname, as_attachment=True)
 
 
 @app.route('/pdf', methods=['POST', ])
