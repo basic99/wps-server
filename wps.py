@@ -135,6 +135,7 @@ def resource_aoi(id):
 
 @app.route('/<int:id>/saved', methods=['GET', ])
 def saved_aoi(id):
+    """Return geojson and extent given aoi id. """
     with g.db.cursor(cursor_factory=psycopg2.extras.DictCursor) as cur:
         cur.execute("select * from aoi_results where pk = %s", (id, ))
         rec = cur.fetchone()
@@ -158,30 +159,36 @@ def saved_aoi(id):
 def map_aoi(id):
     """Run model on AOI to create map.
 
-    Get geojson for AOI with threat as 1. Loop through huc12s,
-    running model on each, set threat result, return geojson.
+    Get geojson for AOI with threat as 1. Get report and create dict from
+    it with huc12 as key and threat as value and use to assign levels
+    to map by loopig geojson.
     """
     with g.db.cursor(cursor_factory=psycopg2.extras.DictCursor) as cur:
         cur.execute("select * from aoi_results where pk = %s", (id, ))
         rec = cur.fetchone()
     huc12_str = rec['huc12s']
+    report_results = model.get_threat_report(huc12_str, request.args)
     results = nchuc12.getgeojson(huc12_str)
+    results_dic = {}
+    for huc12 in report_results['res_arr']:
+        results_dic[huc12[0]] = huc12[-1]
     for huc12 in results["features"]:
-        huc12["properties"]["threat"] = model.get_threat(
-            huc12["properties"]["huc12"], request.args
-            )
+        huc12["properties"]["threat"] = results_dic[
+            huc12["properties"]["huc12"]
+            ]
 
     return json.dumps({"results": results})
 
 
 @app.route('/<int:id>/report', methods=['GET', ])
 def report_aoi(id):
+    """Create model report as html from aoi id. """
     with g.db.cursor(cursor_factory=psycopg2.extras.DictCursor) as cur:
         cur.execute("select * from aoi_results where pk = %s", (id, ))
         rec = cur.fetchone()
     huc12_str = rec['huc12s']
     report_results = model.get_threat_report(huc12_str, request.args)
-    # logger.debug(report_results)
+    logger.debug(report_results)
     return render_template(
         'report.html',
         col_hdrs=report_results['col_hdrs'],
@@ -192,6 +199,7 @@ def report_aoi(id):
 
 @app.route('/<int:id>/ssheet', methods=['GET', ])
 def ssheet_aoi(id):
+    """Create model report as csv from aoi id. """
     with g.db.cursor(cursor_factory=psycopg2.extras.DictCursor) as cur:
         cur.execute("select * from aoi_results where pk = %s", (id, ))
         rec = cur.fetchone()
