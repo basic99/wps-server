@@ -13,7 +13,7 @@ from flask import Flask
 from flask import send_from_directory
 from flask import request
 from flask import url_for
-from flask import g, render_template
+from flask import g, render_template, session
 # from jinja2 import Environment, PackageLoader
 
 import psycopg2
@@ -68,6 +68,10 @@ app = Flask(__name__)
 app.wsgi_app = ReverseProxied(app.wsgi_app)
 
 
+# set the secret key.  keep this really secret:
+app.secret_key = 'A0Zr98j/3yX R~XHH!jmN]LWX/,?RT'
+
+
 def connect_db():
     return psycopg2.connect("dbname=ncthreats user=postgres")
 
@@ -110,6 +114,7 @@ def post_aoi():
     headers = dict()
     headers['Location'] = resource
     # headers['Content-Type'] = 'application/json'
+    logger.debug(session['username'])
 
     return (
         json.dumps({
@@ -161,7 +166,7 @@ def map_aoi(id):
 
     Get geojson for AOI with threat as 1. Get report and create dict from
     it with huc12 as key and threat as value and use to assign levels
-    to map by loopig geojson.
+    to map by looping geojson.
     """
     with g.db.cursor(cursor_factory=psycopg2.extras.DictCursor) as cur:
         cur.execute("select * from aoi_results where pk = %s", (id, ))
@@ -278,6 +283,13 @@ def shptojson():
         ])
 
     return send_from_directory(shp_dir, "shape.json")
+
+@app.route('/login', methods=['POST', ])
+def login():
+    logger.debug(request.form)
+    session['username'] = request.form['loginUsername']
+    return json.dumps({'success': True})
+
 
 
 if __name__ == '__main__':
