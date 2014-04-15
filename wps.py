@@ -30,6 +30,7 @@ import csv
 #modules for this app
 import nchuc12
 import model
+import siteutils
 
 # from gevent import monkey
 # monkey.patch_all()
@@ -289,6 +290,18 @@ def login():
     logger.debug(request.form)
     session['username'] = request.form['loginUsername']
     return json.dumps({'success': True})
+
+@app.route('/register')
+def register():
+    return render_template('register.html')
+
+@app.route('/createuser', methods=['POST', ])
+def createuser():
+    # logger.debug(request.form)
+    siteutils.addnewuser(request.form)
+
+    return 'hello world'
+
 
 
 
