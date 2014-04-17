@@ -11,9 +11,14 @@ function validateEmail(email) {
 
 $(document).ready(function() {
     "use strict";
+    // $("#fm1").submit(function(evt) {
+    //     evt.preventDefault();
+    //     evt.stopPropagation();
+    // });
     $('#submit_btn').click(function(evt) {
         $('.form-group').removeClass('has-error');
         evt.preventDefault();
+        evt.stopPropagation();
         var firstname = $('#FirstName').val();
         var lastname = $('#LastName').val();
         var affil = $('#Affil').val();
@@ -27,8 +32,8 @@ $(document).ready(function() {
             $('.LastName').addClass('has-error');
         } else if (!validateEmail(email)) {
             $('.Email').addClass('has-error');
-        } else if (affil.length === 0) {
-            $('.Affil').addClass('has-error');
+        // } else if (affil.length === 0) {
+        //     $('.Affil').addClass('has-error');
         } else if (username.length === 0) {
             $('.UserName').addClass('has-error');
         } else if (passwd.length < 6) {
