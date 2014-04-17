@@ -284,25 +284,28 @@ def shptojson():
 
     return send_from_directory(shp_dir, "shape.json")
 
+
 @app.route('/login', methods=['POST', ])
 def login():
-    logger.debug(request.form)
-    session['username'] = request.form['loginUsername']
-    return json.dumps({'success': True})
+    result = siteutils.userauth(request.form)
+    if json.loads(result)['success']:
+        username = json.loads(result)['username']
+        session['username'] = username
+        logger.debug(username)
+    return result
+
 
 @app.route('/register')
 def register():
+    """ """
     return render_template('register.html')
+
 
 @app.route('/createuser', methods=['POST', ])
 def createuser():
-    # logger.debug(request.form)
-
+    """ """
     flash(siteutils.addnewuser(request.form))
     return redirect(url_for('register'))
-
-
-
 
 
 if __name__ == '__main__':

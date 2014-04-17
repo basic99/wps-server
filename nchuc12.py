@@ -95,16 +95,7 @@ class NCHuc12():
 
     def gethucsfromhucs(self, ident):
         """Get list of huc12 for huc predefined type. """
-        # col_crswalk = {
-        #     'NC HUC 4': 'huc_4',
-        #     'NC HUC 6': 'huc_6',
-        #     'NC HUC 8': 'huc_8',
-        #     'NC HUC 10': 'huc_10',
-        #     'NC HUC 12': 'huc_12'
-        #     }
 
-        # if self.predef_type == 'NC HUC 2':
-        # if True:
         query_str = """select wkb_geometry, huc_12 from huc12nc
         where huc_12 like %s  """
         with g.db.cursor(cursor_factory=psycopg2.extras.DictCursor) as cur:
@@ -122,28 +113,6 @@ class NCHuc12():
                          values (%s, %s, %s, now()) """,
                         (huc12, ident, the_geom)
                         )
-        # else:
-        #     logger.debug(col_crswalk[self.predef_type])
-        #     query_str = (
-        #         "select wkb_geometry, huc_12 from huc12nc where " +
-        #         col_crswalk[self.predef_type] + " = %s"
-        #         )
-        #     logger.debug(query_str)
-        #     with g.db.cursor(cursor_factory=psycopg2.extras.DictCursor) as cur:
-        #         for huc in self.aoi_list:
-        #             cur.execute(
-        #                 query_str, (huc,)
-        #                 )
-        #             recs = cur.fetchall()
-        #             for rec in recs:
-        #                 the_geom = rec['wkb_geometry']
-        #                 huc12 = rec['huc_12']
-        #                 cur.execute(
-        #                     """insert into results (huc12, identifier,
-        #                      the_geom, date_added)
-        #                      values (%s, %s, %s, now()) """,
-        #                     (huc12, ident, the_geom)
-        #                     )
 
     def gethucsfromcache(self, ident, layer):
         """Get list of huc12s for predefined county and bcr. """

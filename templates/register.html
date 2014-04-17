@@ -56,14 +56,12 @@
     </div>
     <div class="col-md-6">
       {% with messages = get_flashed_messages() %}
-  {% if messages %}
-      <ul class=flashes>
-        {% for message in messages %}
-        <li>{{ message }}</li>
-        {% endfor %}
-      </ul>
+      {% if messages %}
+      {% for message in messages %}
+        <h4>{{ message }}</h4>
+      {% endfor %}
       {% endif %}
-{% endwith %}
+      {% endwith %}
     </div>
   </div>
 </div>
