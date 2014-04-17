@@ -13,7 +13,7 @@ from flask import Flask
 from flask import send_from_directory
 from flask import request
 from flask import url_for
-from flask import g, render_template, session
+from flask import g, render_template, session, flash, redirect
 # from jinja2 import Environment, PackageLoader
 
 import psycopg2
@@ -30,6 +30,8 @@ import csv
 #modules for this app
 import nchuc12
 import model
+import siteutils
+import siteprivate
 
 # from gevent import monkey
 # monkey.patch_all()
@@ -69,7 +71,7 @@ app.wsgi_app = ReverseProxied(app.wsgi_app)
 
 
 # set the secret key.  keep this really secret:
-app.secret_key = 'A0Zr98j/3yX R~XHH!jmN]LWX/,?RT'
+app.secret_key = siteprivate.secret_key
 
 
 def connect_db():
@@ -174,9 +176,7 @@ def map_aoi(id):
     huc12_str = rec['huc12s']
     report_results = model.get_threat_report(huc12_str, request.args)
     results = nchuc12.getgeojson(huc12_str)
-    results_dic = {}
-    for huc12 in report_results['res_arr']:
-        results_dic[huc12[0]] = huc12[-1]
+    results_dic = {huc12[0]: huc12[-1] for huc12 in report_results['res_arr']}
     for huc12 in results["features"]:
         huc12["properties"]["threat"] = results_dic[
             huc12["properties"]["huc12"]
@@ -284,12 +284,28 @@ def shptojson():
 
     return send_from_directory(shp_dir, "shape.json")
 
+
 @app.route('/login', methods=['POST', ])
 def login():
-    logger.debug(request.form)
-    session['username'] = request.form['loginUsername']
-    return json.dumps({'success': True})
+    result = siteutils.userauth(request.form)
+    if json.loads(result)['success']:
+        username = json.loads(result)['username']
+        session['username'] = username
+        logger.debug(username)
+    return result
 
+
+@app.route('/register')
+def register():
+    """ """
+    return render_template('register.html')
+
+
+@app.route('/createuser', methods=['POST', ])
+def createuser():
+    """ """
+    flash(siteutils.addnewuser(request.form))
+    return redirect(url_for('register'))
 
 
 if __name__ == '__main__':

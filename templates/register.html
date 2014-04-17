@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html class="no-js">
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+  <title>NC Threats Analysis Site Registration</title>
+  <meta name="description" content="">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  <link rel="stylesheet" href="{{url_for('static', filename='css/bootstrap.min.css')}}">
+  <style></style>
+  <link rel="stylesheet" href="{{url_for('static', filename='css/bootstrap-theme.min.css')}}">
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/main.css') }}">
+
+  <!--[if lt IE 9]>
+  <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+  <script>window.html5 || document.write('<script src="js/vendor/html5shiv.js"><\/script>')</script>
+<![endif]-->
+</head>
+<body>
+
+<div class="container">
+  <div class="well">
+    <h2>Registration Page</h2>
+  </div>
+
+  <div  class="row">
+    <div class="col-md-6">
+      <form role="form" method="POST" action="/wps/createuser" name="fm1">
+        <div class="form-group FirstName">
+          <label for="FirstName">First Name</label>
+          <input type="text" class="form-control" id="FirstName" name="FirstName"
+          placeholder="Enter First Name"></div>
+        <div class="form-group LastName">
+          <label for="LastName">Last Name</label>
+          <input type="text" class="form-control" id="LastName" name="LastName"
+          placeholder="Enter Last Name"></div>
+        <div class="form-group Affil">
+          <label for="Affil">Affiliation</label>
+          <input type="text" class="form-control" id="Affil" name="Affil"
+          placeholder="Enter Affiliation"></div>
+        <div class="form-group UserName">
+          <label for="UserName">Username</label>
+          <input type="text" class="form-control" id="UserName" name="UserName"
+          placeholder="Enter username"></div>
+        <div class="form-group Password">
+          <label for="Password">Password</label>
+          <input type="text" class="form-control" id="Password" name="Password"
+          placeholder="Enter password  (min 6 chars)"></div>
+        <div class="form-group Email">
+          <label for="Email">Email address</label>
+          <input type="email" class="form-control" id="Email" name="Email"
+          placeholder="Enter email"></div>
+        <button id='submit_btn' type='submit'  class="btn btn-default">Submit</button>
+      </form>
+    </div>
+    <div class="col-md-6">
+      {% with messages = get_flashed_messages() %}
+      {% if messages %}
+      {% for message in messages %}
+        <h4>{{ message }}</h4>
+      {% endfor %}
+      {% endif %}
+      {% endwith %}
+    </div>
+  </div>
+</div>
+
+<!-- /container -->
+<script src="//ajax.googleapis.com/ajax/libs/jquery/1.11.0/jquery.min.js"></script>
+<script>window.jQuery || document.write("<script src=\"{{url_for('static', filename='js/vendor/jquery-1.11.0.min.js')}}\"><\/script>")</script>
+
+<script src="{{url_for('static', filename='js/vendor/bootstrap.min.js')}}"></script>
+
+<script src="{{url_for('static', filename='js/main.js')}}"></script>
+</body>
+</html>
