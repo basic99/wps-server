@@ -114,7 +114,7 @@ def post_aoi():
     headers = dict()
     headers['Location'] = resource
     # headers['Content-Type'] = 'application/json'
-    logger.debug(session['username'])
+    # logger.debug(session['username'])
 
     return (
         json.dumps({
