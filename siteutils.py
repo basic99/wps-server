@@ -5,6 +5,10 @@ import psycopg2
 import psycopg2.extras
 from flask import g
 import json
+import random
+import string
+from email.message import Message
+import email.utils
 
 
 cwd = os.path.dirname(os.path.realpath(__file__))
@@ -81,3 +85,59 @@ def userauth(request):
             })
     except TypeError:
         return json.dumps({'success': False})
+
+
+def passwdreset(emailaddr):
+    query = """select * from users where email = %s """
+    with g.db.cursor(cursor_factory=psycopg2.extras.DictCursor) as cur:
+        cur.execute(query, (emailaddr,))
+        logger.debug(cur.rowcount)
+        if cur.rowcount == 0:
+            return json.dumps({
+                'success': True,
+                'msg': "This email has not registered."
+                })
+        rec = cur.fetchone()
+
+    pk = rec['pk']
+    chars = string.ascii_letters + string.digits
+    pwd = ''.join(random.choice(chars) for i in range(8))
+    digest = hashlib.md5()
+    digest.update(pwd)
+    hash_passwd = digest.hexdigest()
+    logger.debug(pwd)
+    query = """update users set password = %s where pk = %s"""
+    with g.db.cursor() as cur:
+        cur.execute(query, (hash_passwd, pk))
+    g.db.commit()
+
+    message = """
+You have requested a password reset for \
+login to the NC threats \
+analysis web site.
+
+Username:  %s
+Password:  %s
+    """ % (rec['username'], pwd)
+
+    msg = Message()
+    msg['To'] = emailaddr
+    msg['From'] = 'webmaster@basic.ncsu.edu'
+    msg['Subject'] = 'Requested password reset'
+    msg['Date'] = email.utils.formatdate(localtime=1)
+    msg['Message-ID'] = email.utils.make_msgid()
+    msg.set_payload(message)
+
+    logger.debug(msg.as_string())
+
+    # logger.debug(message)
+
+
+
+    return json.dumps({
+        'success': True,
+        'username': rec['username'],
+        'pass': pwd,
+        'msg': "Check your email."
+        })
+

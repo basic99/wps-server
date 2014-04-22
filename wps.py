@@ -307,6 +307,11 @@ def createuser():
     flash(siteutils.addnewuser(request.form))
     return redirect(url_for('register'))
 
+@app.route('/reset', methods=['POST', ])
+def passwdreset():
+    email = request.form['email'].strip()
+    return(siteutils.passwdreset(email))
+
 
 if __name__ == '__main__':
     app.run(debug=True)
