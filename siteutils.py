@@ -9,6 +9,7 @@ import random
 import string
 from email.message import Message
 import email.utils
+import smtplib
 
 
 cwd = os.path.dirname(os.path.realpath(__file__))
@@ -122,17 +123,15 @@ Password:  %s
 
     msg = Message()
     msg['To'] = emailaddr
-    msg['From'] = 'webmaster@basic.ncsu.edu'
+    msg['From'] = 'BaSIC_WebMaster@ncsu.edu'
     msg['Subject'] = 'Requested password reset'
     msg['Date'] = email.utils.formatdate(localtime=1)
     msg['Message-ID'] = email.utils.make_msgid()
     msg.set_payload(message)
 
-    logger.debug(msg.as_string())
-
-    # logger.debug(message)
-
-
+    # logger.debug(msg.as_string())
+    s = smtplib.SMTP('127.0.0.1')
+    s.sendmail('BaSIC_WebMaster@ncsu.edu', emailaddr, msg.as_string())
 
     return json.dumps({
         'success': True,

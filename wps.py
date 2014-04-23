@@ -116,7 +116,6 @@ def post_aoi():
     headers = dict()
     headers['Location'] = resource
     # headers['Content-Type'] = 'application/json'
-    # logger.debug(session['username'])
 
     return (
         json.dumps({
@@ -130,12 +129,24 @@ def post_aoi():
 @app.route('/<int:id>', methods=['GET', ])
 def resource_aoi(id):
     """Method to get resource of huc12s returned as a web page. """
+    try:
+        logger.debug(session['username'])
+        username = session['username']
+        loggedin = True
+    except KeyError:
+        logger.debug('user not logged in')
+        loggedin = False
+        username = ''
+
+
     with g.db.cursor(cursor_factory=psycopg2.extras.DictCursor) as cur:
         cur.execute("select * from aoi_results where pk = %s", (id, ))
         rec = cur.fetchone()
     return render_template(
         'aoi_resource.html',
-        aoi=dict(rec)
+        aoi=dict(rec),
+        loggedin=loggedin,
+        username=username
         # permalink=permalink
         )
 
@@ -311,6 +322,26 @@ def createuser():
 def passwdreset():
     email = request.form['email'].strip()
     return(siteutils.passwdreset(email))
+
+@app.route('/useraddaoi', methods=['POST', ])
+def useraddaoi():
+    logger.debug(request.form)
+    query = """insert into usersaoi (username, aoiid, aoidesc) values
+    (%s, %s, %s) """
+    msg = 'AOI saved for user ' + request.form['username'] + "."
+
+    with g.db.cursor() as cur:
+        try:
+            cur.execute(query, (
+                request.form['username'], request.form['aoiid'],
+                request.form['aoidesc'])
+            )
+        except psycopg2.IntegrityError:
+            msg = 'You have already saved this AOI.'
+    g.db.commit()
+    flash(msg)
+    return redirect(url_for('resource_aoi', id=request.form['aoiid']))
+
 
 
 if __name__ == '__main__':
