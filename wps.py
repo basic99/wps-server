@@ -300,9 +300,8 @@ def shptojson():
 def login():
     result = siteutils.userauth(request.form)
     if json.loads(result)['success']:
-        username = json.loads(result)['username']
-        session['username'] = username
-        logger.debug(username)
+        session['username'] = json.loads(result)['username']
+        session['firstname'] = json.loads(result)['firstname']
     return result
 
 
@@ -342,7 +341,24 @@ def useraddaoi():
     flash(msg)
     return redirect(url_for('resource_aoi', id=request.form['aoiid']))
 
+@app.route('/loginchk')
+def loginchk():
+    try:
+        logger.debug(session['username'])
+        username = session['username']
+        firstname = session['firstname']
+        loggedin = True
 
+    except KeyError:
+        logger.debug('user not logged in')
+        loggedin = False
+        username = ''
+
+    return json.dumps({
+        'loggedin': loggedin,
+        'username': username,
+        'firstname': firstname
+        })
 
 if __name__ == '__main__':
     app.run(debug=True)
