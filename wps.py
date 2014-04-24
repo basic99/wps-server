@@ -212,15 +212,18 @@ def ssheet_aoi(id):
     report_results = model.get_threat_report(huc12_str, request.args)
     with tempfile.NamedTemporaryFile(
             delete=False,
-            suffix=".xls",
+            suffix=".csv",
             dir='/tmp',
             prefix='ncthreats'
             ) as temp:
-        csvwriter = csv.writer(temp, dialect='excel-tab')
+        csvwriter = csv.writer(temp)
         csvwriter.writerow(["Year - " + str(report_results['year'])])
         csvwriter.writerow(report_results['col_hdrs'])
         for row in report_results['res_arr']:
-            csvwriter.writerow(row)
+            row_esc = [('="' + str(x)) + '"' for x in row]
+            logger.debug(row_esc)
+            csvwriter.writerow(row_esc)
+
     headers = dict()
     headers['Location'] = url_for('get_ssheet', fname=temp.name[5:])
     return ('', 201, headers)

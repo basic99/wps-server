@@ -29,7 +29,7 @@ col_names = {
     'tran': 'Transportation Corridors',
     'frag': 'Fragmentation Index',
     'urb': 'Urban Percentage',
-    'huc12': '12 digit hydrologic unit',
+    'huc12': 'HUC12',
     'result': 'Result'
 }
 
