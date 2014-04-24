@@ -220,7 +220,11 @@ def ssheet_aoi(id):
         csvwriter.writerow(["Year - " + str(report_results['year'])])
         csvwriter.writerow(report_results['col_hdrs'])
         for row in report_results['res_arr']:
-            row_esc = [('="' + str(x)) + '"' for x in row]
+            # row_esc = ['="' + str(x) + '"' for x in row]
+            huc12_col = '="' + str(row[0]) + '"'
+            row_esc = [huc12_col]
+            for x in row[1:]:
+                row_esc.append(x)
             logger.debug(row_esc)
             csvwriter.writerow(row_esc)
 
