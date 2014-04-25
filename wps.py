@@ -384,5 +384,18 @@ def userpage(username):
     except KeyError:
         return "not logged in to this account"
 
+
+@app.route('/passwdchng',  methods=['POST', ])
+def passwdchng():
+    passwd = request.form['newpasswd']
+    try:
+        username = session['username']
+        return siteutils.passwdchng(username, passwd)
+
+    except KeyError:
+        pass
+
+    # return json.dumps({'hello': 'world'})sel
+
 if __name__ == '__main__':
     app.run(debug=True)

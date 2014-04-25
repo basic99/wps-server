@@ -151,3 +151,7 @@ def userpage(username):
             logger.debug(rec['aoidesc'])
             results.append({'aoiid': rec['aoiid'], 'aoidesc': rec['aoidesc']})
     return {'username': username, 'results': results}
+
+
+def passwdchng(username, passwd):
+    return json.dumps({'username': username, 'passwd': passwd})
