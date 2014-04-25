@@ -359,13 +359,30 @@ def loginchk():
     except KeyError:
         logger.debug('user not logged in')
         loggedin = False
-        username = ''
+        username = '',
+        firstname = ''
 
     return json.dumps({
         'loggedin': loggedin,
         'username': username,
         'firstname': firstname
         })
+
+@app.route('/user/<username>')
+def userpage(username):
+    try:
+        loggedinname = session['username']
+        if username == loggedinname:
+            results = siteutils.userpage(username)
+            return render_template(
+                "userpage.html",
+                results=results,
+                referer=request.environ['HTTP_REFERER']
+            )
+        else:
+            return "not logged in to this account"
+    except KeyError:
+        return "not logged in to this account"
 
 if __name__ == '__main__':
     app.run(debug=True)

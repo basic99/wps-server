@@ -140,3 +140,14 @@ Password:  %s
         'msg': "Check your email."
         })
 
+
+def userpage(username):
+    query = """select * from usersaoi where username = %s """
+    results = []
+    with g.db.cursor(cursor_factory=psycopg2.extras.DictCursor) as cur:
+        cur.execute(query, (username,))
+        for rec in cur:
+            logger.debug(rec['aoiid'])
+            logger.debug(rec['aoidesc'])
+            results.append({'aoiid': rec['aoiid'], 'aoidesc': rec['aoidesc']})
+    return {'username': username, 'results': results}
