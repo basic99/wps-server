@@ -43,8 +43,10 @@ logger = logging.getLogger(__name__)
 logger.setLevel(logging.DEBUG)
 fh = logging.FileHandler(cwd + '/logs/logs.log')
 formatter = logging.Formatter(
-    '%(asctime)s - %(name)s - %(levelname)s - %(message)s'
+    '%(asctime)s - %(name)s, %(lineno)s - %(levelname)s - %(message)s',
+    datefmt='%m/%d %H:%M:%S'
     )
+
 fh.setFormatter(formatter)
 logger.addHandler(fh)
 
@@ -324,10 +326,12 @@ def createuser():
     flash(siteutils.addnewuser(request.form))
     return redirect(url_for('register'))
 
+
 @app.route('/reset', methods=['POST', ])
 def passwdreset():
     email = request.form['email'].strip()
     return(siteutils.passwdreset(email))
+
 
 @app.route('/useraddaoi', methods=['POST', ])
 def useraddaoi():
@@ -347,6 +351,7 @@ def useraddaoi():
     g.db.commit()
     flash(msg)
     return redirect(url_for('resource_aoi', id=request.form['aoiid']))
+
 
 @app.route('/loginchk')
 def loginchk():
@@ -368,6 +373,7 @@ def loginchk():
         'firstname': firstname
         })
 
+
 @app.route('/user/<username>')
 def userpage(username):
     try:
@@ -387,15 +393,13 @@ def userpage(username):
 
 @app.route('/passwdchng',  methods=['POST', ])
 def passwdchng():
-    passwd = request.form['newpasswd']
+    passwd = request.form['newpasswd'].strip()
     try:
         username = session['username']
         return siteutils.passwdchng(username, passwd)
 
     except KeyError:
-        pass
-
-    # return json.dumps({'hello': 'world'})sel
+        return json.dumps({'success': False})
 
 if __name__ == '__main__':
     app.run(debug=True)

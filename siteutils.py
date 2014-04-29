@@ -17,7 +17,8 @@ logger = logging.getLogger(__name__)
 logger.setLevel(logging.DEBUG)
 fh = logging.FileHandler(cwd + '/logs/logs.log')
 formatter = logging.Formatter(
-    '%(asctime)s - %(name)s - %(levelname)s - %(message)s'
+    '%(asctime)s - %(name)s, %(lineno)s - %(levelname)s - %(message)s',
+    datefmt='%m/%d %H:%M:%S'
     )
 fh.setFormatter(formatter)
 logger.addHandler(fh)
@@ -129,7 +130,6 @@ Password:  %s
     msg['Message-ID'] = email.utils.make_msgid()
     msg.set_payload(message)
 
-    # logger.debug(msg.as_string())
     s = smtplib.SMTP('127.0.0.1')
     s.sendmail('BaSIC_WebMaster@ncsu.edu', emailaddr, msg.as_string())
 
@@ -154,4 +154,20 @@ def userpage(username):
 
 
 def passwdchng(username, passwd):
-    return json.dumps({'username': username, 'passwd': passwd})
+    if len(passwd) < 6:
+            return json.dumps({'success': False})
+    digest = hashlib.md5()
+    digest.update(passwd)
+    hash_passwd = digest.hexdigest()
+    query = """update users set password = %s where username = %s"""
+    with g.db.cursor() as cur:
+        cur.execute(query, (hash_passwd, username))
+        if cur.rowcount == 1:
+            g.db.commit()
+            return json.dumps({'success': True})
+        else:
+            g.db.rollback()
+            return json.dumps({'success': False})
+
+
+

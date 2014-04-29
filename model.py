@@ -13,7 +13,8 @@ logger = logging.getLogger(__name__)
 logger.setLevel(logging.DEBUG)
 fh = logging.FileHandler(cwd + '/logs/logs.log')
 formatter = logging.Formatter(
-    '%(asctime)s - %(name)s - %(levelname)s - %(message)s'
+    '%(asctime)s - %(name)s, %(lineno)s - %(levelname)s - %(message)s',
+    datefmt='%m/%d %H:%M:%S'
     )
 fh.setFormatter(formatter)
 logger.addHandler(fh)
