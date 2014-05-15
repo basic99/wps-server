@@ -70,19 +70,25 @@ class ReverseProxied(object):
 
 app = Flask(__name__)
 app.wsgi_app = ReverseProxied(app.wsgi_app)
-
+# app.config.from_object(__name__)
+app.config.update(dict(
+    DATABASE='ncthreats'
+))
 
 # set the secret key.  keep this really secret:
 app.secret_key = siteprivate.secret_key
 
 
 def connect_db():
-    return psycopg2.connect("dbname=ncthreats user=postgres")
+    return psycopg2.connect(database=app.config['DATABASE'], user="postgres")
 
 
 @app.before_request
 def before_request():
-    g.db = connect_db()
+    try:
+        g.db = connect_db()
+    except Exception as e:
+        logger.debug(e.args)
 
 
 @app.teardown_request
@@ -102,12 +108,22 @@ def post_aoi():
     and location header with resource location.
 
     """
+
+    logger.debug(request.form)
+
     huc = nchuc12.NCHuc12()
     huc.gml = request.form['gml']
-    huc.aoi_list = request.form.getlist('aoi_list[]')
+    # huc.aoi_list = request.form.getlist('aoi_list[]')
+    huc.aoi_list = request.form.get('aoi_list').split(":")
+    logger.debug(huc.aoi_list)
     huc.predef_type = request.form['predef_type']
     huc.sel_type = request.form['sel_type']
-    huc.referer = request.environ['HTTP_REFERER']
+    try:
+        huc.referer = request.environ['HTTP_REFERER']
+    except:
+        pass
+    logger.debug(huc.aoi_list)
+
 
     new_aoi = huc.execute()
 
@@ -139,7 +155,6 @@ def resource_aoi(id):
         logger.debug('user not logged in')
         loggedin = False
         username = ''
-
 
     with g.db.cursor(cursor_factory=psycopg2.extras.DictCursor) as cur:
         cur.execute("select * from aoi_results where pk = %s", (id, ))

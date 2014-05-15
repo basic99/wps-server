@@ -25,7 +25,10 @@ logger.addHandler(fh)
 
 
 def addnewuser(request):
-
+    """Process form from create new user page.
+    Update table users with form data and md5 hash for password.
+    If sql fails due to key constraints return appropriate error msg.
+     """
     username = request.get('UserName').strip()
     firstname = request.get('FirstName').strip()
     lastname = request.get('LastName').strip()
@@ -147,8 +150,6 @@ def userpage(username):
     with g.db.cursor(cursor_factory=psycopg2.extras.DictCursor) as cur:
         cur.execute(query, (username,))
         for rec in cur:
-            logger.debug(rec['aoiid'])
-            logger.debug(rec['aoidesc'])
             results.append({'aoiid': rec['aoiid'], 'aoidesc': rec['aoidesc']})
     return {'username': username, 'results': results}
 
