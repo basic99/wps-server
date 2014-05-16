@@ -109,8 +109,6 @@ def post_aoi():
 
     """
 
-    logger.debug(request.form)
-
     huc = nchuc12.NCHuc12()
     huc.gml = request.form['gml']
     # huc.aoi_list = request.form.getlist('aoi_list[]')
@@ -198,6 +196,7 @@ def map_aoi(id):
     it with huc12 as key and threat as value and use to assign levels
     to map by looping geojson.
     """
+    logger.debug(request.args)
     with g.db.cursor(cursor_factory=psycopg2.extras.DictCursor) as cur:
         cur.execute("select * from aoi_results where pk = %s", (id, ))
         rec = cur.fetchone()
@@ -209,7 +208,6 @@ def map_aoi(id):
         huc12["properties"]["threat"] = results_dic[
             huc12["properties"]["huc12"]
             ]
-
     return json.dumps({"results": results})
 
 

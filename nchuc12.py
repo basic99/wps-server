@@ -92,7 +92,6 @@ class NCHuc12():
                 cur.execute("select st_astext(st_geomfromgml(%s))",
                             (gml_fragment,))
                 geom_list.append(cur.fetchone()[0])
-        logger.debug("returning %s polygons as WKT" % len(polygons))
         return geom_list
 
     def gethucsfromhucs(self, ident):
@@ -161,10 +160,6 @@ class NCHuc12():
         extent - list of extents for huc12 for this aoi
 
         """
-        logger.debug(self.gml[:1000])
-        logger.debug(self.aoi_list)
-        logger.debug(self.predef_type)
-        logger.debug(self.sel_type)
 
         huc12s = list()
 
@@ -194,8 +189,6 @@ class NCHuc12():
                     res = cur.fetchall()
                     for cust_huc in res:
                         cust_huc12s.append(cust_huc[0])
-                logger.debug(len(cust_huc12s))
-                logger.debug(len(set(cust_huc12s)))
                 self.aoi_list = list(set(cust_huc12s))
                 self.predef_type = 'NC HUC 12'
                 self.gethucsfromhucs(ident)

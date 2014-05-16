@@ -48,11 +48,16 @@ class WPSTestCase(unittest.TestCase):
         pass
 
     def test_post_aoi1(self):
-        rv = self.app.post('/', data=dict(
-            gml='',
-            aoi_list='183:63',
-            predef_type='NC Counties',
-            sel_type='predefined'))
+        rv = self.app.post(
+            '/', data=dict(
+                gml='',
+                aoi_list='183:63',
+                predef_type='NC Counties',
+                sel_type='predefined'
+                )
+        )
+        res = json.loads(rv.data)
+        assert 'geometry' in res['geojson']['features'][0]
         assert rv.status_code == 201
 
     def test_post_aoi2(self):
@@ -61,16 +66,27 @@ class WPSTestCase(unittest.TestCase):
             aoi_list='',
             predef_type='',
             sel_type='custom'))
+        res = json.loads(rv.data)
+        assert 'geometry' in res['geojson']['features'][0]
         assert rv.status_code == 201
 
     def test_resource_aoi(self):
         rv = self.app.get("/" + self.resource)
+        assert 'HUC 12 List' in rv.data
         assert rv.status_code == 200
 
     def test_saved_aoi(self):
         rv = self.app.get("/" + self.resource + "/saved")
         res = json.loads(rv.data)
         assert 'geometry' in res['geojson']['features'][0]
+        assert rv.status_code == 200
+
+    def test_map_aoi(self):
+        rv = self.app.get(
+            "/" + self.resource + "/map?year=2010&urb=on"
+        )
+        res = json.loads(rv.data)
+        assert 'geometry' in res['results']['features'][0]
         assert rv.status_code == 200
 
 
