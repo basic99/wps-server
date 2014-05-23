@@ -29,7 +29,6 @@ gml = """<gml:featureMembers xmlns:gml="http://www.opengis.net/gml"
  </feature:MultiPolygon></gml:featureMembers> """
 
 
-
 class WPSTestCase(unittest.TestCase):
 
     def setUp(self):
@@ -88,8 +87,6 @@ class WPSTestCase(unittest.TestCase):
         res = json.loads(rv.data)
         assert 'geometry' in res['results']['features'][0]
         assert rv.status_code == 200
-
-
 
 if __name__ == '__main__':
     unittest.main()
