@@ -3,6 +3,7 @@ import unittest
 import os
 import logging
 import json
+import urllib
 
 cwd = os.path.dirname(os.path.realpath(__file__))
 logger = logging.getLogger(__name__)
@@ -81,12 +82,51 @@ class WPSTestCase(unittest.TestCase):
         assert rv.status_code == 200
 
     def test_map_aoi(self):
+        data = dict(
+            year=2010,
+            urb='on'
+            )
+        qrystr = urllib.urlencode(data)
         rv = self.app.get(
-            "/" + self.resource + "/map?year=2010&urb=on"
+            "/" + self.resource + "/map?" + qrystr
         )
         res = json.loads(rv.data)
         assert 'geometry' in res['results']['features'][0]
         assert rv.status_code == 200
+
+    def test_report_aoi(self):
+        data = dict(
+            year=2050,
+            tran='on',
+            frag='on'
+            )
+        qrystr = urllib.urlencode(data)
+        rv = self.app.get(
+            "/" + self.resource + "/report?" + qrystr
+        )
+        assert 'Fragmentation Index' in rv.data
+        assert 'Transportation Corridors' in rv.data
+        assert 'Result' in rv.data
+
+    def test_ssheet_aoi(self):
+        data = dict(
+            year=2050,
+            polu1='on',
+            polu2='on',
+            dise1='on',
+            dise2='on'
+            )
+        qrystr = urllib.urlencode(data)
+        rv = self.app.get(
+            "/" + self.resource + "/ssheet?" + qrystr
+        )
+        assert 'wps/ssheet' in rv.headers['Location']
+        fname = rv.headers['Location'].split('/')[-1]
+        rv2 = self.app.get(
+            "/ssheet/" + fname
+        )
+        assert 'HUC12,Disease 1,Disease 2,Pollution 1' in rv2.data
+
 
 if __name__ == '__main__':
     unittest.main()

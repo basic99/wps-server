@@ -251,7 +251,6 @@ def ssheet_aoi(id):
             row_esc = [huc12_col]
             for x in row[1:]:
                 row_esc.append(x)
-            logger.debug(row_esc)
             csvwriter.writerow(row_esc)
 
     headers = dict()
