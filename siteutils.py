@@ -66,6 +66,7 @@ def addnewuser(request):
             return errormsg2
     return successmsg
 
+
 def userauth(request):
     logger.debug(request)
     username = request.get('loginUsername').strip()

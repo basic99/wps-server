@@ -4,6 +4,8 @@ import os
 import logging
 import json
 import urllib
+import test_resource1
+import test_resource2
 
 cwd = os.path.dirname(os.path.realpath(__file__))
 logger = logging.getLogger(__name__)
@@ -40,9 +42,10 @@ class WPSTestCase(unittest.TestCase):
             aoi_list='183:63',
             predef_type='NC Counties',
             sel_type='predefined'))
-        logger.debug(rv.headers['Location'])
+        # logger.debug(rv.headers['Location'])
         self.resource = rv.headers['Location'].split("/")[-1]
         self.gml = gml
+        self.htmlseg = test_resource1.htmlseg
 
     def tearDown(self):
         pass
@@ -126,6 +129,28 @@ class WPSTestCase(unittest.TestCase):
             "/ssheet/" + fname
         )
         assert 'HUC12,Disease 1,Disease 2,Pollution 1' in rv2.data
+
+    def test_make_pdf(self):
+        rv = self.app.post(
+            '/pdf', data=dict(
+                htmlseg=self.htmlseg
+                )
+        )
+        logger.debug(rv.headers['Location'])
+        assert "/wps/pdf/ncthreats" in rv.headers['Location']
+
+    def test_shptojson(self):
+        rv = self.app.post(
+            '/shptojson', data=dict(
+                shp=test_resource2.shp,
+                shx=test_resource2.shx,
+                prj=test_resource2.prj
+                )
+        )
+        assert 'geometry": { "type":' in rv.data
+
+    def test_login(self):
+        self.assertFalse(False)
 
 
 if __name__ == '__main__':
