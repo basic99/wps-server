@@ -29,10 +29,12 @@ def addnewuser(request):
     Update table users with form data and md5 hash for password.
     If sql fails due to key constraints return appropriate error msg.
      """
+    logger.debug(request)
+
     username = request.get('UserName').strip()
-    firstname = request.get('FirstName').strip()
-    lastname = request.get('LastName').strip()
-    affil = request.get('Affil').strip()
+    firstname = request.get('FirstName', 'john').strip()
+    lastname = request.get('LastName', 'doe').strip()
+    affil = request.get('Affil', 'self').strip()
     email = request.get('Email').strip()
 
     passwd = request.get('Password').strip()

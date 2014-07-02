@@ -276,7 +276,7 @@ def make_pdf():
         temp.flush()
     subprocess.call([
         cmd1, '-O', "Portrait",
-        temp.name, fname.name
+        temp.name, fname.name,
         ])
     headers = dict()
     headers['Location'] = url_for('get_pdf', fname=fname.name[5:])

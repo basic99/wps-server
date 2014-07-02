@@ -6,6 +6,10 @@ import json
 import urllib
 import test_resource1
 import test_resource2
+import siteutils
+from flask import Flask, current_app, g
+import psycopg2
+import psycopg2.extras
 
 cwd = os.path.dirname(os.path.realpath(__file__))
 logger = logging.getLogger(__name__)
@@ -46,6 +50,7 @@ class WPSTestCase(unittest.TestCase):
         self.resource = rv.headers['Location'].split("/")[-1]
         self.gml = gml
         self.htmlseg = test_resource1.htmlseg
+
 
     def tearDown(self):
         pass
@@ -150,8 +155,34 @@ class WPSTestCase(unittest.TestCase):
         assert 'geometry": { "type":' in rv.data
 
     def test_login(self):
-        self.assertFalse(False)
+        user = 'testuser'
+        passwd = 'supersecret'
+        email = 'jim@test.com'
+        request = dict(
+            UserName=user,
+            Email=email,
+            Password=passwd
+        )
 
+        db = psycopg2.connect(
+            database=wps.app.config['DATABASE'],
+            user="postgres"
+        )
+        query = "delete from users"
+        with db.cursor() as cur:
+            cur.execute(query)
+        db.commit()
+
+        app = Flask(__name__)
+        with app.app_context():
+            g.db = psycopg2.connect(
+                database=wps.app.config['DATABASE'],
+                user="postgres"
+            )
+            rv = siteutils.addnewuser(request)
+            assert 'Registration completed' in rv
+            rv = siteutils.addnewuser(request)
+            assert 'You have already registered with this email' in rv
 
 if __name__ == '__main__':
     unittest.main()
