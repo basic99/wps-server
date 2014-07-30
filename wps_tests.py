@@ -51,7 +51,6 @@ class WPSTestCase(unittest.TestCase):
         self.gml = gml
         self.htmlseg = test_resource1.htmlseg
 
-
     def tearDown(self):
         pass
 
@@ -157,11 +156,25 @@ class WPSTestCase(unittest.TestCase):
     def test_login(self):
         user = 'testuser'
         passwd = 'supersecret'
+        badpass = 'short'
         email = 'jim@test.com'
         request = dict(
             UserName=user,
             Email=email,
             Password=passwd
+        )
+        request_bad = dict(
+            UserName=user,
+            Email=email,
+            Password=badpass
+        )
+        login = dict(
+            loginUsername=user,
+            loginPassword=passwd
+        )
+        bad_login = dict(
+            loginUsername=user,
+            loginPassword='badguess'
         )
 
         db = psycopg2.connect(
@@ -179,10 +192,23 @@ class WPSTestCase(unittest.TestCase):
                 database=wps.app.config['DATABASE'],
                 user="postgres"
             )
+            rv = siteutils.addnewuser(request_bad)
+            assert 'Registration error' in rv
             rv = siteutils.addnewuser(request)
             assert 'Registration completed' in rv
             rv = siteutils.addnewuser(request)
             assert 'You have already registered with this email' in rv
+
+        #not sure why needs to do this twice but database fail otherwise
+        with app.app_context():
+            g.db = psycopg2.connect(
+                database=wps.app.config['DATABASE'],
+                user="postgres"
+            )
+            rv = siteutils.userauth(login)
+            assert '"success": true' in rv
+            rv = siteutils.userauth(bad_login)
+            assert '{"success": false}' in rv
 
 if __name__ == '__main__':
     unittest.main()

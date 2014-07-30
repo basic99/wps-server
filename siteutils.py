@@ -51,8 +51,13 @@ def addnewuser(request):
                 request a reset on the login tab of the app."""
     errormsg2 = """This username is already in use. Please try to register
                 again with a different username. """
+    errormsg3 = """Registration error. """
     successmsg = """Registration completed. You can now login
                 with your username and password on the login tab of the app."""
+
+    if(len(passwd) < 6 or len(username) < 2 or len(email) < 5):
+        return errormsg3
+
     try:
         with g.db.cursor() as cur:
             cur.execute(
@@ -82,7 +87,10 @@ def userauth(request):
     and password = %s"""
 
     with g.db.cursor(cursor_factory=psycopg2.extras.DictCursor) as cur:
-        cur.execute(query, (username, hash_passwd))
+        try:
+            cur.execute(query, (username, hash_passwd))
+        except Exception, e:
+            logger.debug(e.pgerror)
         rec = cur.fetchone()
 
     try:

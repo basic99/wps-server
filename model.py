@@ -45,7 +45,7 @@ def get_threat_report(huc12_str, query):
             col_hdrs.append(col_hdr)
     col_hdrs.sort()
     col_hdrs.append("result")
-    logger.debug(col_hdr)
+    # logger.debug(col_hdr)
 
     col_len = len(huc12s)
     outputType.append(("huc12", "U20"))
