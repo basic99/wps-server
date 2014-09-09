@@ -237,20 +237,21 @@ def ssheet_aoi(id):
     report_results = model.get_threat_report(huc12_str, request.args)
     with tempfile.NamedTemporaryFile(
             delete=False,
-            suffix=".csv",
+            suffix=".txt",
             dir='/tmp',
             prefix='ncthreats'
             ) as temp:
-        csvwriter = csv.writer(temp)
+        csvwriter = csv.writer(temp, quoting=csv.QUOTE_ALL, delimiter='\t')
         csvwriter.writerow(["Year - " + str(report_results['year'])])
         csvwriter.writerow(report_results['col_hdrs'])
         for row in report_results['res_arr']:
             # row_esc = ['="' + str(x) + '"' for x in row]
-            huc12_col = '="' + str(row[0]) + '"'
-            row_esc = [huc12_col]
-            for x in row[1:]:
-                row_esc.append(x)
-            csvwriter.writerow(row_esc)
+            # huc12_col = '="' + str(row[0]) + '"'
+            # huc12_col = "'%s'" % str(row[0])
+            # row_esc = [huc12_col]
+            # for x in row[1:]:
+            #     row_esc.append(x)
+            csvwriter.writerow(row)
 
     headers = dict()
     headers['Location'] = url_for('get_ssheet', fname=temp.name[5:])
@@ -266,7 +267,10 @@ def get_ssheet(fname):
 @app.route('/pdf', methods=['POST', ])
 def make_pdf():
     """Create PDF resource and return in location header. """
+    # try http://flask.pocoo.org/snippets/68/
     htmlseg = request.form["htmlseg"].encode('ascii', 'ignore')
+    with open("/tmp/test.html", "wb") as fp:
+        fp.write(htmlseg)
     cmd1 = "/usr/local/wkhtmltox/bin/wkhtmltopdf"
     fname = tempfile.NamedTemporaryFile(
         delete=False, suffix=".pdf", dir='/tmp', prefix='ncthreats'

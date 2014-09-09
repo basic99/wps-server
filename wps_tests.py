@@ -132,7 +132,8 @@ class WPSTestCase(unittest.TestCase):
         rv2 = self.app.get(
             "/ssheet/" + fname
         )
-        assert 'HUC12,Disease 1,Disease 2,Pollution 1' in rv2.data
+        # assert 'HUC12,Disease 1,Disease 2,Pollution 1' in rv2.data
+        assert '"HUC12"\t"Disease 1"\t"Disease 2"\t"Pollution 1"' in rv2.data
 
     def test_make_pdf(self):
         rv = self.app.post(
