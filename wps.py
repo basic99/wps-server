@@ -421,9 +421,9 @@ def pttojson():
     """input layer and point, return geo and id """
     # pt_obj = request.form['pt_obj']
     # qry_lyr = request.form['qry_lyr']
-    lon = request.args.get("pt_lon")
-    lat = request.args.get("pt_lat")
-    layer = request.args.get("qry_lyr")
+    lon = request.args.get("pt_lon", "")
+    lat = request.args.get("pt_lat", "")
+    layer = request.args.get("qry_lyr", "")
 
     return siteutils.qrypttojson(lon, lat, layer)
 

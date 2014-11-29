@@ -182,5 +182,14 @@ def passwdchng(username, passwd):
             return json.dumps({'success': False})
 
 def qrypttojson(lon, lat, lyr):
-    return json.dumps({'lon': lon, "lat": lat, "lyr": lyr})
+
+    """select huc6 from huc6nc where ST_Contains(wkb_geometry, 
+        ST_Transform(ST_SetSRID(ST_Point(-9108450, 4230555),900913),4326)); """
+
+    query = "select " + lyr + " from " + lyr +"nc where ST_Contains(wkb_geometry, ST_Transform(ST_SetSRID(ST_Point(%s, %s),900913),4326)) "
+    with g.db.cursor() as cur:
+        cur.execute(query, ( lon, lat))
+        res = cur.fetchone()[0]
+
+    return json.dumps({'lon': lon, "lat": lat, "lyr": lyr, "res": res})
 
