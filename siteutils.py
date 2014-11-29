@@ -181,5 +181,6 @@ def passwdchng(username, passwd):
             g.db.rollback()
             return json.dumps({'success': False})
 
-
+def qrypttojson(lon, lat, lyr):
+    return json.dumps({'lon': lon, "lat": lat, "lyr": lyr})
 

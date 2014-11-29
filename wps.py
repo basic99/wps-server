@@ -40,7 +40,7 @@ import siteprivate
 
 cwd = os.path.dirname(os.path.realpath(__file__))
 logger = logging.getLogger(__name__)
-logger.setLevel(logging.INFO)
+logger.setLevel(logging.DEBUG)
 fh = logging.FileHandler(cwd + '/logs/logs.log')
 formatter = logging.Formatter(
     '%(asctime)s - %(name)s, %(lineno)s - %(levelname)s - %(message)s',
@@ -415,6 +415,19 @@ def passwdchng():
 
     except KeyError:
         return json.dumps({'success': False})
+
+@app.route('/pttojson',  methods=['GET', ])
+def pttojson():
+    """input layer and point, return geo and id """
+    # pt_obj = request.form['pt_obj']
+    # qry_lyr = request.form['qry_lyr']
+    lon = request.args.get("pt_lon")
+    lat = request.args.get("pt_lat")
+    layer = request.args.get("qry_lyr")
+
+    return siteutils.qrypttojson(lon, lat, layer)
+
+
 
 if __name__ == '__main__':
     app.run(debug=True)

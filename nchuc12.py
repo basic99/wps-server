@@ -1,5 +1,5 @@
 """Module contains a class to perform GIS calculations."""
-#import psycopg2
+import psycopg2
 from flask import g
 import xml.dom.minidom
 import hashlib
