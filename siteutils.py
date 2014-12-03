@@ -186,18 +186,14 @@ def qrypttojson(lon, lat, lyr):
 
     """select huc6 from huc6nc where ST_Contains(wkb_geometry,
         ST_Transform(ST_SetSRID(ST_Point(-9108450, 4230555),900913),4326)); """
-
+    qry_col = lyr
     if lyr in ['huc2', 'huc4', 'huc6', 'huc8', 'huc10']:
-        qry_col = lyr
         qry_tbl = lyr + "nc"
     elif lyr == 'huc_12':
-        qry_col = lyr
         qry_tbl = 'huc12nc'
     elif lyr == 'co_num':
-        qry_col = lyr
         qry_tbl = 'counties'
     elif lyr == 'bcr':
-        qry_col = lyr
         qry_tbl = 'nc_bcr'
 
     query = "select ST_AsGeoJSON(wkb_geometry, 6), "
