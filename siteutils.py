@@ -14,7 +14,7 @@ import smtplib
 
 cwd = os.path.dirname(os.path.realpath(__file__))
 logger = logging.getLogger(__name__)
-logger.setLevel(logging.INFO)
+logger.setLevel(logging.DEBUG)
 fh = logging.FileHandler(cwd + '/logs/logs.log')
 formatter = logging.Formatter(
     '%(asctime)s - %(name)s, %(lineno)s - %(levelname)s - %(message)s',
@@ -206,9 +206,20 @@ def qrypttojson(lon, lat, lyr):
         res = cur.fetchone()
         the_geom = json.loads(res[0])
         the_huc = str(res[1])
-    logger.debug(the_huc)
+    logger.debug(the_geom['type'])
+    logger.debug(the_geom)
+    geojson_obj = {
+        "type": "Feature",
+        "geometry": {
+            "type": the_geom['type'],
+            "coordinates": the_geom['coordinates']
+        },
+        "properties": {
+            "name": the_huc
+            }
+        }
     ret_dict = {
-        "the_geom": the_geom,
+        "the_geom": geojson_obj,
         "the_huc": the_huc
     }
     return json.dumps(ret_dict)
