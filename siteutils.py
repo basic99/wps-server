@@ -14,7 +14,7 @@ import smtplib
 
 cwd = os.path.dirname(os.path.realpath(__file__))
 logger = logging.getLogger(__name__)
-logger.setLevel(logging.DEBUG)
+logger.setLevel(logging.INFO)
 fh = logging.FileHandler(cwd + '/logs/logs.log')
 formatter = logging.Formatter(
     '%(asctime)s - %(name)s, %(lineno)s - %(levelname)s - %(message)s',
@@ -181,21 +181,38 @@ def passwdchng(username, passwd):
             g.db.rollback()
             return json.dumps({'success': False})
 
+
 def qrypttojson(lon, lat, lyr):
 
-    """select huc6 from huc6nc where ST_Contains(wkb_geometry, 
+    """select huc6 from huc6nc where ST_Contains(wkb_geometry,
         ST_Transform(ST_SetSRID(ST_Point(-9108450, 4230555),900913),4326)); """
 
-    query = "select ST_AsGeoJSON(wkb_geometry, 6), " + lyr + " from " + lyr +"nc where ST_Contains(wkb_geometry, ST_Transform(ST_SetSRID(ST_Point(%s, %s),900913),4326)) "
+    if lyr in ['huc2', 'huc4', 'huc6', 'huc8', 'huc10']:
+        qry_col = lyr
+        qry_tbl = lyr + "nc"
+    elif lyr == 'huc_12':
+        qry_col = lyr
+        qry_tbl = 'huc12nc'
+    elif lyr == 'co_num':
+        qry_col = lyr
+        qry_tbl = 'counties'
+    elif lyr == 'bcr':
+        qry_col = lyr
+        qry_tbl = 'nc_bcr'
+
+    query = "select ST_AsGeoJSON(wkb_geometry, 6), "
+    query += qry_col + " from " + qry_tbl
+    query += " where ST_Contains(wkb_geometry, "
+    query += "ST_Transform(ST_SetSRID(ST_Point(%s, %s),900913),4326)) "
+    logger.debug(query % (lon, lat))
     with g.db.cursor() as cur:
-        cur.execute(query, ( lon, lat))
+        cur.execute(query, (lon, lat))
         res = cur.fetchone()
         the_geom = json.loads(res[0])
-        the_huc = res[1]
+        the_huc = str(res[1])
+    logger.debug(the_huc)
     ret_dict = {
-         "the_geom": the_geom,
-         "the_huc": the_huc
-    }  
+        "the_geom": the_geom,
+        "the_huc": the_huc
+    }
     return json.dumps(ret_dict)
-    # return json.dumps({'lon': lon, "lat": lat, "lyr": lyr, "res": res})
-

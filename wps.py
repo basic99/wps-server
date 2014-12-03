@@ -416,6 +416,7 @@ def passwdchng():
     except KeyError:
         return json.dumps({'success': False})
 
+
 @app.route('/pttojson',  methods=['GET', ])
 def pttojson():
     """input layer and point, return geo and id """
@@ -426,8 +427,6 @@ def pttojson():
     layer = request.args.get("qry_lyr", "")
 
     return siteutils.qrypttojson(lon, lat, layer)
-
-
 
 if __name__ == '__main__':
     app.run(debug=True)
