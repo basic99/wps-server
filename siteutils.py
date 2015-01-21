@@ -187,6 +187,11 @@ def qrypttojson(lon, lat, lyr):
     """select huc6 from huc6nc where ST_Contains(wkb_geometry,
         ST_Transform(ST_SetSRID(ST_Point(-9108450, 4230555),900913),4326)); """
     qry_col = lyr
+    if lyr not in [
+            'huc2', 'huc4', 'huc6', 'huc8', 'huc10', 'huc_12', 'co_num', 'bcr'
+    ]:
+        logger.info('invalid layer name')
+        return
     if lyr in ['huc2', 'huc4', 'huc6', 'huc8', 'huc10']:
         qry_tbl = lyr + "nc"
     elif lyr == 'huc_12':
