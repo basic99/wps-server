@@ -428,5 +428,22 @@ def pttojson():
 
     return siteutils.qrypttojson(lon, lat, layer)
 
+
+@app.route('/huc12_state',  methods=['GET', ])
+def huc12_state():
+    huc12s = []
+    with g.db.cursor(cursor_factory=psycopg2.extras.DictCursor) as cur:
+        query = "select  huc_12 from huc12nc"
+        cur.execute(query)
+        # recs = cur.fetchall()
+        for row in cur:
+            huc12s.append(row[0])
+    huc12_str = ", ".join(huc12s)
+    logger.info(len(huc12s))
+    # logger.debug(huc12_str)
+    return json.dumps(nchuc12.getgeojson(huc12_str))
+
+    # return json.dumps({"test": "hello world"})
+
 if __name__ == '__main__':
     app.run(debug=True)
