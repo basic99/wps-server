@@ -432,7 +432,7 @@ def pttojson():
 @app.route('/huc12_state',  methods=['GET', ])
 def huc12_state():
     huc12s = []
-    with g.db.cursor(cursor_factory=psycopg2.extras.DictCursor) as cur:
+    with g.db.cursor() as cur:
         query = "select  huc_12 from huc12nc"
         cur.execute(query)
         # recs = cur.fetchall()
@@ -443,7 +443,52 @@ def huc12_state():
     # logger.debug(huc12_str)
     return json.dumps(nchuc12.getgeojson(huc12_str))
 
-    # return json.dumps({"test": "hello world"})
+@app.route('/huc12_map',  methods=['GET', ])
+def huc12_map():
+    map = request.args.get("map", "")
+    year = request.args.get("year", "")
+    results_dict = {}
+    results_list = []
+    rang = {}
+
+    if map in [
+        "polu1", "polu2", "dise1", "dise2", "slr", "firp", "firs", "tran"
+    ]:
+        query = "select huc_12," + map + " from data_static"
+    with g.db.cursor() as cur:
+        cur.execute(query)
+        for row in cur:
+            results_dict[row[0]] = row[1]
+            results_list.append(row[1])
+
+    results_list.sort()
+    quint = len(results_list) / 5
+    rang[0] = results_list[0]
+    rang[1] = results_list[quint]
+    rang[2] = results_list[quint * 2]
+    rang[3] = results_list[quint * 3]
+    rang[4] = results_list[quint * 4]
+    rang[5] = results_list[len(results_list) - 1]
+
+    for huc in results_dict:
+        if results_dict[huc] <= rang[1]:
+            results_dict[huc] = 1
+        elif results_dict[huc] <= rang[2]:
+            results_dict[huc] = 2
+        elif results_dict[huc] <= rang[3]:
+            results_dict[huc] = 3
+        elif results_dict[huc] <= rang[4]:
+            results_dict[huc] = 4
+        else:
+            results_dict[huc] = 5
+
+
+    return json.dumps({
+        "map": map,
+        "year": year,
+        "res": results_dict,
+        "range": rang
+    })
 
 if __name__ == '__main__':
     app.run(debug=True)
