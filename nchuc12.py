@@ -34,7 +34,7 @@ def getgeojson(huc12_str):
     for huc12 in huc12s:
         with g.db.cursor() as cur:
             cur.execute(
-                """select ST_AsGeoJSON(geomsimp, 6) from huc12_200m
+                """select ST_AsGeoJSON(geomsimp, 6) from huc12nc
                 where huc_12 = %s""", (huc12, )
             )
             the_geom = cur.fetchone()
