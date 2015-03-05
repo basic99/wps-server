@@ -443,48 +443,71 @@ def huc12_state():
     # logger.debug(huc12_str)
     return json.dumps(nchuc12.getgeojson(huc12_str))
 
+
 @app.route('/huc12_map',  methods=['GET', ])
 def huc12_map():
-    map = request.args.get("map", "")
-    year = request.args.get("year", "")
+    mymap_str = request.args.get("map", "")
+    # year = request.args.get("year", "")
+    # scenario = request.args.get("scenario", "")
+    try:
+        mymap = mymap_str.split(":")[0]
+        year = mymap_str.split(":")[1]
+        scenario = mymap_str.split(":")[2]
+    except IndexError:
+        pass
     results_dict = {}
     results_list = []
     rang = {}
 
-    if map in [
-        "polu1", "polu2", "dise1", "dise2", "slr", "firp", "firs", "tran"
-    ]:
-        query = "select huc_12," + map + " from data_static"
+    logger.debug(request.args)
+
+    if mymap in [
+                "frst", 'ftwt', 'hbwt', 'open', 'shrb'
+            ]:
+        query = "select huc_12, %s%sha from lcscen_%s_ha" % (
+            mymap, year, scenario
+            )
+    elif mymap in ['urban']:
+        query = "select huc_12, urb%sha from urban_ha" % year
+    elif mymap in ['fire']:
+        query = "select huc_12, urb%sden from urban_den" % year
+    elif mymap in ['trans']:
+        query = "select huc_12, rds%sm from dclrds_m" % year
+    elif mymap in ['nutrient']:
+        query = "select huc_12, %s from ea_pol" % year
+    elif mymap in ['water']:
+        query = "select huc_12, %s from ea_h20" % year
     with g.db.cursor() as cur:
         cur.execute(query)
         for row in cur:
-            results_dict[row[0]] = row[1]
+            results_dict[row[0]] = float(row[1])
             results_list.append(row[1])
-
+    logger.debug(len(results_list))
     results_list.sort()
     quint = len(results_list) / 5
-    rang[0] = results_list[0]
-    rang[1] = results_list[quint]
-    rang[2] = results_list[quint * 2]
-    rang[3] = results_list[quint * 3]
-    rang[4] = results_list[quint * 4]
-    rang[5] = results_list[len(results_list) - 1]
+    rang[0] = str(results_list[0])
+    rang[1] = str(results_list[quint])
+    rang[2] = str(results_list[quint * 2])
+    rang[3] = str(results_list[quint * 3])
+    rang[4] = str(results_list[quint * 4])
+    rang[5] = str(results_list[len(results_list) - 1])
+    logger.debug(rang)
 
     for huc in results_dict:
-        if results_dict[huc] <= rang[1]:
+        if results_dict[huc] <= float(rang[1]):
             results_dict[huc] = 1
-        elif results_dict[huc] <= rang[2]:
+        elif results_dict[huc] <= float(rang[2]):
             results_dict[huc] = 2
-        elif results_dict[huc] <= rang[3]:
+        elif results_dict[huc] <= float(rang[3]):
             results_dict[huc] = 3
-        elif results_dict[huc] <= rang[4]:
+        elif results_dict[huc] <= float(rang[4]):
             results_dict[huc] = 4
         else:
             results_dict[huc] = 5
 
 
     return json.dumps({
-        "map": map,
+        "map": mymap,
         "year": year,
         "res": results_dict,
         "range": rang
