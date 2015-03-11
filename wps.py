@@ -472,11 +472,15 @@ def huc12_map():
     elif mymap in ['fire']:
         query = "select huc_12, urb%sden from urban_den" % year
     elif mymap in ['trans']:
-        query = "select huc_12, rds%sm from dclrds_m" % year
+        query = "select huc_12, rds%smha from transportation" % year
     elif mymap in ['nutrient']:
         query = "select huc_12, %s from ea_pol" % year
     elif mymap in ['water']:
         query = "select huc_12, %s from ea_h20" % year
+    elif mymap in ['frsthlth']:
+        query = "select huc_12, fhlth_ha from forest_health"
+    elif mymap in ['energydev']:
+        query = " select huc_12, triassic_ha from energy_dev"
     with g.db.cursor() as cur:
         cur.execute(query)
         for row in cur:
@@ -508,7 +512,7 @@ def huc12_map():
 
     return json.dumps({
         "map": mymap,
-        "year": year,
+        # "year": year,
         "res": results_dict,
         "range": rang
     })
