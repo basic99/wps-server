@@ -451,6 +451,7 @@ def huc12_map():
     # scenario = request.args.get("scenario", "")
     try:
         mymap = mymap_str.split(":")[0]
+        # note year may be some other param
         year = mymap_str.split(":")[1]
         scenario = mymap_str.split(":")[2]
     except IndexError:
@@ -461,53 +462,70 @@ def huc12_map():
 
     logger.debug(request.args)
 
+    query2 = "select * from legend_data where layer_str = %s"
     if mymap in [
                 "frst", 'ftwt', 'hbwt', 'open', 'shrb'
             ]:
-        query = "select huc_12, %s%sha from lcscen_%s_ha" % (
+        query1 = "select huc_12, %s%sha from lcscen_%s_ha" % (
             mymap, year, scenario
             )
+        legend_param = mymap
+
     elif mymap in ['urban']:
-        query = "select huc_12, urb%sha from urban_ha" % year
+        query1 = "select huc_12, urb%sha from urban_ha" % year
+        legend_param = mymap
     elif mymap in ['fire']:
-        query = "select huc_12, urb%sden from urban_den" % year
+        query1 = "select huc_12, urb%sden from urban_den" % year
+        legend_param = mymap
     elif mymap in ['trans']:
-        query = "select huc_12, rds%smha from transportation" % year
+        query1 = "select huc_12, rds%smha from transportation" % year
+        legend_param = mymap
     elif mymap in ['nutrient']:
-        query = "select huc_12, %s from ea_pol" % year
+        query1 = "select huc_12, %s from ea_pol" % year
+        legend_param = mymap_str
     elif mymap in ['water']:
-        query = "select huc_12, %s from ea_h20" % year
+        query1 = "select huc_12, %s from ea_h20" % year
+        legend_param = mymap_str
     elif mymap in ['frsthlth']:
-        query = "select huc_12, fhlth_ha from forest_health"
+        query1 = "select huc_12, fhlth_ha from forest_health"
+        legend_param = mymap
     elif mymap in ['energydev']:
-        query = " select huc_12, triassic_ha from energy_dev"
+        query1 = " select huc_12, triassic_ha from energy_dev"
+        legend_param = mymap
     with g.db.cursor() as cur:
-        cur.execute(query)
+        cur.execute(query1)
         for row in cur:
             results_dict[row[0]] = float(row[1])
             results_list.append(row[1])
     logger.debug(len(results_list))
     results_list.sort()
-    quint = len(results_list) / 5
-    rang[0] = str(results_list[0])
-    rang[1] = str(results_list[quint])
-    rang[2] = str(results_list[quint * 2])
-    rang[3] = str(results_list[quint * 3])
-    rang[4] = str(results_list[quint * 4])
-    rang[5] = str(results_list[len(results_list) - 1])
-    logger.debug(rang)
+    logger.debug(mymap)
+    logger.debug(query2)
+    with g.db.cursor(cursor_factory=psycopg2.extras.DictCursor) as cur:
+        cur.execute(query2, (legend_param, ))
+        for row in cur:
+            logger.debug(row)
+            pass
+    # quint = len(results_list) / 5
+    # rang[0] = str(results_list[0])
+    # rang[1] = str(results_list[quint])
+    # rang[2] = str(results_list[quint * 2])
+    # rang[3] = str(results_list[quint * 3])
+    # rang[4] = str(results_list[quint * 4])
+    # rang[5] = str(results_list[len(results_list) - 1])
+    # logger.debug(rang)
 
-    for huc in results_dict:
-        if results_dict[huc] <= float(rang[1]):
-            results_dict[huc] = 1
-        elif results_dict[huc] <= float(rang[2]):
-            results_dict[huc] = 2
-        elif results_dict[huc] <= float(rang[3]):
-            results_dict[huc] = 3
-        elif results_dict[huc] <= float(rang[4]):
-            results_dict[huc] = 4
-        else:
-            results_dict[huc] = 5
+    # for huc in results_dict:
+    #     if results_dict[huc] <= float(rang[1]):
+    #         results_dict[huc] = 1
+    #     elif results_dict[huc] <= float(rang[2]):
+    #         results_dict[huc] = 2
+    #     elif results_dict[huc] <= float(rang[3]):
+    #         results_dict[huc] = 3
+    #     elif results_dict[huc] <= float(rang[4]):
+    #         results_dict[huc] = 4
+    #     else:
+    #         results_dict[huc] = 5
 
 
     return json.dumps({
