@@ -491,7 +491,6 @@ def huc12_map():
         legend_param = mymap
     elif mymap in ['energydev']:
         query1 = " select huc_12, triassic_ha from energy_dev"
-        legend_param = mymap
     with g.db.cursor() as cur:
         cur.execute(query1)
         for row in cur:
@@ -506,33 +505,49 @@ def huc12_map():
         for row in cur:
             logger.debug(row)
             pass
-    # quint = len(results_list) / 5
-    # rang[0] = str(results_list[0])
-    # rang[1] = str(results_list[quint])
-    # rang[2] = str(results_list[quint * 2])
-    # rang[3] = str(results_list[quint * 3])
-    # rang[4] = str(results_list[quint * 4])
-    # rang[5] = str(results_list[len(results_list) - 1])
-    # logger.debug(rang)
+    with g.db.cursor(cursor_factory=psycopg2.extras.DictCursor) as cur:
+        cur.execute(query2, (legend_param, ))
+        for row in cur:
+            logger.debug(row)
+            ranges = siteutils.legend_ranges(
+                row['range2_vals'],
+                row['range3_vals'],
+                row['range4_vals'],
+                row['range5_vals'],
+                row['range6_vals']
+            )
+            colors = {
+                'color2': row['color2'],
+                'color3': row['color3'],
+                'color4': row['color4'],
+                'color5': row['color5'],
+                'color6': row['color6']
+            }
 
-    # for huc in results_dict:
-    #     if results_dict[huc] <= float(rang[1]):
-    #         results_dict[huc] = 1
-    #     elif results_dict[huc] <= float(rang[2]):
-    #         results_dict[huc] = 2
-    #     elif results_dict[huc] <= float(rang[3]):
-    #         results_dict[huc] = 3
-    #     elif results_dict[huc] <= float(rang[4]):
-    #         results_dict[huc] = 4
-    #     else:
-    #         results_dict[huc] = 5
+    # colors_json = json.dumps(colors)
+    range_vals = json.loads(ranges)
+
+    for huc in results_dict:
+        if results_dict[huc] == 0:
+            pass
+        elif results_dict[huc] <= float(range_vals['rng2_end']):
+            results_dict[huc] = 1
+        elif results_dict[huc] <= float(range_vals['rng3_end']):
+            results_dict[huc] = 2
+        elif results_dict[huc] <= float(range_vals['rng4_end']):
+            results_dict[huc] = 3
+        elif results_dict[huc] <= float(range_vals['rng5_end']):
+            results_dict[huc] = 4
+        else:
+            results_dict[huc] = 5
+
 
 
     return json.dumps({
         "map": mymap,
         # "year": year,
         "res": results_dict,
-        "range": rang
+        'colors': colors
     })
 
 if __name__ == '__main__':
