@@ -491,6 +491,8 @@ def huc12_map():
         legend_param = mymap
     elif mymap in ['energydev']:
         query1 = " select huc_12, triassic_ha from energy_dev"
+        legend_param = mymap
+
     with g.db.cursor() as cur:
         cur.execute(query1)
         for row in cur:
@@ -524,6 +526,14 @@ def huc12_map():
                 'color6': row['color6']
             }
 
+            lgd_text = {
+                'lgd_text2': row['range2'],
+                'lgd_text3': row['range3'],
+                'lgd_text4': row['range4'],
+                'lgd_text5': row['range5'],
+                'lgd_text6': row['range6']
+            }
+
     # colors_json = json.dumps(colors)
     range_vals = json.loads(ranges)
 
@@ -545,7 +555,7 @@ def huc12_map():
 
     return json.dumps({
         "map": mymap,
-        # "year": year,
+        "lgd_text": lgd_text,
         "res": results_dict,
         'colors': colors
     })
