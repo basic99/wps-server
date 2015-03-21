@@ -518,21 +518,23 @@ def huc12_map():
                 row['range5_vals'],
                 row['range6_vals']
             )
-            colors = {
-                'color2': row['color2'],
-                'color3': row['color3'],
-                'color4': row['color4'],
-                'color5': row['color5'],
-                'color6': row['color6']
-            }
+            colors = [
+                'ffffff',
+                row['color2'],
+                row['color3'],
+                row['color4'],
+                row['color5'],
+                row['color6']
+            ]
 
-            lgd_text = {
-                'lgd_text2': row['range2'],
-                'lgd_text3': row['range3'],
-                'lgd_text4': row['range4'],
-                'lgd_text5': row['range5'],
-                'lgd_text6': row['range6']
-            }
+            lgd_text = [
+                '0',
+                row['range2'],
+                row['range3'],
+                row['range4'],
+                row['range5'],
+                row['range6']
+            ]
 
     # colors_json = json.dumps(colors)
     range_vals = json.loads(ranges)
@@ -551,10 +553,8 @@ def huc12_map():
         else:
             results_dict[huc] = 5
 
-
-
     return json.dumps({
-        "map": mymap,
+        "map": legend_param,
         "lgd_text": lgd_text,
         "res": results_dict,
         'colors': colors
