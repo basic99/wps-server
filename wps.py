@@ -492,6 +492,9 @@ def huc12_map():
     elif mymap in ['energydev']:
         query1 = " select huc_12, triassic_ha from energy_dev"
         legend_param = mymap
+    elif mymap in ['wind']:
+        query1 = "select * from wind_avg"
+        legend_param = mymap
 
     with g.db.cursor() as cur:
         cur.execute(query1)
@@ -559,6 +562,28 @@ def huc12_map():
         "res": results_dict,
         'colors': colors
     })
+
+
+@app.route('/map',  methods=['GET', ])
+def map():
+    logger.debug(request.args)
+    logger.debug(len(request.args))
+    return "test"
+
+
+@app.route('/report',  methods=['GET', ])
+def report():
+    logger.debug(request.args)
+    logger.debug(len(request.args))
+    return "test"
+
+
+@app.route('/ssheet',  methods=['GET', ])
+def ssheet():
+    logger.debug(request.args)
+    logger.debug(len(request.args))
+    return "test"
+
 
 if __name__ == '__main__':
     app.run(debug=True)
