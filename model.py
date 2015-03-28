@@ -136,3 +136,53 @@ def get_threat_report(huc12_str, query):
         "year": year
         }
 
+
+def get_threat_report2(formdata):
+    # logger.debug
+    formvals = {}
+
+    # create dict w/ key huc12 and val empty list
+    hucs_dict = {}
+    query = "select huc_12 from forest_health"
+    with g.db.cursor() as cur:
+        cur.execute(query)
+        hucs = cur.fetchall()
+    for huc in hucs:
+        hucs_dict[huc[0]] = []
+        hucs_dict[huc[0]].append(huc[0])
+
+    # read formdata into formvals excluding notinclude
+    for formval in formdata:
+        if formdata[formval] == 'notinclude':
+            continue
+        formvals[formval] = formdata[formval]
+
+    scenario = formvals['scenario']
+    year = formvals['year']
+    habitat = formvals['habitat']
+    logger.info(formvals)
+
+    if 'habitat_weight' in formvals:
+        query = "select huc_12, %s%srnk from lcscen_%s_rnk" % (
+            habitat, year[2:], scenario
+        )
+    logger.debug("query")
+    with g.db.cursor() as cur:
+        cur.execute(query)
+        for row in cur:
+            logger.debug(row)
+            hucs_dict[row[0]].append(row[1])
+
+    logger.debug(hucs_dict)
+    res_arr = [hucs_dict[x] for x in hucs_dict]
+
+    return {
+        "res_arr": res_arr,
+        # "col_hdrs": col_disp,
+        "year": year
+        }
+
+
+
+
+

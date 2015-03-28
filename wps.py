@@ -511,11 +511,11 @@ def huc12_map():
     results_list.sort()
     logger.debug(mymap)
     logger.debug(query2)
-    with g.db.cursor(cursor_factory=psycopg2.extras.DictCursor) as cur:
-        cur.execute(query2, (legend_param, ))
-        for row in cur:
-            logger.debug(row)
-            pass
+    # with g.db.cursor(cursor_factory=psycopg2.extras.DictCursor) as cur:
+    #     cur.execute(query2, (legend_param, ))
+    #     for row in cur:
+    #         logger.debug(row)
+    #         pass
     with g.db.cursor(cursor_factory=psycopg2.extras.DictCursor) as cur:
         cur.execute(query2, (legend_param, ))
         for row in cur:
@@ -573,9 +573,10 @@ def huc12_map():
 
 @app.route('/map',  methods=['GET', ])
 def map():
-    logger.debug(request.args)
-    logger.debug(len(request.args))
-    return "test"
+    # logger.debug(request.args)
+    # logger.debug(len(request.args))
+    res = model.get_threat_report2(request.args)
+    return json.dumps(res)
 
 
 @app.route('/report',  methods=['GET', ])
