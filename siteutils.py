@@ -230,23 +230,17 @@ def qrypttojson(lon, lat, lyr):
     return json.dumps(ret_dict)
 
 
-def legend_ranges(a, b, c, d, e):
-    x1 = a.split("-")
-    x2 = b.split("-")
-    x3 = c.split("-")
-    x4 = d.split("-")
-    x5 = e.split("-")
-    return_str = {
-        'rng2_start': x1[0],
-        'rng2_end': x1[1],
-        'rng3_start': x2[0],
-        'rng3_end': x2[1],
-        'rng4_start': x3[0],
-        'rng4_end': x3[1],
-        'rng5_start': x4[0],
-        'rng5_end': x4[1],
-        'rng6_start': x5[0],
-        'rng6_end': x5[1]
-    }
-    # logger.debug(return_str)
-    return json.dumps(return_str)
+# def legend_ranges(a, b, c, d, e, f):
+#     x1 = a.split("-")
+#     x2 = b.split("-")
+#     x3 = c.split("-")
+#     x4 = d.split("-")
+#     x5 = e.split("-")
+#     x6 = f.split("-")
+
+
+#     return_str = {
+
+#     }
+#     # logger.debug(return_str)
+#     return json.dumps(return_str)

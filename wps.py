@@ -495,6 +495,12 @@ def huc12_map():
     elif mymap in ['wind']:
         query1 = "select * from wind_avg"
         legend_param = mymap
+    elif mymap in ['slr_up']:
+        query1 = "select huc_12, up00%sha from slamm_up_ha" % year
+        legend_param = mymap
+    elif mymap in ['slr_lc']:
+        query1 = "select huc_12, lc00%sha from slamm_lc_ha" % year
+        legend_param = mymap
 
     with g.db.cursor() as cur:
         cur.execute(query1)
@@ -514,15 +520,16 @@ def huc12_map():
         cur.execute(query2, (legend_param, ))
         for row in cur:
             logger.debug(row)
-            ranges = siteutils.legend_ranges(
-                row['range2_vals'],
-                row['range3_vals'],
-                row['range4_vals'],
-                row['range5_vals'],
-                row['range6_vals']
-            )
+            # ranges = siteutils.legend_ranges(
+            #     row['range1_vals'],
+            #     row['range2_vals'],
+            #     row['range3_vals'],
+            #     row['range4_vals'],
+            #     row['range5_vals'],
+            #     row['range6_vals']
+            # )
             colors = [
-                'ffffff',
+                row['color1'],
                 row['color2'],
                 row['color3'],
                 row['color4'],
@@ -531,7 +538,7 @@ def huc12_map():
             ]
 
             lgd_text = [
-                '0',
+                row['range1'],
                 row['range2'],
                 row['range3'],
                 row['range4'],
@@ -540,18 +547,18 @@ def huc12_map():
             ]
 
     # colors_json = json.dumps(colors)
-    range_vals = json.loads(ranges)
+    # range_vals = json.loads(ranges)
 
     for huc in results_dict:
-        if results_dict[huc] == 0:
-            pass
-        elif results_dict[huc] <= float(range_vals['rng2_end']):
+        if results_dict[huc] <= float(row['range1_high']):
+            results_dict[huc] = 0
+        elif results_dict[huc] <= float(row['range2_high']):
             results_dict[huc] = 1
-        elif results_dict[huc] <= float(range_vals['rng3_end']):
+        elif results_dict[huc] <= float(row['range3_high']):
             results_dict[huc] = 2
-        elif results_dict[huc] <= float(range_vals['rng4_end']):
+        elif results_dict[huc] <= float(row['range4_high']):
             results_dict[huc] = 3
-        elif results_dict[huc] <= float(range_vals['rng5_end']):
+        elif results_dict[huc] <= float(row['range5_high']):
             results_dict[huc] = 4
         else:
             results_dict[huc] = 5
