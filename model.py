@@ -7,6 +7,7 @@ import psycopg2.extras
 from flask import g
 import os
 import numpy as np
+import collections
 
 cwd = os.path.dirname(os.path.realpath(__file__))
 logger = logging.getLogger(__name__)
@@ -140,10 +141,12 @@ def get_threat_report(huc12_str, query):
 def get_threat_report2(formdata):
     # logger.debug
     formvals = {}
+    model_cols = ["huc"]
+    model_wts = []
 
     # create dict w/ key huc12 and val empty list
-    hucs_dict = {}
-    query = "select huc_12 from forest_health"
+    hucs_dict = collections.OrderedDict()
+    query = "select huc_12 from forest_health order by huc_12"
     with g.db.cursor() as cur:
         cur.execute(query)
         hucs = cur.fetchall()
@@ -162,23 +165,49 @@ def get_threat_report2(formdata):
     habitat = formvals['habitat']
     logger.info(formvals)
 
+    # add habitat in in model
     if 'habitat_weight' in formvals:
         query = "select huc_12, %s%srnk from lcscen_%s_rnk" % (
             habitat, year[2:], scenario
         )
-    logger.debug("query")
-    with g.db.cursor() as cur:
-        cur.execute(query)
-        for row in cur:
-            logger.debug(row)
-            hucs_dict[row[0]].append(row[1])
+        model_wts.append(formvals['habitat_weight'])
+        model_cols.append(
+            "%s %s - weight(%s)" % (
+                habitat, scenario, formvals['habitat_weight'])
+            )
+        with g.db.cursor() as cur:
+            cur.execute(query)
+            for row in cur:
+                # logger.debug(row)
+                hucs_dict[row[0]].append(row[1])
 
-    logger.debug(hucs_dict)
+    # add urban growth if included
+    if 'urbangrth' in formvals:
+        query = "select huc_12, urb%sha_rnk from urban_ha_rnk" % year[2:]
+        model_wts.append(formvals['urbangrth'])
+        model_cols.append("Urban Growth - weight(%s)" % formvals['urbangrth'])
+        logger.info(query)
+        with g.db.cursor() as cur:
+            cur.execute(query)
+            for row in cur:
+                # logger.debug(row)
+                hucs_dict[row[0]].append(row[1])
+
+    logger.debug(model_wts)
+    for huc in hucs_dict:
+        threat = 0
+        tot_weight = 0
+        for idx, weight in enumerate(model_wts):
+            threat += float(hucs_dict[huc][idx + 1]) * float(weight)
+            tot_weight += float(weight)
+        threat = threat / float(tot_weight)
+        hucs_dict[huc].append(threat)
+
     res_arr = [hucs_dict[x] for x in hucs_dict]
 
     return {
         "res_arr": res_arr,
-        # "col_hdrs": col_disp,
+        "col_hdrs": model_cols,
         "year": year
         }
 
