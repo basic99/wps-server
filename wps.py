@@ -583,7 +583,20 @@ def map():
 def report():
     logger.debug(request.args)
     logger.debug(len(request.args))
-    return "test"
+    report_results = model.get_threat_report2(request.args)
+    # logger.debug(report_results)
+    res_arr = [report_results['res_arr'][x] for x in report_results['res_arr']]
+    col_hdrs = report_results['col_hdrs']
+    col_hdrs.append("results")
+    logger.debug(col_hdrs)
+
+
+    return render_template(
+        'report.html',
+        col_hdrs=col_hdrs,
+        res_arr=res_arr,
+        year=report_results['year']
+        )
 
 
 @app.route('/ssheet',  methods=['GET', ])
