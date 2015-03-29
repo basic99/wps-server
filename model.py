@@ -203,10 +203,10 @@ def get_threat_report2(formdata):
         threat = threat / float(tot_weight)
         hucs_dict[huc].append(threat)
 
-    res_arr = [hucs_dict[x] for x in hucs_dict]
+    # res_arr = [hucs_dict[x] for x in hucs_dict]
 
     return {
-        "res_arr": res_arr,
+        "res_arr": hucs_dict,
         "col_hdrs": model_cols,
         "year": year
         }
