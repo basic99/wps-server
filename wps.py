@@ -576,6 +576,8 @@ def map():
     # logger.debug(request.args)
     # logger.debug(len(request.args))
     res = model.get_threat_report2(request.args)
+    # logger.debug(res)
+    # return "tst"
     return json.dumps(res)
 
 

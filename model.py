@@ -179,19 +179,62 @@ def get_threat_report2(formdata):
             cur.execute(query)
             for row in cur:
                 # logger.debug(row)
-                hucs_dict[row[0]].append(row[1])
+                hucs_dict[row[0]].append(int(row[1]))
 
     # add urban growth if included
     if 'urbangrth' in formvals:
         query = "select huc_12, urb%sha_rnk from urban_ha_rnk" % year[2:]
         model_wts.append(formvals['urbangrth'])
         model_cols.append("Urban Growth - weight(%s)" % formvals['urbangrth'])
-        logger.info(query)
         with g.db.cursor() as cur:
             cur.execute(query)
             for row in cur:
                 # logger.debug(row)
-                hucs_dict[row[0]].append(row[1])
+                hucs_dict[row[0]].append(int(row[1]))
+
+    # add fire suppression
+    if 'firesup' in formvals:
+        query = "select huc_12, urb%sden_rnk from urban_den_rnk" % year[2:]
+        model_wts.append(formvals['firesup'])
+        model_cols.append("Fire Suppresion - weight(%s)" % formvals['firesup'])
+        with g.db.cursor() as cur:
+            cur.execute(query)
+            for row in cur:
+                # logger.debug(row)
+                hucs_dict[row[0]].append(int(row[1]))
+
+    # add highway
+    if 'hiway' in formvals:
+        query = "select huc_12, rds%srnk from transportation_rnk" % year[2:]
+        model_wts.append(formvals['hiway'])
+        model_cols.append("Highway - weight(%s)" % formvals['hiway'])
+        with g.db.cursor() as cur:
+            cur.execute(query)
+            for row in cur:
+                # logger.debug(row)
+                hucs_dict[row[0]].append(int(row[1]))
+
+    # add slr up
+    if 'slr_up' in formvals:
+        query = "select huc_12, up00%srnk from slamm_up_rnk" % year[2:]
+        model_wts.append(formvals['slr_up'])
+        model_cols.append("Sea Level rise Upland change - weight(%s)" % formvals['slr_up'])
+        with g.db.cursor() as cur:
+            cur.execute(query)
+            for row in cur:
+                # logger.debug(row)
+                hucs_dict[row[0]].append(int(row[1]))
+
+    # add sea level land cover
+    if 'slr_lc' in formvals:
+        query = "select huc_12, lc00%srnk from slamm_lc_rnk" % year[2:]
+        model_wts.append(formvals['slr_lc'])
+        model_cols.append("Sea Level rise landcover change - weight(%s)" % formvals['slr_lc'])
+        with g.db.cursor() as cur:
+            cur.execute(query)
+            for row in cur:
+                # logger.debug(row)
+                hucs_dict[row[0]].append(int(row[1]))
 
     logger.debug(model_wts)
     for huc in hucs_dict:
