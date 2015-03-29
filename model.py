@@ -170,7 +170,7 @@ def get_threat_report2(formdata):
         query = "select huc_12, %s%srnk from lcscen_%s_rnk" % (
             habitat, year[2:], scenario
         )
-        model_wts.append(formvals['habitat_weight'])
+        model_wts.append(float(formvals['habitat_weight']))
         model_cols.append(
             "%s %s - weight(%s)" % (
                 habitat, scenario, formvals['habitat_weight'])
@@ -184,7 +184,7 @@ def get_threat_report2(formdata):
     # add urban growth if included
     if 'urbangrth' in formvals:
         query = "select huc_12, urb%sha_rnk from urban_ha_rnk" % year[2:]
-        model_wts.append(formvals['urbangrth'])
+        model_wts.append(float(formvals['urbangrth']))
         model_cols.append("Urban Growth - weight(%s)" % formvals['urbangrth'])
         with g.db.cursor() as cur:
             cur.execute(query)
@@ -195,7 +195,7 @@ def get_threat_report2(formdata):
     # add fire suppression
     if 'firesup' in formvals:
         query = "select huc_12, urb%sden_rnk from urban_den_rnk" % year[2:]
-        model_wts.append(formvals['firesup'])
+        model_wts.append(float(formvals['firesup']))
         model_cols.append("Fire Suppresion - weight(%s)" % formvals['firesup'])
         with g.db.cursor() as cur:
             cur.execute(query)
@@ -206,7 +206,7 @@ def get_threat_report2(formdata):
     # add highway
     if 'hiway' in formvals:
         query = "select huc_12, rds%srnk from transportation_rnk" % year[2:]
-        model_wts.append(formvals['hiway'])
+        model_wts.append(float(formvals['hiway']))
         model_cols.append("Highway - weight(%s)" % formvals['hiway'])
         with g.db.cursor() as cur:
             cur.execute(query)
@@ -217,8 +217,10 @@ def get_threat_report2(formdata):
     # add slr up
     if 'slr_up' in formvals:
         query = "select huc_12, up00%srnk from slamm_up_rnk" % year[2:]
-        model_wts.append(formvals['slr_up'])
-        model_cols.append("Sea Level rise Upland change - weight(%s)" % formvals['slr_up'])
+        model_wts.append(float(formvals['slr_up']))
+        model_cols.append(
+            "Sea Level rise Upland change - weight(%s)" % formvals['slr_up']
+        )
         with g.db.cursor() as cur:
             cur.execute(query)
             for row in cur:
@@ -228,22 +230,24 @@ def get_threat_report2(formdata):
     # add sea level land cover
     if 'slr_lc' in formvals:
         query = "select huc_12, lc00%srnk from slamm_lc_rnk" % year[2:]
-        model_wts.append(formvals['slr_lc'])
-        model_cols.append("Sea Level rise landcover change - weight(%s)" % formvals['slr_lc'])
+        model_wts.append(float(formvals['slr_lc']))
+        model_cols.append(
+            "Sea Level rise landcover change - weight(%s)" % formvals['slr_lc']
+        )
         with g.db.cursor() as cur:
             cur.execute(query)
             for row in cur:
                 # logger.debug(row)
                 hucs_dict[row[0]].append(int(row[1]))
 
+    tot_weight = sum(model_wts)
     logger.debug(model_wts)
+    logger.debug(tot_weight)
     for huc in hucs_dict:
         threat = 0
-        tot_weight = 0
         for idx, weight in enumerate(model_wts):
             threat += float(hucs_dict[huc][idx + 1]) * float(weight)
-            tot_weight += float(weight)
-        threat = threat / float(tot_weight)
+        threat = threat / tot_weight
         hucs_dict[huc].append(threat)
 
     # res_arr = [hucs_dict[x] for x in hucs_dict]
