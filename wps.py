@@ -603,6 +603,31 @@ def report():
 def ssheet():
     logger.debug(request.args)
     logger.debug(len(request.args))
+    report_results = model.get_threat_report2(request.args)
+    res_arr = [report_results['res_arr'][x] for x in report_results['res_arr']]
+    col_hdrs = report_results['col_hdrs']
+    col_hdrs.append("results")
+    with tempfile.NamedTemporaryFile(
+            delete=False,
+            suffix=".txt",
+            dir='/tmp',
+            prefix='ncthreats'
+            ) as temp:
+        csvwriter = csv.writer(temp, quoting=csv.QUOTE_ALL, delimiter='\t')
+        csvwriter.writerow(["Year - " + str(report_results['year'])])
+        csvwriter.writerow(col_hdrs)
+        for row in res_arr:
+            # row_esc = ['="' + str(x) + '"' for x in row]
+            # huc12_col = '="' + str(row[0]) + '"'
+            # huc12_col = "'%s'" % str(row[0])
+            # row_esc = [huc12_col]
+            # for x in row[1:]:
+            #     row_esc.append(x)
+            csvwriter.writerow(row)
+
+    headers = dict()
+    headers['Location'] = url_for('get_ssheet', fname=temp.name[5:])
+    return ('', 201, headers)
     return "test"
 
 
