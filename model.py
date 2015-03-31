@@ -20,20 +20,6 @@ formatter = logging.Formatter(
 fh.setFormatter(formatter)
 logger.addHandler(fh)
 
-col_names = {
-    'polu1': 'Pollution 1',
-    'polu2': 'Pollution 2',
-    'dise1': 'Disease 1',
-    'dise2': 'Disease 2',
-    'slr': 'Sea Level Rise',
-    'firp': 'Fire Probability',
-    'firs': 'Fire Suppresion',
-    'tran': 'Transportation Corridors',
-    'frag': 'Fragmentation Index',
-    'urb': 'Urban Percentage',
-    'huc12': 'HUC12',
-    'result': 'Result'
-}
 
 
 def get_threat_report(huc12_str, query):
@@ -137,6 +123,20 @@ def get_threat_report(huc12_str, query):
         "year": year
         }
 
+col_names = {
+    'x': 'Baseline',
+    'a': 'Biofuel A',
+    'b': 'Biofuel B',
+    'c': 'Biofuel C',
+    'd': 'Biofuel D',
+    'e': 'Biofuel E',
+    'frst': 'Forest',
+    'ftwt': 'Wet forest',
+    'open': 'Open',
+    'shrb': 'Scrub',
+    'hbwt': 'Wet herbaceous'
+}
+
 
 def get_threat_report2(formdata):
     # logger.debug
@@ -168,12 +168,16 @@ def get_threat_report2(formdata):
     # add habitat in in model
     if 'habitat_weight' in formvals:
         query = "select huc_12, %s%srnk from lcscen_%s_rnk" % (
-            habitat, year[2:], scenario
+            habitat,
+            year[2:],
+            scenario
         )
         model_wts.append(float(formvals['habitat_weight']))
         model_cols.append(
             "%s %s - weight(%s)" % (
-                habitat, scenario, formvals['habitat_weight'])
+                col_names[habitat],
+                col_names[scenario],
+                formvals['habitat_weight'])
             )
         with g.db.cursor() as cur:
             cur.execute(query)
@@ -466,6 +470,7 @@ def get_threat_report2(formdata):
         for idx, weight in enumerate(model_wts):
             threat += float(hucs_dict[huc][idx + 1]) * float(weight)
         threat = threat / tot_weight
+        threat = int(threat * 100) / 100.0
         hucs_dict[huc].append(threat)
 
     # res_arr = [hucs_dict[x] for x in hucs_dict]
