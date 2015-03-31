@@ -344,6 +344,118 @@ def get_threat_report2(formdata):
                 # logger.debug(row)
                 hucs_dict[row[0]].append(int(row[1]))
 
+    # add impaired waters all
+    if 'impairall' in formvals and formvals['impaired'] == 'all':
+        query = "select huc_12, TotImpLen_rnk from static_rnk"
+        model_wts.append(float(formvals['impairall']))
+        model_cols.append(
+            "Impaired all - weight(%s)" % formvals['impairall']
+        )
+        with g.db.cursor() as cur:
+            cur.execute(query)
+            for row in cur:
+                # logger.debug(row)
+                hucs_dict[row[0]].append(int(row[1]))
+
+    # add impaired biota
+    if 'impairbiota' in formvals and formvals['impaired'] == 'indiv':
+        query = "select huc_12, BioImpLen_rnk from static_rnk"
+        logger.debug(query)
+        model_wts.append(float(formvals['impairbiota']))
+        model_cols.append(
+            "Impaired biota - weight(%s)" % formvals['impairbiota']
+        )
+        with g.db.cursor() as cur:
+            cur.execute(query)
+            for row in cur:
+                # logger.debug(row)
+                hucs_dict[row[0]].append(int(row[1]))
+
+    # add impaired metals
+    if 'impairmetal' in formvals and formvals['impaired'] == 'indiv':
+        query = "select huc_12, MetImpLen_rnk from static_rnk"
+        logger.debug(query)
+        model_wts.append(float(formvals['impairmetal']))
+        model_cols.append(
+            "Impaired metal - weight(%s)" % formvals['impairmetal']
+        )
+        with g.db.cursor() as cur:
+            cur.execute(query)
+            for row in cur:
+                # logger.debug(row)
+                hucs_dict[row[0]].append(int(row[1]))
+
+    # add impaired nutrients
+    if 'impairnutr' in formvals and formvals['impaired'] == 'indiv':
+        query = "select huc_12, NutImpLen_rnk from static_rnk"
+        logger.debug(query)
+        model_wts.append(float(formvals['impairnutr']))
+        model_cols.append(
+            "Impaired nutrients - weight(%s)" % formvals['impairnutr']
+        )
+        with g.db.cursor() as cur:
+            cur.execute(query)
+            for row in cur:
+                # logger.debug(row)
+                hucs_dict[row[0]].append(int(row[1]))
+
+    # add impaired habitat
+    if 'impairhab' in formvals and formvals['impaired'] == 'indiv':
+        query = "select huc_12, HabImpLen_rnk from static_rnk"
+        logger.debug(query)
+        model_wts.append(float(formvals['impairhab']))
+        model_cols.append(
+            "Impaired habitat - weight(%s)" % formvals['impairhab']
+        )
+        with g.db.cursor() as cur:
+            cur.execute(query)
+            for row in cur:
+                # logger.debug(row)
+                hucs_dict[row[0]].append(int(row[1]))
+
+    # add impaired temp
+    if 'impairtemp' in formvals and formvals['impaired'] == 'indiv':
+        query = "select huc_12, TempImpLen_rnk from static_rnk"
+        logger.debug(query)
+        model_wts.append(float(formvals['impairtemp']))
+        model_cols.append(
+            "Impaired temp - weight(%s)" % formvals['impairtemp']
+        )
+        with g.db.cursor() as cur:
+            cur.execute(query)
+            for row in cur:
+                # logger.debug(row)
+                hucs_dict[row[0]].append(int(row[1]))
+
+    # add impaired polution
+    if 'impairpolu' in formvals and formvals['impaired'] == 'indiv':
+        query = "select huc_12, PolImpLen_rnk from static_rnk"
+        logger.debug(query)
+        model_wts.append(float(formvals['impairpolu']))
+        model_cols.append(
+            "Impaired polution - weight(%s)" % formvals['impairpolu']
+        )
+        with g.db.cursor() as cur:
+            cur.execute(query)
+            for row in cur:
+                # logger.debug(row)
+                hucs_dict[row[0]].append(int(row[1]))
+
+    # add impaired other
+    if 'impairother' in formvals and formvals['impaired'] == 'indiv':
+        query = "select huc_12, OtherLen_rnk from static_rnk"
+        logger.debug(query)
+        model_wts.append(float(formvals['impairother']))
+        model_cols.append(
+            "Impaired other - weight(%s)" % formvals['impairother']
+        )
+        with g.db.cursor() as cur:
+            cur.execute(query)
+            for row in cur:
+                # logger.debug(row)
+                hucs_dict[row[0]].append(int(row[1]))
+
+
 
     tot_weight = sum(model_wts)
     logger.debug(model_cols)
