@@ -240,7 +240,113 @@ def get_threat_report2(formdata):
                 # logger.debug(row)
                 hucs_dict[row[0]].append(int(row[1]))
 
+    # add triassic
+    if 'triassic' in formvals:
+        query = "select huc_12, triassic_rnk from static_rnk"
+        model_wts.append(float(formvals['triassic']))
+        model_cols.append(
+            "Triassic Basin - weight(%s)" % formvals['triassic']
+        )
+        with g.db.cursor() as cur:
+            cur.execute(query)
+            for row in cur:
+                # logger.debug(row)
+                hucs_dict[row[0]].append(int(row[1]))
+
+    # add wind power
+    if 'wind' in formvals:
+        query = "select huc_12, WPC_rnk from wind_rnk"
+        model_wts.append(float(formvals['wind']))
+        model_cols.append(
+            "Wind Power - weight(%s)" % formvals['wind']
+        )
+        with g.db.cursor() as cur:
+            cur.execute(query)
+            for row in cur:
+                # logger.debug(row)
+                hucs_dict[row[0]].append(int(row[1]))
+
+    # add manure
+    if 'manure' in formvals:
+        query = "select huc_12, MANU_rnk from static_rnk"
+        model_wts.append(float(formvals['manure']))
+        model_cols.append(
+            "Manure Application - weight(%s)" % formvals['manure']
+        )
+        with g.db.cursor() as cur:
+            cur.execute(query)
+            for row in cur:
+                # logger.debug(row)
+                hucs_dict[row[0]].append(int(row[1]))
+
+    # add nitrogen
+    if 'nitrofrt' in formvals:
+        query = "select huc_12, FERT_rnk from static_rnk"
+        model_wts.append(float(formvals['nitrofrt']))
+        model_cols.append(
+            "Synthetic Nitrogen - weight(%s)" % formvals['nitrofrt']
+        )
+        with g.db.cursor() as cur:
+            cur.execute(query)
+            for row in cur:
+                # logger.debug(row)
+                hucs_dict[row[0]].append(int(row[1]))
+
+    # add total nitrogen
+    if 'totnitro' in formvals:
+        query = "select huc_12, TD_N_T_rnk from static_rnk"
+        model_wts.append(float(formvals['totnitro']))
+        model_cols.append(
+            "Total Nitrogen - weight(%s)" % formvals['totnitro']
+        )
+        with g.db.cursor() as cur:
+            cur.execute(query)
+            for row in cur:
+                # logger.debug(row)
+                hucs_dict[row[0]].append(int(row[1]))
+
+    # add total sulphur
+    if 'totsulf' in formvals:
+        query = "select huc_12, TD_S_T_rnk from static_rnk"
+        model_wts.append(float(formvals['totsulf']))
+        model_cols.append(
+            "Total Sulfur - weight(%s)" % formvals['totsulf']
+        )
+        with g.db.cursor() as cur:
+            cur.execute(query)
+            for row in cur:
+                # logger.debug(row)
+                hucs_dict[row[0]].append(int(row[1]))
+
+    # add forest health
+    if 'insectdisease' in formvals:
+        query = "select huc_12, FHlth_Rnk from static_rnk"
+        model_wts.append(float(formvals['insectdisease']))
+        model_cols.append(
+            "Foreset health - weight(%s)" % formvals['insectdisease']
+        )
+        with g.db.cursor() as cur:
+            cur.execute(query)
+            for row in cur:
+                # logger.debug(row)
+                hucs_dict[row[0]].append(int(row[1]))
+
+    # add number of dams
+    if 'ndams' in formvals:
+        query = "select huc_12, NID_rnk from static_rnk"
+        model_wts.append(float(formvals['ndams']))
+        model_cols.append(
+            "# of dams - weight(%s)" % formvals['ndams']
+        )
+        with g.db.cursor() as cur:
+            cur.execute(query)
+            for row in cur:
+                # logger.debug(row)
+                hucs_dict[row[0]].append(int(row[1]))
+
+
     tot_weight = sum(model_wts)
+    logger.debug(model_cols)
     logger.debug(model_wts)
     logger.debug(tot_weight)
     for huc in hucs_dict:
