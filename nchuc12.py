@@ -45,7 +45,7 @@ def getgeojson(huc12_str):
                 "geometry": the_geom,
                 "properties": {
                     "huc12": huc12,
-                    "threat": 1}
+                    "threat": 0}
                 }
             list_features.append(new_feature)
         dict_for_json = {
