@@ -349,7 +349,7 @@ def get_threat_report2(formdata):
                 hucs_dict[row[0]].append(int(row[1]))
 
     # add impaired waters all
-    if 'impairall' in formvals and formvals['impaired'] == 'all':
+    if 'impairall' in formvals:
         query = "select huc_12, TotImpLen_rnk from static_rnk"
         model_wts.append(float(formvals['impairall']))
         model_cols.append(
