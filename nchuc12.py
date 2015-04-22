@@ -99,6 +99,7 @@ class NCHuc12():
 
         query_str = """select wkb_geometry, huc_12 from huc12nc
         where huc_12 like %s  """
+        logger.debug(query_str)
         with g.db.cursor(cursor_factory=psycopg2.extras.DictCursor) as cur:
             for huc in self.aoi_list:
                 cur.execute(

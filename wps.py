@@ -210,21 +210,21 @@ def map_aoi(id):
     return json.dumps({"results": results})
 
 
-@app.route('/<int:id>/report', methods=['GET', ])
-def report_aoi(id):
-    """Create model report as html from aoi id. """
-    with g.db.cursor(cursor_factory=psycopg2.extras.DictCursor) as cur:
-        cur.execute("select * from aoi_results where pk = %s", (id, ))
-        rec = cur.fetchone()
-    huc12_str = rec['huc12s']
-    report_results = model.get_threat_report(huc12_str, request.args)
-    logger.debug(report_results)
-    return render_template(
-        'report.html',
-        col_hdrs=report_results['col_hdrs'],
-        res_arr=report_results['res_arr'],
-        year=report_results['year']
-        )
+# @app.route('/<int:id>/report', methods=['GET', ])
+# def report_aoi(id):
+#     """Create model report as html from aoi id. """
+#     with g.db.cursor(cursor_factory=psycopg2.extras.DictCursor) as cur:
+#         cur.execute("select * from aoi_results where pk = %s", (id, ))
+#         rec = cur.fetchone()
+#     huc12_str = rec['huc12s']
+#     report_results = model.get_threat_report(huc12_str, request.args)
+#     logger.debug(report_results)
+#     return render_template(
+#         'report.html',
+#         col_hdrs=report_results['col_hdrs'],
+#         res_arr=report_results['res_arr'],
+#         year=report_results['year']
+#         )
 
 
 @app.route('/<int:id>/ssheet', methods=['GET', ])
@@ -580,12 +580,13 @@ def map():
     # return "tst"
     return json.dumps(res)
 
-
-@app.route('/report',  methods=['GET', ])
-def report():
+@app.route('/<int:id>/report', methods=['GET', ])
+# @app.route('/report',  methods=['GET', ])
+def report(id):
+    logger.debug(id)
     logger.debug(request.args)
     logger.debug(len(request.args))
-    report_results = model.get_threat_report2(request.args)
+    report_results = model.get_threat_report2(id, request.args)
     # logger.debug(report_results)
     res_arr = [report_results['res_arr'][x] for x in report_results['res_arr']]
     col_hdrs = report_results['col_hdrs']

@@ -138,21 +138,34 @@ col_names = {
 }
 
 
-def get_threat_report2(formdata):
+def get_threat_report2(id, formdata):
     # logger.debug
     formvals = {}
     model_cols = ["huc"]
     model_wts = []
 
+    logger.debug(id)
+
     # create dict w/ key huc12 and val empty list
     hucs_dict = collections.OrderedDict()
-    query = "select huc_12 from forest_health order by huc_12"
-    with g.db.cursor() as cur:
-        cur.execute(query)
-        hucs = cur.fetchall()
-    for huc in hucs:
-        hucs_dict[huc[0]] = []
-        hucs_dict[huc[0]].append(huc[0])
+
+    if int(id) == 0:
+        query = "select huc_12 from forest_health order by huc_12"
+        with g.db.cursor() as cur:
+            cur.execute(query)
+            hucs = cur.fetchall()
+        for huc in hucs:
+            hucs_dict[huc[0]] = []
+            hucs_dict[huc[0]].append(huc[0])
+    else:
+        with g.db.cursor() as cur:
+            cur.execute("select huc12s from aoi_results where pk = %s", (id, ))
+            huc12_str = cur.fetchone()
+        hucs = huc12_str[0].split(",")
+        for huc in hucs:
+            hucs_dict[huc.strip()] = []
+            hucs_dict[huc.strip()].append(huc.strip())
+
 
     # read formdata into formvals excluding notinclude
     for formval in formdata:
@@ -183,7 +196,11 @@ def get_threat_report2(formdata):
             cur.execute(query)
             for row in cur:
                 # logger.debug(row)
-                hucs_dict[row[0]].append(int(row[1]))
+                try:
+                    hucs_dict[row[0]].append(int(row[1]))
+                except KeyError:
+                    pass
+
 
     # add urban growth if included
     if 'urbangrth' in formvals:
@@ -194,7 +211,11 @@ def get_threat_report2(formdata):
             cur.execute(query)
             for row in cur:
                 # logger.debug(row)
-                hucs_dict[row[0]].append(int(row[1]))
+                # hucs_dict[row[0]].append(int(row[1]))
+                try:
+                    hucs_dict[row[0]].append(int(row[1]))
+                except KeyError:
+                    pass
 
     # add fire suppression
     if 'firesup' in formvals:
@@ -205,7 +226,11 @@ def get_threat_report2(formdata):
             cur.execute(query)
             for row in cur:
                 # logger.debug(row)
-                hucs_dict[row[0]].append(int(row[1]))
+                # hucs_dict[row[0]].append(int(row[1]))
+                try:
+                    hucs_dict[row[0]].append(int(row[1]))
+                except KeyError:
+                    pass
 
     # add highway
     if 'hiway' in formvals:
@@ -216,7 +241,11 @@ def get_threat_report2(formdata):
             cur.execute(query)
             for row in cur:
                 # logger.debug(row)
-                hucs_dict[row[0]].append(int(row[1]))
+                # hucs_dict[row[0]].append(int(row[1]))
+                try:
+                    hucs_dict[row[0]].append(int(row[1]))
+                except KeyError:
+                    pass
 
     # add slr up
     if 'slr_up' in formvals:
@@ -229,7 +258,11 @@ def get_threat_report2(formdata):
             cur.execute(query)
             for row in cur:
                 # logger.debug(row)
-                hucs_dict[row[0]].append(int(row[1]))
+                # hucs_dict[row[0]].append(int(row[1]))
+                try:
+                    hucs_dict[row[0]].append(int(row[1]))
+                except KeyError:
+                    pass
 
     # add sea level land cover
     if 'slr_lc' in formvals:
@@ -242,7 +275,11 @@ def get_threat_report2(formdata):
             cur.execute(query)
             for row in cur:
                 # logger.debug(row)
-                hucs_dict[row[0]].append(int(row[1]))
+                # hucs_dict[row[0]].append(int(row[1]))
+                try:
+                    hucs_dict[row[0]].append(int(row[1]))
+                except KeyError:
+                    pass
 
     # add triassic
     if 'triassic' in formvals:
@@ -255,7 +292,11 @@ def get_threat_report2(formdata):
             cur.execute(query)
             for row in cur:
                 # logger.debug(row)
-                hucs_dict[row[0]].append(int(row[1]))
+                # hucs_dict[row[0]].append(int(row[1]))
+                try:
+                    hucs_dict[row[0]].append(int(row[1]))
+                except KeyError:
+                    pass
 
     # add wind power
     if 'wind' in formvals:
@@ -268,7 +309,11 @@ def get_threat_report2(formdata):
             cur.execute(query)
             for row in cur:
                 # logger.debug(row)
-                hucs_dict[row[0]].append(int(row[1]))
+                # hucs_dict[row[0]].append(int(row[1]))
+                try:
+                    hucs_dict[row[0]].append(int(row[1]))
+                except KeyError:
+                    pass
 
     # add manure
     if 'manure' in formvals:
@@ -281,7 +326,11 @@ def get_threat_report2(formdata):
             cur.execute(query)
             for row in cur:
                 # logger.debug(row)
-                hucs_dict[row[0]].append(int(row[1]))
+                # hucs_dict[row[0]].append(int(row[1]))
+                try:
+                    hucs_dict[row[0]].append(int(row[1]))
+                except KeyError:
+                    pass
 
     # add nitrogen
     if 'nitrofrt' in formvals:
@@ -294,7 +343,11 @@ def get_threat_report2(formdata):
             cur.execute(query)
             for row in cur:
                 # logger.debug(row)
-                hucs_dict[row[0]].append(int(row[1]))
+                # hucs_dict[row[0]].append(int(row[1]))
+                try:
+                    hucs_dict[row[0]].append(int(row[1]))
+                except KeyError:
+                    pass
 
     # add total nitrogen
     if 'totnitro' in formvals:
@@ -307,7 +360,11 @@ def get_threat_report2(formdata):
             cur.execute(query)
             for row in cur:
                 # logger.debug(row)
-                hucs_dict[row[0]].append(int(row[1]))
+                # hucs_dict[row[0]].append(int(row[1]))
+                try:
+                    hucs_dict[row[0]].append(int(row[1]))
+                except KeyError:
+                    pass
 
     # add total sulphur
     if 'totsulf' in formvals:
@@ -320,7 +377,11 @@ def get_threat_report2(formdata):
             cur.execute(query)
             for row in cur:
                 # logger.debug(row)
-                hucs_dict[row[0]].append(int(row[1]))
+                # hucs_dict[row[0]].append(int(row[1]))
+                try:
+                    hucs_dict[row[0]].append(int(row[1]))
+                except KeyError:
+                    pass
 
     # add forest health
     if 'insectdisease' in formvals:
@@ -333,7 +394,11 @@ def get_threat_report2(formdata):
             cur.execute(query)
             for row in cur:
                 # logger.debug(row)
-                hucs_dict[row[0]].append(int(row[1]))
+                # hucs_dict[row[0]].append(int(row[1]))
+                try:
+                    hucs_dict[row[0]].append(int(row[1]))
+                except KeyError:
+                    pass
 
     # add number of dams
     if 'ndams' in formvals:
@@ -346,7 +411,11 @@ def get_threat_report2(formdata):
             cur.execute(query)
             for row in cur:
                 # logger.debug(row)
-                hucs_dict[row[0]].append(int(row[1]))
+                # hucs_dict[row[0]].append(int(row[1]))
+                try:
+                    hucs_dict[row[0]].append(int(row[1]))
+                except KeyError:
+                    pass
 
     # add impaired waters all
     if 'impairall' in formvals:
@@ -359,105 +428,109 @@ def get_threat_report2(formdata):
             cur.execute(query)
             for row in cur:
                 # logger.debug(row)
-                hucs_dict[row[0]].append(int(row[1]))
+                # hucs_dict[row[0]].append(int(row[1]))
+                try:
+                    hucs_dict[row[0]].append(int(row[1]))
+                except KeyError:
+                    pass
 
-    # add impaired biota
-    if 'impairbiota' in formvals and formvals['impaired'] == 'indiv':
-        query = "select huc_12, BioImpLen_rnk from static_rnk"
-        logger.debug(query)
-        model_wts.append(float(formvals['impairbiota']))
-        model_cols.append(
-            "Impaired biota - weight(%s)" % formvals['impairbiota']
-        )
-        with g.db.cursor() as cur:
-            cur.execute(query)
-            for row in cur:
-                # logger.debug(row)
-                hucs_dict[row[0]].append(int(row[1]))
+    # # add impaired biota
+    # if 'impairbiota' in formvals and formvals['impaired'] == 'indiv':
+    #     query = "select huc_12, BioImpLen_rnk from static_rnk"
+    #     logger.debug(query)
+    #     model_wts.append(float(formvals['impairbiota']))
+    #     model_cols.append(
+    #         "Impaired biota - weight(%s)" % formvals['impairbiota']
+    #     )
+    #     with g.db.cursor() as cur:
+    #         cur.execute(query)
+    #         for row in cur:
+    #             # logger.debug(row)
+    #             hucs_dict[row[0]].append(int(row[1]))
 
-    # add impaired metals
-    if 'impairmetal' in formvals and formvals['impaired'] == 'indiv':
-        query = "select huc_12, MetImpLen_rnk from static_rnk"
-        logger.debug(query)
-        model_wts.append(float(formvals['impairmetal']))
-        model_cols.append(
-            "Impaired metal - weight(%s)" % formvals['impairmetal']
-        )
-        with g.db.cursor() as cur:
-            cur.execute(query)
-            for row in cur:
-                # logger.debug(row)
-                hucs_dict[row[0]].append(int(row[1]))
+    # # add impaired metals
+    # if 'impairmetal' in formvals and formvals['impaired'] == 'indiv':
+    #     query = "select huc_12, MetImpLen_rnk from static_rnk"
+    #     logger.debug(query)
+    #     model_wts.append(float(formvals['impairmetal']))
+    #     model_cols.append(
+    #         "Impaired metal - weight(%s)" % formvals['impairmetal']
+    #     )
+    #     with g.db.cursor() as cur:
+    #         cur.execute(query)
+    #         for row in cur:
+    #             # logger.debug(row)
+    #             hucs_dict[row[0]].append(int(row[1]))
 
-    # add impaired nutrients
-    if 'impairnutr' in formvals and formvals['impaired'] == 'indiv':
-        query = "select huc_12, NutImpLen_rnk from static_rnk"
-        logger.debug(query)
-        model_wts.append(float(formvals['impairnutr']))
-        model_cols.append(
-            "Impaired nutrients - weight(%s)" % formvals['impairnutr']
-        )
-        with g.db.cursor() as cur:
-            cur.execute(query)
-            for row in cur:
-                # logger.debug(row)
-                hucs_dict[row[0]].append(int(row[1]))
+    # # add impaired nutrients
+    # if 'impairnutr' in formvals and formvals['impaired'] == 'indiv':
+    #     query = "select huc_12, NutImpLen_rnk from static_rnk"
+    #     logger.debug(query)
+    #     model_wts.append(float(formvals['impairnutr']))
+    #     model_cols.append(
+    #         "Impaired nutrients - weight(%s)" % formvals['impairnutr']
+    #     )
+    #     with g.db.cursor() as cur:
+    #         cur.execute(query)
+    #         for row in cur:
+    #             # logger.debug(row)
+    #             hucs_dict[row[0]].append(int(row[1]))
 
-    # add impaired habitat
-    if 'impairhab' in formvals and formvals['impaired'] == 'indiv':
-        query = "select huc_12, HabImpLen_rnk from static_rnk"
-        logger.debug(query)
-        model_wts.append(float(formvals['impairhab']))
-        model_cols.append(
-            "Impaired habitat - weight(%s)" % formvals['impairhab']
-        )
-        with g.db.cursor() as cur:
-            cur.execute(query)
-            for row in cur:
-                # logger.debug(row)
-                hucs_dict[row[0]].append(int(row[1]))
+    # # add impaired habitat
+    # if 'impairhab' in formvals and formvals['impaired'] == 'indiv':
+    #     query = "select huc_12, HabImpLen_rnk from static_rnk"
+    #     logger.debug(query)
+    #     model_wts.append(float(formvals['impairhab']))
+    #     model_cols.append(
+    #         "Impaired habitat - weight(%s)" % formvals['impairhab']
+    #     )
+    #     with g.db.cursor() as cur:
+    #         cur.execute(query)
+    #         for row in cur:
+    #             # logger.debug(row)
+    #             hucs_dict[row[0]].append(int(row[1]))
 
-    # add impaired temp
-    if 'impairtemp' in formvals and formvals['impaired'] == 'indiv':
-        query = "select huc_12, TempImpLen_rnk from static_rnk"
-        logger.debug(query)
-        model_wts.append(float(formvals['impairtemp']))
-        model_cols.append(
-            "Impaired temp - weight(%s)" % formvals['impairtemp']
-        )
-        with g.db.cursor() as cur:
-            cur.execute(query)
-            for row in cur:
-                # logger.debug(row)
-                hucs_dict[row[0]].append(int(row[1]))
+    # # add impaired temp
+    # if 'impairtemp' in formvals and formvals['impaired'] == 'indiv':
+    #     query = "select huc_12, TempImpLen_rnk from static_rnk"
+    #     logger.debug(query)
+    #     model_wts.append(float(formvals['impairtemp']))
+    #     model_cols.append(
+    #         "Impaired temp - weight(%s)" % formvals['impairtemp']
+    #     )
+    #     with g.db.cursor() as cur:
+    #         cur.execute(query)
+    #         for row in cur:
+    #             # logger.debug(row)
+    #             hucs_dict[row[0]].append(int(row[1]))
 
-    # add impaired polution
-    if 'impairpolu' in formvals and formvals['impaired'] == 'indiv':
-        query = "select huc_12, PolImpLen_rnk from static_rnk"
-        logger.debug(query)
-        model_wts.append(float(formvals['impairpolu']))
-        model_cols.append(
-            "Impaired polution - weight(%s)" % formvals['impairpolu']
-        )
-        with g.db.cursor() as cur:
-            cur.execute(query)
-            for row in cur:
-                # logger.debug(row)
-                hucs_dict[row[0]].append(int(row[1]))
+    # # add impaired polution
+    # if 'impairpolu' in formvals and formvals['impaired'] == 'indiv':
+    #     query = "select huc_12, PolImpLen_rnk from static_rnk"
+    #     logger.debug(query)
+    #     model_wts.append(float(formvals['impairpolu']))
+    #     model_cols.append(
+    #         "Impaired polution - weight(%s)" % formvals['impairpolu']
+    #     )
+    #     with g.db.cursor() as cur:
+    #         cur.execute(query)
+    #         for row in cur:
+    #             # logger.debug(row)
+    #             hucs_dict[row[0]].append(int(row[1]))
 
-    # add impaired other
-    if 'impairother' in formvals and formvals['impaired'] == 'indiv':
-        query = "select huc_12, OtherLen_rnk from static_rnk"
-        logger.debug(query)
-        model_wts.append(float(formvals['impairother']))
-        model_cols.append(
-            "Impaired other - weight(%s)" % formvals['impairother']
-        )
-        with g.db.cursor() as cur:
-            cur.execute(query)
-            for row in cur:
-                # logger.debug(row)
-                hucs_dict[row[0]].append(int(row[1]))
+    # # add impaired other
+    # if 'impairother' in formvals and formvals['impaired'] == 'indiv':
+    #     query = "select huc_12, OtherLen_rnk from static_rnk"
+    #     logger.debug(query)
+    #     model_wts.append(float(formvals['impairother']))
+    #     model_cols.append(
+    #         "Impaired other - weight(%s)" % formvals['impairother']
+    #     )
+    #     with g.db.cursor() as cur:
+    #         cur.execute(query)
+    #         for row in cur:
+    #             # logger.debug(row)
+    #             hucs_dict[row[0]].append(int(row[1]))
 
 
 
