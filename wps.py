@@ -575,10 +575,11 @@ def huc12_map():
 def map():
     # logger.debug(request.args)
     # logger.debug(len(request.args))
-    res = model.get_threat_report2(request.args)
+    res = model.get_threat_report2(0, request.args)
     # logger.debug(res)
     # return "tst"
     return json.dumps(res)
+
 
 @app.route('/<int:id>/report', methods=['GET', ])
 # @app.route('/report',  methods=['GET', ])
@@ -593,12 +594,12 @@ def report(id):
     col_hdrs.append("results")
     logger.debug(col_hdrs)
 
-
     return render_template(
         'report.html',
         col_hdrs=col_hdrs,
         res_arr=res_arr,
-        year=report_results['year']
+        year=report_results['year'],
+        report=report_results['report']
         )
 
 

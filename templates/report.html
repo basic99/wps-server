@@ -25,6 +25,28 @@
     <h4>Year {{year}}</h4>
   </div>
 
+  <h2 style="text-align: center;">Summary Statistics by AOI</h2>
+
+   <table class="table table-striped">
+    <tr>
+      <th></th>
+      <th>Mean</th>
+      <th>Standard Deviation</th>
+      <th>Minumum value</th>
+      <th>Maximum value</th>
+    </tr>
+    {%for res_row in report%}
+    <tr>
+      {% for res in res_row%}
+      <td >{{res}}</td>
+      {% endfor %}
+    </tr>
+    {% endfor %}
+  </table>
+
+  <h2 style="text-align: center;">Summary  by HUC12</h2>
+
+
   <table class="table table-striped">
     <tr>
       {% for colhdr in col_hdrs%}
