@@ -174,9 +174,13 @@ def get_threat_report2(id, formdata):
             continue
         formvals[formval] = formdata[formval]
 
-    scenario = formvals['scenario']
-    year = formvals['year']
-    habitat = formvals['habitat']
+    try:
+        year = formvals['year']
+        scenario = formvals['scenario']
+        habitat = formvals['habitat']
+    except KeyError:
+        year = '2010'
+        pass
     logger.info(formvals)
 
     # add habitat in in model

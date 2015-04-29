@@ -593,13 +593,15 @@ def report(id):
     col_hdrs = report_results['col_hdrs']
     col_hdrs.append("results")
     logger.debug(col_hdrs)
+    samplesize = len(res_arr)
 
     return render_template(
         'report.html',
         col_hdrs=col_hdrs,
         res_arr=res_arr,
         year=report_results['year'],
-        report=report_results['report']
+        report=report_results['report'],
+        samplesize=samplesize
         )
 
 
