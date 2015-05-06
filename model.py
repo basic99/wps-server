@@ -151,6 +151,7 @@ def get_threat_report2(id, formdata):
     hucs_dict = collections.OrderedDict()
 
     if int(id) == 0:
+        # could use any table here
         query = "select huc_12 from forest_health order by huc_12"
         with g.db.cursor() as cur:
             cur.execute(query)
@@ -177,25 +178,25 @@ def get_threat_report2(id, formdata):
     try:
         year = formvals['year']
         scenario = formvals['scenario']
-        habitat = formvals['habitat']
+        # habitat = formvals['habitat']
     except KeyError:
         year = '2010'
         pass
     logger.info(formvals)
 
     # add habitat in in model
-    if 'habitat_weight' in formvals:
+    if 'frst' in formvals:
         query = "select huc_12, %s%srnk from lcscen_%s_rnk" % (
-            habitat,
+            'frst',
             year[2:],
             scenario
         )
-        model_wts.append(float(formvals['habitat_weight']))
+        model_wts.append(float(formvals['frst']))
         model_cols.append(
             "%s %s - weight(%s)" % (
-                col_names[habitat],
+                col_names['frst'],
                 col_names[scenario],
-                formvals['habitat_weight'])
+                formvals['frst'])
             )
         with g.db.cursor() as cur:
             cur.execute(query)
@@ -206,7 +207,93 @@ def get_threat_report2(id, formdata):
                 except KeyError:
                     pass
 
+    if 'ftwt' in formvals:
+        query = "select huc_12, %s%srnk from lcscen_%s_rnk" % (
+            'ftwt',
+            year[2:],
+            scenario
+        )
+        model_wts.append(float(formvals['ftwt']))
+        model_cols.append(
+            "%s %s - weight(%s)" % (
+                col_names['ftwt'],
+                col_names[scenario],
+                formvals['ftwt'])
+            )
+        with g.db.cursor() as cur:
+            cur.execute(query)
+            for row in cur:
+                # logger.debug(row)
+                try:
+                    hucs_dict[row[0]].append(int(row[1]))
+                except KeyError:
+                    pass
 
+    if 'hbwt' in formvals:
+        query = "select huc_12, %s%srnk from lcscen_%s_rnk" % (
+            'hbwt',
+            year[2:],
+            scenario
+        )
+        model_wts.append(float(formvals['hbwt']))
+        model_cols.append(
+            "%s %s - weight(%s)" % (
+                col_names['hbwt'],
+                col_names[scenario],
+                formvals['hbwt'])
+            )
+        with g.db.cursor() as cur:
+            cur.execute(query)
+            for row in cur:
+                # logger.debug(row)
+                try:
+                    hucs_dict[row[0]].append(int(row[1]))
+                except KeyError:
+                    pass
+
+    if 'open' in formvals:
+        query = "select huc_12, %s%srnk from lcscen_%s_rnk" % (
+            'open',
+            year[2:],
+            scenario
+        )
+        model_wts.append(float(formvals['open']))
+        model_cols.append(
+            "%s %s - weight(%s)" % (
+                col_names['open'],
+                col_names[scenario],
+                formvals['open'])
+            )
+        with g.db.cursor() as cur:
+            cur.execute(query)
+            for row in cur:
+                # logger.debug(row)
+                try:
+                    hucs_dict[row[0]].append(int(row[1]))
+                except KeyError:
+                    pass
+
+    if 'shrb' in formvals:
+        query = "select huc_12, %s%srnk from lcscen_%s_rnk" % (
+            'shrb',
+            year[2:],
+            scenario
+        )
+        model_wts.append(float(formvals['shrb']))
+        model_cols.append(
+            "%s %s - weight(%s)" % (
+                col_names['shrb'],
+                col_names[scenario],
+                formvals['shrb'])
+            )
+        with g.db.cursor() as cur:
+            cur.execute(query)
+            for row in cur:
+                # logger.debug(row)
+                try:
+                    hucs_dict[row[0]].append(int(row[1]))
+                except KeyError:
+                    pass
     # add urban growth if included
     if 'urbangrth' in formvals:
         query = "select huc_12, urb%sha_rnk from urban_ha_rnk" % year[2:]
@@ -497,7 +584,7 @@ def get_threat_report2(id, formdata):
                 hucs_dict[x][idx] for x in hucs_dict
             ]
 
-    logger.debug(summary_params_list)
+    # logger.debug(summary_params_list)
     report = []
     for row in summary_params_list:
         report_row = [str(row)]
