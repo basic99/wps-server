@@ -423,17 +423,51 @@ def get_threat_report2(id, formdata):
                     pass
 
     # add impaired waters all
-    if 'impairall' in formvals:
-        query = "select huc_12, TotImpLen_rnk from static_rnk"
-        model_wts.append(float(formvals['impairall']))
+    # if 'impairall' in formvals:
+    #     query = "select huc_12, TotImpLen_rnk from static_rnk"
+    #     model_wts.append(float(formvals['impairall']))
+    #     model_cols.append(
+    #         "Impaired all - weight(%s)" % formvals['impairall']
+    #     )
+    #     with g.db.cursor() as cur:
+    #         cur.execute(query)
+    #         for row in cur:
+    #             # logger.debug(row)
+    #             # hucs_dict[row[0]].append(int(row[1]))
+    #             try:
+    #                 hucs_dict[row[0]].append(int(row[1]))
+    #             except KeyError:
+    #                 pass
+
+    # add impaired biota
+    if 'impairbiota' in formvals:
+        query = "select huc_12, BioImpLen_rnk from static_rnk"
+        logger.debug(query)
+        model_wts.append(float(formvals['impairbiota']))
         model_cols.append(
-            "Impaired all - weight(%s)" % formvals['impairall']
+            "Impaired biota - weight(%s)" % formvals['impairbiota']
         )
         with g.db.cursor() as cur:
             cur.execute(query)
             for row in cur:
                 # logger.debug(row)
-                # hucs_dict[row[0]].append(int(row[1]))
+                try:
+                    hucs_dict[row[0]].append(int(row[1]))
+                except KeyError:
+                    pass
+
+    # add impaired metals
+    if 'impairmetal' in formvals:
+        query = "select huc_12, MetImpLen_rnk from static_rnk"
+        logger.debug(query)
+        model_wts.append(float(formvals['impairmetal']))
+        model_cols.append(
+            "Impaired metal - weight(%s)" % formvals['impairmetal']
+        )
+        with g.db.cursor() as cur:
+            cur.execute(query)
+            for row in cur:
+                # logger.debug(row)
                 try:
                     hucs_dict[row[0]].append(int(row[1]))
                 except KeyError:
