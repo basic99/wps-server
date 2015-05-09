@@ -168,7 +168,6 @@ def get_threat_report2(id, formdata):
             hucs_dict[huc.strip()] = []
             hucs_dict[huc.strip()].append(huc.strip())
 
-
     # read formdata into formvals excluding notinclude
     for formval in formdata:
         if formdata[formval] == 'notinclude':
@@ -184,6 +183,7 @@ def get_threat_report2(id, formdata):
         pass
     logger.info(formvals)
 
+
     # add habitat in in model
     if 'frst' in formvals:
         query = "select huc_12, %s%srnk from lcscen_%s_rnk" % (
@@ -191,9 +191,10 @@ def get_threat_report2(id, formdata):
             year[2:],
             scenario
         )
+        logger.debug(query)
         model_wts.append(float(formvals['frst']))
         model_cols.append(
-            "%s %s - weight(%s)" % (
+            "%s %s - threshold(%s)" % (
                 col_names['frst'],
                 col_names[scenario],
                 formvals['frst'])
@@ -201,9 +202,13 @@ def get_threat_report2(id, formdata):
         with g.db.cursor() as cur:
             cur.execute(query)
             for row in cur:
-                # logger.debug(row)
+                logger.debug(row)
+                if int(row[1]) > int(formvals['frst']):
+                    above = 1
+                else:
+                    above = 0
                 try:
-                    hucs_dict[row[0]].append(int(row[1]))
+                    hucs_dict[row[0]].append(above)
                 except KeyError:
                     pass
 
@@ -223,9 +228,13 @@ def get_threat_report2(id, formdata):
         with g.db.cursor() as cur:
             cur.execute(query)
             for row in cur:
+                if int(row[1]) > int(formvals['ftwt']):
+                    above = 1
+                else:
+                    above = 0
                 # logger.debug(row)
                 try:
-                    hucs_dict[row[0]].append(int(row[1]))
+                    hucs_dict[row[0]].append(above)
                 except KeyError:
                     pass
 
@@ -246,8 +255,12 @@ def get_threat_report2(id, formdata):
             cur.execute(query)
             for row in cur:
                 # logger.debug(row)
+                if int(row[1]) > int(formvals['hbwt']):
+                    above = 1
+                else:
+                    above = 0
                 try:
-                    hucs_dict[row[0]].append(int(row[1]))
+                    hucs_dict[row[0]].append(above)
                 except KeyError:
                     pass
 
@@ -268,8 +281,12 @@ def get_threat_report2(id, formdata):
             cur.execute(query)
             for row in cur:
                 # logger.debug(row)
+                if int(row[1]) > int(formvals['open']):
+                    above = 1
+                else:
+                    above = 0
                 try:
-                    hucs_dict[row[0]].append(int(row[1]))
+                    hucs_dict[row[0]].append(above)
                 except KeyError:
                     pass
 
@@ -290,8 +307,12 @@ def get_threat_report2(id, formdata):
             cur.execute(query)
             for row in cur:
                 # logger.debug(row)
+                if int(row[1]) > int(formvals['shrb']):
+                    above = 1
+                else:
+                    above = 0
                 try:
-                    hucs_dict[row[0]].append(int(row[1]))
+                    hucs_dict[row[0]].append(above)
                 except KeyError:
                     pass
     # add urban growth if included
@@ -304,8 +325,12 @@ def get_threat_report2(id, formdata):
             for row in cur:
                 # logger.debug(row)
                 # hucs_dict[row[0]].append(int(row[1]))
+                if int(row[1]) > int(formvals['urbangrth']):
+                    above = 1
+                else:
+                    above = 0
                 try:
-                    hucs_dict[row[0]].append(int(row[1]))
+                    hucs_dict[row[0]].append(above)
                 except KeyError:
                     pass
 
@@ -319,6 +344,10 @@ def get_threat_report2(id, formdata):
             for row in cur:
                 # logger.debug(row)
                 # hucs_dict[row[0]].append(int(row[1]))
+                if int(row[1]) > int(formvals['firesup']):
+                    above = 1
+                else:
+                    above = 0
                 try:
                     hucs_dict[row[0]].append(int(row[1]))
                 except KeyError:
@@ -334,8 +363,12 @@ def get_threat_report2(id, formdata):
             for row in cur:
                 # logger.debug(row)
                 # hucs_dict[row[0]].append(int(row[1]))
+                if int(row[1]) > int(formvals['hiway']):
+                    above = 1
+                else:
+                    above = 0
                 try:
-                    hucs_dict[row[0]].append(int(row[1]))
+                    hucs_dict[row[0]].append(above)
                 except KeyError:
                     pass
 
@@ -351,8 +384,12 @@ def get_threat_report2(id, formdata):
             for row in cur:
                 # logger.debug(row)
                 # hucs_dict[row[0]].append(int(row[1]))
+                if int(row[1]) > int(formvals['slr_up']):
+                    above = 1
+                else:
+                    above = 0
                 try:
-                    hucs_dict[row[0]].append(int(row[1]))
+                    hucs_dict[row[0]].append(above)
                 except KeyError:
                     pass
 
@@ -368,8 +405,12 @@ def get_threat_report2(id, formdata):
             for row in cur:
                 # logger.debug(row)
                 # hucs_dict[row[0]].append(int(row[1]))
+                if int(row[1]) > int(formvals['slr_lc']):
+                    above = 1
+                else:
+                    above = 0
                 try:
-                    hucs_dict[row[0]].append(int(row[1]))
+                    hucs_dict[row[0]].append(above)
                 except KeyError:
                     pass
 
@@ -385,8 +426,12 @@ def get_threat_report2(id, formdata):
             for row in cur:
                 # logger.debug(row)
                 # hucs_dict[row[0]].append(int(row[1]))
+                if int(row[1]) > int(formvals['triassic']):
+                    above = 1
+                else:
+                    above = 0
                 try:
-                    hucs_dict[row[0]].append(int(row[1]))
+                    hucs_dict[row[0]].append(above)
                 except KeyError:
                     pass
 
@@ -402,8 +447,12 @@ def get_threat_report2(id, formdata):
             for row in cur:
                 # logger.debug(row)
                 # hucs_dict[row[0]].append(int(row[1]))
+                if int(row[1]) > int(formvals['wind']):
+                    above = 1
+                else:
+                    above = 0
                 try:
-                    hucs_dict[row[0]].append(int(row[1]))
+                    hucs_dict[row[0]].append(above)
                 except KeyError:
                     pass
 
@@ -419,8 +468,12 @@ def get_threat_report2(id, formdata):
             for row in cur:
                 # logger.debug(row)
                 # hucs_dict[row[0]].append(int(row[1]))
+                if int(row[1]) > int(formvals['manure']):
+                    above = 1
+                else:
+                    above = 0
                 try:
-                    hucs_dict[row[0]].append(int(row[1]))
+                    hucs_dict[row[0]].append(above)
                 except KeyError:
                     pass
 
@@ -436,8 +489,12 @@ def get_threat_report2(id, formdata):
             for row in cur:
                 # logger.debug(row)
                 # hucs_dict[row[0]].append(int(row[1]))
+                if int(row[1]) > int(formvals['nitrofrt']):
+                    above = 1
+                else:
+                    above = 0
                 try:
-                    hucs_dict[row[0]].append(int(row[1]))
+                    hucs_dict[row[0]].append(above)
                 except KeyError:
                     pass
 
@@ -453,8 +510,12 @@ def get_threat_report2(id, formdata):
             for row in cur:
                 # logger.debug(row)
                 # hucs_dict[row[0]].append(int(row[1]))
+                if int(row[1]) > int(formvals['totnitro']):
+                    above = 1
+                else:
+                    above = 0
                 try:
-                    hucs_dict[row[0]].append(int(row[1]))
+                    hucs_dict[row[0]].append(above)
                 except KeyError:
                     pass
 
@@ -470,8 +531,12 @@ def get_threat_report2(id, formdata):
             for row in cur:
                 # logger.debug(row)
                 # hucs_dict[row[0]].append(int(row[1]))
+                if int(row[1]) > int(formvals['totsulf']):
+                    above = 1
+                else:
+                    above = 0
                 try:
-                    hucs_dict[row[0]].append(int(row[1]))
+                    hucs_dict[row[0]].append(above)
                 except KeyError:
                     pass
 
@@ -487,8 +552,12 @@ def get_threat_report2(id, formdata):
             for row in cur:
                 # logger.debug(row)
                 # hucs_dict[row[0]].append(int(row[1]))
+                if int(row[1]) > int(formvals['insectdisease']):
+                    above = 1
+                else:
+                    above = 0
                 try:
-                    hucs_dict[row[0]].append(int(row[1]))
+                    hucs_dict[row[0]].append(above)
                 except KeyError:
                     pass
 
@@ -504,8 +573,12 @@ def get_threat_report2(id, formdata):
             for row in cur:
                 # logger.debug(row)
                 # hucs_dict[row[0]].append(int(row[1]))
+                if int(row[1]) > int(formvals['ndams']):
+                    above = 1
+                else:
+                    above = 0
                 try:
-                    hucs_dict[row[0]].append(int(row[1]))
+                    hucs_dict[row[0]].append(above)
                 except KeyError:
                     pass
 
@@ -538,8 +611,12 @@ def get_threat_report2(id, formdata):
             cur.execute(query)
             for row in cur:
                 # logger.debug(row)
+                if int(row[1]) > int(formvals['impairbiota']):
+                    above = 1
+                else:
+                    above = 0
                 try:
-                    hucs_dict[row[0]].append(int(row[1]))
+                    hucs_dict[row[0]].append(above)
                 except KeyError:
                     pass
 
@@ -555,22 +632,28 @@ def get_threat_report2(id, formdata):
             cur.execute(query)
             for row in cur:
                 # logger.debug(row)
+                if int(row[1]) > int(formvals['impairmetal']):
+                    above = 1
+                else:
+                    above = 0
                 try:
-                    hucs_dict[row[0]].append(int(row[1]))
+                    hucs_dict[row[0]].append(above)
                 except KeyError:
                     pass
+    logger.debug(hucs_dict)
 
-    tot_weight = sum(model_wts)
+    tot_weight = len(model_wts)
     logger.debug(model_cols)
     logger.debug(model_wts)
     logger.debug(tot_weight)
     for huc in hucs_dict:
         threat = 0
         for idx, weight in enumerate(model_wts):
-            threat += float(hucs_dict[huc][idx + 1]) * float(weight)
+            threat += float(hucs_dict[huc][idx + 1])
         threat = threat / tot_weight
-        threat = int(threat * 100) / 100.0
+        threat = int(threat * 100) / 10.0
         hucs_dict[huc].append(threat)
+        logger.debug(threat)
 
     # start making summary report
     logger.debug(model_cols)
