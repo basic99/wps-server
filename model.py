@@ -202,7 +202,7 @@ def get_threat_report2(id, formdata):
         with g.db.cursor() as cur:
             cur.execute(query)
             for row in cur:
-                logger.debug(row)
+                # logger.debug(row)
                 if int(row[1]) > int(formvals['frst']):
                     above = 1
                 else:
@@ -220,7 +220,7 @@ def get_threat_report2(id, formdata):
         )
         model_wts.append(float(formvals['ftwt']))
         model_cols.append(
-            "%s %s - weight(%s)" % (
+            "%s %s - threshold(%s)" % (
                 col_names['ftwt'],
                 col_names[scenario],
                 formvals['ftwt'])
@@ -246,7 +246,7 @@ def get_threat_report2(id, formdata):
         )
         model_wts.append(float(formvals['hbwt']))
         model_cols.append(
-            "%s %s - weight(%s)" % (
+            "%s %s - threshold(%s)" % (
                 col_names['hbwt'],
                 col_names[scenario],
                 formvals['hbwt'])
@@ -272,7 +272,7 @@ def get_threat_report2(id, formdata):
         )
         model_wts.append(float(formvals['open']))
         model_cols.append(
-            "%s %s - weight(%s)" % (
+            "%s %s - threshold(%s)" % (
                 col_names['open'],
                 col_names[scenario],
                 formvals['open'])
@@ -298,7 +298,7 @@ def get_threat_report2(id, formdata):
         )
         model_wts.append(float(formvals['shrb']))
         model_cols.append(
-            "%s %s - weight(%s)" % (
+            "%s %s - threshold(%s)" % (
                 col_names['shrb'],
                 col_names[scenario],
                 formvals['shrb'])
@@ -319,7 +319,7 @@ def get_threat_report2(id, formdata):
     if 'urbangrth' in formvals:
         query = "select huc_12, urb%sha_rnk from urban_ha_rnk" % year[2:]
         model_wts.append(float(formvals['urbangrth']))
-        model_cols.append("Urban Growth - weight(%s)" % formvals['urbangrth'])
+        model_cols.append("Urban Growth - threshold(%s)" % formvals['urbangrth'])
         with g.db.cursor() as cur:
             cur.execute(query)
             for row in cur:
@@ -338,7 +338,7 @@ def get_threat_report2(id, formdata):
     if 'firesup' in formvals:
         query = "select huc_12, urb%sden_rnk from urban_den_rnk" % year[2:]
         model_wts.append(float(formvals['firesup']))
-        model_cols.append("Fire Suppresion - weight(%s)" % formvals['firesup'])
+        model_cols.append("Fire Suppresion - threshold(%s)" % formvals['firesup'])
         with g.db.cursor() as cur:
             cur.execute(query)
             for row in cur:
@@ -357,7 +357,7 @@ def get_threat_report2(id, formdata):
     if 'hiway' in formvals:
         query = "select huc_12, rds%srnk from transportation_rnk" % year[2:]
         model_wts.append(float(formvals['hiway']))
-        model_cols.append("Highway - weight(%s)" % formvals['hiway'])
+        model_cols.append("Highway - threshold(%s)" % formvals['hiway'])
         with g.db.cursor() as cur:
             cur.execute(query)
             for row in cur:
@@ -377,7 +377,7 @@ def get_threat_report2(id, formdata):
         query = "select huc_12, up00%srnk from slamm_up_rnk" % year[2:]
         model_wts.append(float(formvals['slr_up']))
         model_cols.append(
-            "Sea Level rise Upland change - weight(%s)" % formvals['slr_up']
+            "Sea Level rise Upland change - threshold(%s)" % formvals['slr_up']
         )
         with g.db.cursor() as cur:
             cur.execute(query)
@@ -398,7 +398,7 @@ def get_threat_report2(id, formdata):
         query = "select huc_12, lc00%srnk from slamm_lc_rnk" % year[2:]
         model_wts.append(float(formvals['slr_lc']))
         model_cols.append(
-            "Sea Level rise landcover change - weight(%s)" % formvals['slr_lc']
+            "Sea Level rise landcover change - threshold(%s)" % formvals['slr_lc']
         )
         with g.db.cursor() as cur:
             cur.execute(query)
@@ -419,7 +419,7 @@ def get_threat_report2(id, formdata):
         query = "select huc_12, triassic_rnk from static_rnk"
         model_wts.append(float(formvals['triassic']))
         model_cols.append(
-            "Triassic Basin - weight(%s)" % formvals['triassic']
+            "Triassic Basin - threshold(%s)" % formvals['triassic']
         )
         with g.db.cursor() as cur:
             cur.execute(query)
@@ -440,7 +440,7 @@ def get_threat_report2(id, formdata):
         query = "select huc_12, WPC_rnk from wind_rnk"
         model_wts.append(float(formvals['wind']))
         model_cols.append(
-            "Wind Power - weight(%s)" % formvals['wind']
+            "Wind Power - threshold(%s)" % formvals['wind']
         )
         with g.db.cursor() as cur:
             cur.execute(query)
@@ -461,7 +461,7 @@ def get_threat_report2(id, formdata):
         query = "select huc_12, MANU_rnk from static_rnk"
         model_wts.append(float(formvals['manure']))
         model_cols.append(
-            "Manure Application - weight(%s)" % formvals['manure']
+            "Manure Application - threshold(%s)" % formvals['manure']
         )
         with g.db.cursor() as cur:
             cur.execute(query)
@@ -482,7 +482,7 @@ def get_threat_report2(id, formdata):
         query = "select huc_12, FERT_rnk from static_rnk"
         model_wts.append(float(formvals['nitrofrt']))
         model_cols.append(
-            "Synthetic Nitrogen - weight(%s)" % formvals['nitrofrt']
+            "Synthetic Nitrogen - threshold(%s)" % formvals['nitrofrt']
         )
         with g.db.cursor() as cur:
             cur.execute(query)
@@ -503,7 +503,7 @@ def get_threat_report2(id, formdata):
         query = "select huc_12, TD_N_T_rnk from static_rnk"
         model_wts.append(float(formvals['totnitro']))
         model_cols.append(
-            "Total Nitrogen - weight(%s)" % formvals['totnitro']
+            "Total Nitrogen - threshold(%s)" % formvals['totnitro']
         )
         with g.db.cursor() as cur:
             cur.execute(query)
@@ -524,7 +524,7 @@ def get_threat_report2(id, formdata):
         query = "select huc_12, TD_S_T_rnk from static_rnk"
         model_wts.append(float(formvals['totsulf']))
         model_cols.append(
-            "Total Sulfur - weight(%s)" % formvals['totsulf']
+            "Total Sulfur - threshold(%s)" % formvals['totsulf']
         )
         with g.db.cursor() as cur:
             cur.execute(query)
@@ -545,7 +545,7 @@ def get_threat_report2(id, formdata):
         query = "select huc_12, FHlth_Rnk from static_rnk"
         model_wts.append(float(formvals['insectdisease']))
         model_cols.append(
-            "Foreset health - weight(%s)" % formvals['insectdisease']
+            "Foreset health - threshold(%s)" % formvals['insectdisease']
         )
         with g.db.cursor() as cur:
             cur.execute(query)
@@ -566,7 +566,7 @@ def get_threat_report2(id, formdata):
         query = "select huc_12, NID_rnk from static_rnk"
         model_wts.append(float(formvals['ndams']))
         model_cols.append(
-            "# of dams - weight(%s)" % formvals['ndams']
+            "# of dams - threshold(%s)" % formvals['ndams']
         )
         with g.db.cursor() as cur:
             cur.execute(query)
@@ -587,7 +587,7 @@ def get_threat_report2(id, formdata):
     #     query = "select huc_12, TotImpLen_rnk from static_rnk"
     #     model_wts.append(float(formvals['impairall']))
     #     model_cols.append(
-    #         "Impaired all - weight(%s)" % formvals['impairall']
+    #         "Impaired all - threshold(%s)" % formvals['impairall']
     #     )
     #     with g.db.cursor() as cur:
     #         cur.execute(query)
@@ -605,7 +605,7 @@ def get_threat_report2(id, formdata):
         logger.debug(query)
         model_wts.append(float(formvals['impairbiota']))
         model_cols.append(
-            "Impaired biota - weight(%s)" % formvals['impairbiota']
+            "Impaired biota - threshold(%s)" % formvals['impairbiota']
         )
         with g.db.cursor() as cur:
             cur.execute(query)
@@ -626,7 +626,7 @@ def get_threat_report2(id, formdata):
         logger.debug(query)
         model_wts.append(float(formvals['impairmetal']))
         model_cols.append(
-            "Impaired metal - weight(%s)" % formvals['impairmetal']
+            "Impaired metal - threshold(%s)" % formvals['impairmetal']
         )
         with g.db.cursor() as cur:
             cur.execute(query)
@@ -640,7 +640,7 @@ def get_threat_report2(id, formdata):
                     hucs_dict[row[0]].append(above)
                 except KeyError:
                     pass
-    logger.debug(hucs_dict)
+    # logger.debug(hucs_dict)
 
     tot_weight = len(model_wts)
     logger.debug(model_cols)
@@ -650,10 +650,13 @@ def get_threat_report2(id, formdata):
         threat = 0
         for idx, weight in enumerate(model_wts):
             threat += float(hucs_dict[huc][idx + 1])
+        # hucs_dict[huc].append(threat)
+        threat_raw = threat
         threat = threat / tot_weight
         threat = int(threat * 100) / 10.0
         hucs_dict[huc].append(threat)
-        logger.debug(threat)
+        hucs_dict[huc].append(threat_raw)
+
 
     # start making summary report
     logger.debug(model_cols)
