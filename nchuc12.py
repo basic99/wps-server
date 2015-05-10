@@ -178,7 +178,10 @@ class NCHuc12():
         with g.db.cursor(cursor_factory=psycopg2.extras.DictCursor) as cur:
             if self.sel_type == 'predefined':
                 if 'Counties' in self.predef_type:
+                    # get data for aoi
                     self.gethucsfromcache(ident, 'county')
+
+                    # add buffer data
                     with open('data/countiescache_5k.json') as fp:
                         json_str = fp.read()
                     cache = json.loads(json_str)
@@ -186,7 +189,7 @@ class NCHuc12():
                     for co_num in self.aoi_list:
                         buff_list += cache[co_num]
                     buff_list5 = list(set(buff_list))
-                    logger.debug(buff_list5)
+                    # logger.debug(buff_list5)
                     with open('data/countiescache_12k.json') as fp:
                         json_str = fp.read()
                     cache = json.loads(json_str)
@@ -194,13 +197,32 @@ class NCHuc12():
                     for co_num in self.aoi_list:
                         buff_list += cache[co_num]
                     buff_list12 = list(set(buff_list))
-                    logger.debug(buff_list12)
+                    # logger.debug(buff_list12)
                     self.buffer5k_str = ", ".join(buff_list5)
                     self.buffer12k_str = ", ".join(buff_list12)
 
-
                 elif 'BCR' in self.predef_type:
                     self.gethucsfromcache(ident, 'bcr')
+
+                    with open('data/bcrcache_5k.json') as fp:
+                        json_str = fp.read()
+                    cache = json.loads(json_str)
+                    buff_list = []
+                    for bcr in self.aoi_list:
+                        buff_list += cache[bcr]
+                    buff_list5 = list(set(buff_list))
+                    logger.debug(len(buff_list5))
+                    with open('data/bcrcache_12k.json') as fp:
+                        json_str = fp.read()
+                    cache = json.loads(json_str)
+                    buff_list = []
+                    for bcr in self.aoi_list:
+                        buff_list += cache[bcr]
+                    buff_list12 = list(set(buff_list))
+                    logger.debug(len(buff_list12))
+                    self.buffer5k_str = ", ".join(buff_list5)
+                    self.buffer12k_str = ", ".join(buff_list12)
+
                 elif 'HUC' in self.predef_type:
                     logger.debug('type is huc')
                     self.gethucsfromhucs(ident)
@@ -245,6 +267,7 @@ class NCHuc12():
                 )
             for row in cur:
                 huc12s.append(row[0])
+            logger.debug("length of huc12 list is %d" % len(huc12s))
             huc12_str = ", ".join(huc12s)
             cur.execute(
                 """select max(st_xmax(the_geom)) from results where
