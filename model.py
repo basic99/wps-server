@@ -184,6 +184,7 @@ def get_threat_report2(id, formdata):
     logger.info(formvals)
 
 
+
     # add habitat in in model
     if 'frst' in formvals:
         query = "select huc_12, %s%srnk from lcscen_%s_rnk" % (

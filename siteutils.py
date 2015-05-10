@@ -212,7 +212,7 @@ def qrypttojson(lon, lat, lyr):
         the_geom = json.loads(res[0])
         the_huc = str(res[1])
     logger.debug(the_geom['type'])
-    logger.debug(the_geom)
+    # logger.debug(the_geom)
     geojson_obj = {
         "type": "Feature",
         "geometry": {

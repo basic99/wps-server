@@ -72,6 +72,12 @@ class NCHuc12():
    huc12 and insert with extents into table aoi_results returning pk as
    resource identifier.
 
+
+    Common projections for North Carolina:
+     EPSG:2264 NC State Plane Feet NAD83
+     EPSG:32119 NC State Plane Meters NAD83
+     see http://epsg.io/?q=North+Carolina
+
     """
 
     def __init__(self):
@@ -194,23 +200,23 @@ class NCHuc12():
                 self.predef_type = 'NC HUC 12'
                 self.gethucsfromhucs(ident)
 
-            else:
-                # statewide
-                query = "select wkb_geometry, huc_12 from huc12nc"
-                cur.execute(query)
-                recs = cur.fetchall()
-                for rec in recs:
-                    the_geom = rec['wkb_geometry']
-                    huc12 = rec['huc_12']
-                    try:
-                        cur.execute(
-                            """insert into results (huc12, identifier,
-                             the_geom, date_added)
-                             values (%s, %s, %s, now()) """,
-                            (huc12, ident, the_geom)
-                            )
-                    except Exception as e:
-                        logger.debug(e)
+            # else:
+            #     # statewide
+            #     query = "select wkb_geometry, huc_12 from huc12nc"
+            #     cur.execute(query)
+            #     recs = cur.fetchall()
+            #     for rec in recs:
+            #         the_geom = rec['wkb_geometry']
+            #         huc12 = rec['huc_12']
+            #         try:
+            #             cur.execute(
+            #                 """insert into results (huc12, identifier,
+            #                  the_geom, date_added)
+            #                  values (%s, %s, %s, now()) """,
+            #                 (huc12, ident, the_geom)
+            #                 )
+            #         except Exception as e:
+            #             logger.debug(e)
 
             cur.execute(
                 "select huc12 from results where identifier = %s", (ident,)
@@ -264,6 +270,3 @@ class NCHuc12():
             #     )
 
         return (aoi_id, extent, geojson)
-
-
-
