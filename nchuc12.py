@@ -224,8 +224,42 @@ class NCHuc12():
                     self.buffer12k_str = ", ".join(buff_list12)
 
                 elif 'HUC' in self.predef_type:
-                    logger.debug('type is huc')
+                    logger.debug(self.predef_type)
+                    logger.debug(len(self.aoi_list[0]))
                     self.gethucsfromhucs(ident)
+
+                    if len(self.aoi_list[0]) == 6:
+                        logger.debug("huc6")
+                        file_name_5kbuf = 'data/huc6cache_5k.json'
+                        file_name_12kbuf = 'data/huc6cache_12k.json'
+                    elif len(self.aoi_list[0]) == 8:
+                        logger.debug("huc8")
+                        file_name_5kbuf = 'data/huc8cache_5k.json'
+                        file_name_12kbuf = 'data/huc8cache_12k.json'
+                    else:
+                        logger.debug("huc10")
+                        file_name_5kbuf = 'data/huc10cache_5k.json'
+                        file_name_12kbuf = 'data/huc10cache_12k.json'
+                    with open(file_name_5kbuf) as fp:
+                        json_str = fp.read()
+                    cache = json.loads(json_str)
+                    buff_list = []
+                    for huc in self.aoi_list:
+                        buff_list += cache[huc]
+                    buff_list5 = list(set(buff_list))
+                    # logger.debug(len(buff_list5))
+                    with open(file_name_12kbuf) as fp:
+                        json_str = fp.read()
+                    cache = json.loads(json_str)
+                    buff_list = []
+                    for huc in self.aoi_list:
+                        buff_list += cache[huc]
+                    buff_list12 = list(set(buff_list))
+                    # logger.debug(len(buff_list12))
+                    self.buffer5k_str = ", ".join(buff_list5)
+                    self.buffer12k_str = ", ".join(buff_list12)
+
+
                 else:
                     logger.debug('none type selected')
 
@@ -268,6 +302,14 @@ class NCHuc12():
             for row in cur:
                 huc12s.append(row[0])
             logger.debug("length of huc12 list is %d" % len(huc12s))
+            logger.debug(
+                "length of huc12 list buffer 5k is %d" %
+                len(self.buffer5k_str.split(","))
+             )
+            logger.debug(
+                "length of huc12 list buffer 12k is %d" %
+                len(self.buffer12k_str.split(","))
+            )
             huc12_str = ", ".join(huc12s)
             cur.execute(
                 """select max(st_xmax(the_geom)) from results where
