@@ -86,6 +86,8 @@ class NCHuc12():
         self.referer = ''
         self.predef_type = ''
         self.sel_type = ''
+        self.buffer5k_str = ''
+        self.buffer12k_str = ''
 
     def mkgeom(self):
         """ Convert GML into list of Well-Known Text representations."""
@@ -177,6 +179,26 @@ class NCHuc12():
             if self.sel_type == 'predefined':
                 if 'Counties' in self.predef_type:
                     self.gethucsfromcache(ident, 'county')
+                    with open('data/countiescache_5k.json') as fp:
+                        json_str = fp.read()
+                    cache = json.loads(json_str)
+                    buff_list = []
+                    for co_num in self.aoi_list:
+                        buff_list += cache[co_num]
+                    buff_list5 = list(set(buff_list))
+                    logger.debug(buff_list5)
+                    with open('data/countiescache_12k.json') as fp:
+                        json_str = fp.read()
+                    cache = json.loads(json_str)
+                    buff_list = []
+                    for co_num in self.aoi_list:
+                        buff_list += cache[co_num]
+                    buff_list12 = list(set(buff_list))
+                    logger.debug(buff_list12)
+                    self.buffer5k_str = ", ".join(buff_list5)
+                    self.buffer12k_str = ", ".join(buff_list12)
+
+
                 elif 'BCR' in self.predef_type:
                     self.gethucsfromcache(ident, 'bcr')
                 elif 'HUC' in self.predef_type:
@@ -248,11 +270,21 @@ class NCHuc12():
 
             cur.execute(
                 """insert into aoi_results(identifier, huc12s,
-                date, x_max, x_min, y_max, y_min) values
-                (%s, %s,  now(), %s, %s, %s, %s) returning pk""",
-                (ident, huc12_str, xmax, xmin, ymax, ymin)
+                date, x_max, x_min, y_max, y_min, huc12s_5k, huc12s_12k) values
+                (%s, %s,  now(), %s, %s, %s, %s, %s, %s) returning pk""",
+                (
+                    ident,
+                    huc12_str,
+                    xmax,
+                    xmin,
+                    ymax,
+                    ymin,
+                    self.buffer5k_str,
+                    self.buffer12k_str
+                )
                 )
             aoi_id = cur.fetchone()[0]
+            logger.debug("aoi id is %d" % aoi_id)
             permalink = self.referer + "#" + str(aoi_id)
             cur.execute(
                 """update aoi_results set permalink = %s
