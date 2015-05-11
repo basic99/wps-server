@@ -139,18 +139,19 @@ col_names = {
 }
 
 
-def get_threat_report2(id, formdata):
+def get_threat_report2(id, formdata, mode='state'):
     # logger.debug
     formvals = {}
     model_cols = ["huc"]
     model_wts = []
 
     logger.debug(id)
+    logger.debug(mode)
 
     # create dict w/ key huc12 and val empty list
     hucs_dict = collections.OrderedDict()
 
-    if int(id) == 0:
+    if int(id) == 0 or mode == 'state':
         # could use any table here
         query = "select huc_12 from forest_health order by huc_12"
         with g.db.cursor() as cur:
@@ -159,9 +160,29 @@ def get_threat_report2(id, formdata):
         for huc in hucs:
             hucs_dict[huc[0]] = []
             hucs_dict[huc[0]].append(huc[0])
-    else:
+    elif mode == 'aoi':
         with g.db.cursor() as cur:
             cur.execute("select huc12s from aoi_results where pk = %s", (id, ))
+            huc12_str = cur.fetchone()
+        hucs = huc12_str[0].split(",")
+        for huc in hucs:
+            hucs_dict[huc.strip()] = []
+            hucs_dict[huc.strip()].append(huc.strip())
+    elif mode == '12k':
+        with g.db.cursor() as cur:
+            cur.execute(
+                "select huc12s_12k from aoi_results where pk = %s", (id, )
+            )
+            huc12_str = cur.fetchone()
+        hucs = huc12_str[0].split(",")
+        for huc in hucs:
+            hucs_dict[huc.strip()] = []
+            hucs_dict[huc.strip()].append(huc.strip())
+    elif mode == '5k':
+        with g.db.cursor() as cur:
+            cur.execute(
+                "select huc12s_5k from aoi_results where pk = %s", (id, )
+            )
             huc12_str = cur.fetchone()
         hucs = huc12_str[0].split(",")
         for huc in hucs:

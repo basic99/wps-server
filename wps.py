@@ -587,23 +587,57 @@ def report(id):
     logger.debug(id)
     logger.debug(request.args)
     logger.debug(len(request.args))
-    report_results = model.get_threat_report2(id, request.args)
-    # logger.debug(report_results)
-    res_arr = [report_results['res_arr'][x] for x in report_results['res_arr']]
-    col_hdrs = report_results['col_hdrs']
-    col_hdrs.append("results (normalized) ")
-    col_hdrs.append("results (raw)")
-    logger.debug(col_hdrs)
-    samplesize = len(res_arr)
+    if id == 0:
+        report_results = model.get_threat_report2(id, request.args)
+        # logger.debug(report_results)
+        res_arr = [report_results['res_arr'][x] for x in report_results['res_arr']]
+        col_hdrs = report_results['col_hdrs']
+        col_hdrs.append("results (normalized) ")
+        col_hdrs.append("results (raw)")
+        logger.debug(col_hdrs)
+        samplesize = len(res_arr)
 
-    return render_template(
-        'report.html',
-        col_hdrs=col_hdrs,
-        res_arr=res_arr,
-        year=report_results['year'],
-        report=report_results['report'],
-        samplesize=samplesize
+        return render_template(
+            'report.html',
+            col_hdrs=col_hdrs,
+            res_arr=res_arr,
+            year=report_results['year'],
+            report=report_results['report'],
+            samplesize=samplesize
+            )
+    else:
+        results_state = model.get_threat_report2(id, request.args)
+        results_aoi = model.get_threat_report2(id, request.args, 'aoi')
+        results_5k = model.get_threat_report2(id, request.args, '5k')
+        results_12k = model.get_threat_report2(id, request.args, '12k')
+
+        res_arr = [results_aoi['res_arr'][x] for x in results_aoi['res_arr']]
+        col_hdrs = results_aoi['col_hdrs']
+        col_hdrs.append("results (normalized) ")
+        col_hdrs.append("results (raw)")
+        logger.debug(col_hdrs)
+        samplesize = len(res_arr)
+        samplesize_5k = len(
+            [results_5k['res_arr'][x] for x in results_5k['res_arr']]
         )
+        samplesize_12k = len(
+            [results_12k['res_arr'][x] for x in results_12k['res_arr']]
+        )
+
+        return render_template(
+            'report2.html',
+            year=results_aoi['year'],
+            col_hdrs=col_hdrs,
+            res_arr=res_arr,
+            report_aoi=results_aoi['report'],
+            samplesize_aoi=samplesize,
+            report_state=results_state['report'],
+            report_5k=results_5k['report'],
+            report_12k=results_12k['report'],
+            samplesize_5k=samplesize_5k,
+            samplesize_12k=samplesize_12k
+            )
+
 
 
 @app.route('/ssheet',  methods=['GET', ])
