@@ -100,6 +100,7 @@ class NCHuc12():
                 cur.execute("select st_astext(st_geomfromgml(%s))",
                             (gml_fragment,))
                 geom_list.append(cur.fetchone()[0])
+        logger.debug(len(geom_list))
         return geom_list
 
     def gethucsfromhucs(self, ident):
@@ -259,42 +260,49 @@ class NCHuc12():
                     self.buffer5k_str = ", ".join(buff_list5)
                     self.buffer12k_str = ", ".join(buff_list12)
 
-
                 else:
                     logger.debug('none type selected')
 
             elif self.sel_type == 'custom':
                 # custom includes shapefile and drawn
                 cust_huc12s = []
-                query = """select huc_12 from huc12nc where ST_Intersects(
-                    wkb_geometry, ST_GeomFromText(%s, 4326))"""
-                input_geoms = self.mkgeom()
-                for b in input_geoms:
-                    cur.execute(query, (b,))
+                buff_list5 = []
+                buff_list12 = []
+                # query = """select huc_12 from huc12nc where ST_Intersects(
+                #     wkb_geometry, ST_GeomFromText(%s, 4326))"""
+                query2 = """
+                SELECT ST_Distance(
+                    ST_Transform((ST_GeomFromText(%s, 4326)),32119),
+                    ST_Transform((select wkb_geometry from huc12nc where
+                     huc_12 = %s),32119)
+                );
+                """
+                query3 = "select huc12 from huc12nc order by huc12"
+                cur.execute(query3)
+                hucs = cur.fetchall()
+                input_geom = self.mkgeom()[0]
+
+                for huc in hucs:
+                    # logger.debug(huc[0])
+                    # logger.debug(query2 % (input_geom, huc[0]))
+                    try:
+                        cur.execute(query2, (input_geom, huc[0]))
+                    except psycopg2.ProgrammingError:
+                        continue
                     res = cur.fetchall()
                     for cust_huc in res:
-                        cust_huc12s.append(cust_huc[0])
+                        if cust_huc[0] == 0:
+                            cust_huc12s.append(huc[0])
+                        if cust_huc[0] < 3000:
+                            buff_list5.append(huc[0])
+                        if cust_huc[0] < 12000:
+                            buff_list12.append(huc[0])
                 self.aoi_list = list(set(cust_huc12s))
                 self.predef_type = 'NC HUC 12'
                 self.gethucsfromhucs(ident)
+                self.buffer5k_str = ", ".join(buff_list5)
+                self.buffer12k_str = ", ".join(buff_list12)
 
-            # else:
-            #     # statewide
-            #     query = "select wkb_geometry, huc_12 from huc12nc"
-            #     cur.execute(query)
-            #     recs = cur.fetchall()
-            #     for rec in recs:
-            #         the_geom = rec['wkb_geometry']
-            #         huc12 = rec['huc_12']
-            #         try:
-            #             cur.execute(
-            #                 """insert into results (huc12, identifier,
-            #                  the_geom, date_added)
-            #                  values (%s, %s, %s, now()) """,
-            #                 (huc12, ident, the_geom)
-            #                 )
-            #         except Exception as e:
-            #             logger.debug(e)
 
             cur.execute(
                 "select huc12 from results where identifier = %s", (ident,)

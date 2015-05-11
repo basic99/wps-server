@@ -782,7 +782,7 @@ def get_threat_report2(id, formdata, mode='state'):
         # threat = int(threat * 100) / 10.0
         # hucs_dict[huc].append(threat)
         hucs_dict[huc].append(threat_raw)
-        logger.debug(threat)
+        # logger.debug(threat)
     # logger.debug(hucs_dict)
 
 
