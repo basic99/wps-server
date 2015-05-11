@@ -397,6 +397,7 @@ def get_threat_report2(id, formdata, mode='state'):
     # add fire suppression
     if 'firesup' in formvals:
         query = "select huc_12, urb%sden_rnk from urban_den_rnk" % year[2:]
+        # logger.debug(query)
         model_wts.append(float(formvals['firesup']))
         model_cols.append("Fire Suppresion - threshold(%s)" % formvals['firesup'])
         with g.db.cursor() as cur:
@@ -413,7 +414,7 @@ def get_threat_report2(id, formdata, mode='state'):
                 else:
                     above = 0
                 try:
-                    hucs_dict[row[0]].append(int(row[1]))
+                    hucs_dict[row[0]].append(above)
                 except KeyError:
                     pass
 
