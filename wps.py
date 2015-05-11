@@ -592,8 +592,8 @@ def report(id):
         # logger.debug(report_results)
         res_arr = [report_results['res_arr'][x] for x in report_results['res_arr']]
         col_hdrs = report_results['col_hdrs']
-        col_hdrs.append("results (normalized) ")
-        col_hdrs.append("results (raw)")
+        # col_hdrs.append("results (normalized) ")
+        col_hdrs.append("results")
         logger.debug(col_hdrs)
         samplesize = len(res_arr)
 
@@ -613,8 +613,8 @@ def report(id):
 
         res_arr = [results_aoi['res_arr'][x] for x in results_aoi['res_arr']]
         col_hdrs = results_aoi['col_hdrs']
-        col_hdrs.append("results (normalized) ")
-        col_hdrs.append("results (raw)")
+        # col_hdrs.append("results (normalized) ")
+        col_hdrs.append("results")
         logger.debug(col_hdrs)
         samplesize = len(res_arr)
         samplesize_5k = len(
