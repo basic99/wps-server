@@ -86,8 +86,8 @@ class NCHuc12():
         self.referer = ''
         self.predef_type = ''
         self.sel_type = ''
-        self.buffer5k_str = ''
-        self.buffer12k_str = ''
+        self.buff_list5 = []
+        self.buff_list12 = []
 
     def mkgeom(self):
         """ Convert GML into list of Well-Known Text representations."""
@@ -189,7 +189,7 @@ class NCHuc12():
                     buff_list = []
                     for co_num in self.aoi_list:
                         buff_list += cache[co_num]
-                    buff_list5 = list(set(buff_list))
+                    self.buff_list5 = list(set(buff_list))
                     # logger.debug(buff_list5)
                     with open('data/countiescache_12k.json') as fp:
                         json_str = fp.read()
@@ -197,10 +197,10 @@ class NCHuc12():
                     buff_list = []
                     for co_num in self.aoi_list:
                         buff_list += cache[co_num]
-                    buff_list12 = list(set(buff_list))
+                    self.buff_list12 = list(set(buff_list))
                     # logger.debug(buff_list12)
-                    self.buffer5k_str = ", ".join(buff_list5)
-                    self.buffer12k_str = ", ".join(buff_list12)
+                    # self.buffer5k_str = ", ".join(buff_list5)
+                    # self.buffer12k_str = ", ".join(buff_list12)
 
                 elif 'BCR' in self.predef_type:
                     self.gethucsfromcache(ident, 'bcr')
@@ -211,18 +211,18 @@ class NCHuc12():
                     buff_list = []
                     for bcr in self.aoi_list:
                         buff_list += cache[bcr]
-                    buff_list5 = list(set(buff_list))
-                    logger.debug(len(buff_list5))
+                    self.buff_list5 = list(set(buff_list))
+                    # logger.debug(len(buff_list5))
                     with open('data/bcrcache_12k.json') as fp:
                         json_str = fp.read()
                     cache = json.loads(json_str)
                     buff_list = []
                     for bcr in self.aoi_list:
                         buff_list += cache[bcr]
-                    buff_list12 = list(set(buff_list))
-                    logger.debug(len(buff_list12))
-                    self.buffer5k_str = ", ".join(buff_list5)
-                    self.buffer12k_str = ", ".join(buff_list12)
+                    self.buff_list12 = list(set(buff_list))
+                    # logger.debug(len(buff_list12))
+                    # self.buffer5k_str = ", ".join(buff_list5)
+                    # self.buffer12k_str = ", ".join(buff_list12)
 
                 elif 'HUC' in self.predef_type:
                     logger.debug(self.predef_type)
@@ -247,7 +247,7 @@ class NCHuc12():
                     buff_list = []
                     for huc in self.aoi_list:
                         buff_list += cache[huc]
-                    buff_list5 = list(set(buff_list))
+                    self.buff_list5 = list(set(buff_list))
                     # logger.debug(len(buff_list5))
                     with open(file_name_12kbuf) as fp:
                         json_str = fp.read()
@@ -255,10 +255,10 @@ class NCHuc12():
                     buff_list = []
                     for huc in self.aoi_list:
                         buff_list += cache[huc]
-                    buff_list12 = list(set(buff_list))
+                    self.buff_list12 = list(set(buff_list))
                     # logger.debug(len(buff_list12))
-                    self.buffer5k_str = ", ".join(buff_list5)
-                    self.buffer12k_str = ", ".join(buff_list12)
+                    # self.buffer5k_str = ", ".join(buff_list5)
+                    # self.buffer12k_str = ", ".join(buff_list12)
 
                 else:
                     logger.debug('none type selected')
@@ -294,31 +294,32 @@ class NCHuc12():
                         if cust_huc[0] == 0:
                             cust_huc12s.append(huc[0])
                         if cust_huc[0] < 3000:
-                            buff_list5.append(huc[0])
+                            self.buff_list5.append(huc[0])
                         if cust_huc[0] < 12000:
-                            buff_list12.append(huc[0])
+                            self.buff_list12.append(huc[0])
                 self.aoi_list = list(set(cust_huc12s))
                 self.predef_type = 'NC HUC 12'
                 self.gethucsfromhucs(ident)
-                self.buffer5k_str = ", ".join(buff_list5)
-                self.buffer12k_str = ", ".join(buff_list12)
-
+                # self.buffer5k_str = ", ".join(buff_list5)
+                # self.buffer12k_str = ", ".join(buff_list12)
 
             cur.execute(
                 "select huc12 from results where identifier = %s", (ident,)
                 )
             for row in cur:
                 huc12s.append(row[0])
-            logger.debug("length of huc12 list is %d" % len(huc12s))
-            logger.debug(
-                "length of huc12 list buffer 5k is %d" %
-                len(self.buffer5k_str.split(","))
-             )
-            logger.debug(
-                "length of huc12 list buffer 12k is %d" %
-                len(self.buffer12k_str.split(","))
-            )
+            # logger.debug("length of huc12 list is %d" % len(huc12s))
+            # logger.debug(
+            #     "length of huc12 list buffer 5k is %d" %
+            #     len(self.buffer5k_str.split(","))
+            #  )
+            # logger.debug(
+            #     "length of huc12 list buffer 12k is %d" %
+            #     len(self.buffer12k_str.split(","))
+            # )
             huc12_str = ", ".join(huc12s)
+            buffer5k_str = ", ".join(list(set(self.buff_list5) - set(huc12s)))
+            buffer12k_str = ", ".join(list(set(self.buff_list12) - set(huc12s)))
             cur.execute(
                 """select max(st_xmax(the_geom)) from results where
                 identifier = %s""", (ident,)
@@ -352,8 +353,8 @@ class NCHuc12():
                     xmin,
                     ymax,
                     ymin,
-                    self.buffer5k_str,
-                    self.buffer12k_str
+                    buffer5k_str,
+                    buffer12k_str
                 )
                 )
             aoi_id = cur.fetchone()[0]
