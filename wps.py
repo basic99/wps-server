@@ -108,9 +108,13 @@ def post_aoi():
     and location header with resource location.
 
     """
-
+    # pt_lon = request.form.get('point_buffer[lon]')
+    # pt_lat = request.form.get('point_buffer[lat]')
+    # logger.debug(pt_lon)
     huc = nchuc12.NCHuc12()
     huc.gml = request.form['gml']
+    huc.pt_lon = request.form.get('point_buffer[lon]')
+    huc.pt_lat = request.form.get('point_buffer[lat]')
     # huc.aoi_list = request.form.getlist('aoi_list[]')
     huc.aoi_list = request.form.get('aoi_list').split(":")
     logger.debug(huc.aoi_list)

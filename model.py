@@ -942,7 +942,7 @@ def get_threat_report2(id, formdata, mode='state'):
             report_row.append(row_max)
 
         # add row to report
-        report_rank.append(report_row)
+            report_rank.append(report_row)
 
     # logger.debug(report_rank)
 

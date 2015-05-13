@@ -88,6 +88,8 @@ class NCHuc12():
         self.sel_type = ''
         self.buff_list5 = []
         self.buff_list12 = []
+        self.pt_lon = ""
+        self.pt_lat = ""
 
     def mkgeom(self):
         """ Convert GML into list of Well-Known Text representations."""
@@ -302,6 +304,10 @@ class NCHuc12():
                 self.gethucsfromhucs(ident)
                 # self.buffer5k_str = ", ".join(buff_list5)
                 # self.buffer12k_str = ", ".join(buff_list12)
+            elif self.sel_type == 'point_buffer':
+                logger.debug(self.pt_lon)
+                logger.debug(self.pt_lat)
+
 
             cur.execute(
                 "select huc12 from results where identifier = %s", (ident,)
