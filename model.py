@@ -927,19 +927,19 @@ def get_threat_report2(id, formdata, mode='state'):
 
         report.append(report_row)
 
-
-    for i, threat in enumerate(rank_data):
-        logger.debug(threat)
-        logger.debug(model_cols[i + 1])
-        report_row = [model_cols[i + 1]]
-        mean = statistics.mean(rank_data[threat])
-        report_row.append(int(mean * 100) / 100.0)
-        stdev = statistics.stdev(rank_data[threat])
-        report_row.append(int(stdev * 10000) / 10000.0)
-        row_min = min(rank_data[threat])
-        report_row.append(row_min)
-        row_max = max(rank_data[threat])
-        report_row.append(row_max)
+    if formvals['mode'] != 'single':
+        for i, threat in enumerate(rank_data):
+            logger.debug(threat)
+            logger.debug(model_cols[i + 1])
+            report_row = [model_cols[i + 1]]
+            mean = statistics.mean(rank_data[threat])
+            report_row.append(int(mean * 100) / 100.0)
+            stdev = statistics.stdev(rank_data[threat])
+            report_row.append(int(stdev * 10000) / 10000.0)
+            row_min = min(rank_data[threat])
+            report_row.append(row_min)
+            row_max = max(rank_data[threat])
+            report_row.append(row_max)
 
         # add row to report
         report_rank.append(report_row)
