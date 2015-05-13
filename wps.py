@@ -611,6 +611,11 @@ def report(id):
         results_5k = model.get_threat_report2(id, request.args, '5k')
         results_12k = model.get_threat_report2(id, request.args, '12k')
 
+        logger.debug(results_aoi['report_rank'])
+        logger.debug(results_5k['report_rank'])
+        logger.debug(results_12k['report_rank'])
+        logger.debug(results_5k['report_rank'])
+
         res_arr = [results_aoi['res_arr'][x] for x in results_aoi['res_arr']]
         col_hdrs = results_aoi['col_hdrs']
         # col_hdrs.append("results (normalized) ")
@@ -635,7 +640,14 @@ def report(id):
             report_5k=results_5k['report'],
             report_12k=results_12k['report'],
             samplesize_5k=samplesize_5k,
-            samplesize_12k=samplesize_12k
+            samplesize_12k=samplesize_12k,
+            report_rank_aoi=results_aoi['report_rank'],
+            report_rank_5k=results_5k['report_rank'],
+            report_rank_12k=results_12k['report_rank'],
+            report_rank_state=results_state['report_rank']
+
+
+
             )
 
 

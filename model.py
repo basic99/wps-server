@@ -150,7 +150,7 @@ def get_threat_report2(id, formdata, mode='state'):
 
     # create dict w/ key huc12 and val empty list
     hucs_dict = collections.OrderedDict()
-    rank_data = {}
+    rank_data = collections.OrderedDict()
 
     if int(id) == 0 or mode == 'state':
         # could use any table here
@@ -235,12 +235,15 @@ def get_threat_report2(id, formdata, mode='state'):
                     continue
                 if int(row[1]) > int(formvals['frst']):
                     above = 1
-                    rank_data['frst'].append(int(row[1]))
+                    rank = int(row[1])
                 else:
                     above = 0
-                    rank_data['frst'].append(0)
+                    rank = 0
                 try:
                     hucs_dict[row[0]].append(above)
+
+                    # must follow this line to get hucs correct
+                    rank_data['frst'].append(rank)
                 except KeyError:
                     pass
 
@@ -270,13 +273,14 @@ def get_threat_report2(id, formdata, mode='state'):
                     continue
                 if int(row[1]) > int(formvals['ftwt']):
                     above = 1
-                    rank_data['ftwt'].append(int(row[1]))
+                    rank = int(row[1])
                 else:
                     above = 0
-                    rank_data['ftwt'].append(0)
+                    rank = 0
                 # logger.debug(row)
                 try:
                     hucs_dict[row[0]].append(above)
+                    rank_data['ftwt'].append(rank)
                 except KeyError:
                     pass
 
@@ -307,12 +311,13 @@ def get_threat_report2(id, formdata, mode='state'):
                 # logger.debug(row)
                 if int(row[1]) > int(formvals['hbwt']):
                     above = 1
-                    rank_data['hbwt'].append(int(row[1]))
+                    rank = int(row[1])
                 else:
                     above = 0
-                    rank_data['hbwt'].append(0)
+                    rank = 0
                 try:
                     hucs_dict[row[0]].append(above)
+                    rank_data['hbwt'].append(rank)
                 except KeyError:
                     pass
 
@@ -343,12 +348,13 @@ def get_threat_report2(id, formdata, mode='state'):
                 # logger.debug(row)
                 if int(row[1]) > int(formvals['open']):
                     above = 1
-                    rank_data['open'].append(int(row[1]))
+                    rank = int(row[1])
                 else:
                     above = 0
-                    rank_data['open'].append(0)
+                    rank = 0
                 try:
                     hucs_dict[row[0]].append(above)
+                    rank_data['open'].append(rank)
                 except KeyError:
                     pass
 
@@ -379,12 +385,13 @@ def get_threat_report2(id, formdata, mode='state'):
                 # logger.debug(row)
                 if int(row[1]) > int(formvals['shrb']):
                     above = 1
-                    rank_data['shrb'].append(int(row[1]))
+                    rank = int(row[1])
                 else:
                     above = 0
-                    rank_data['shrb'].append(0)
+                    rank = 0
                 try:
                     hucs_dict[row[0]].append(above)
+                    rank_data['shrb'].append(rank)
                 except KeyError:
                     pass
     # add urban growth if included
@@ -406,12 +413,13 @@ def get_threat_report2(id, formdata, mode='state'):
                     continue
                 if int(row[1]) > int(formvals['urbangrth']):
                     above = 1
-                    rank_data['urbangrth'].append(int(row[1]))
+                    rank = int(row[1])
                 else:
                     above = 0
-                    rank_data['urbangrth'].append(0)
+                    rank = 0
                 try:
                     hucs_dict[row[0]].append(above)
+                    rank_data['urbangrth'].append(rank)
                 except KeyError:
                     pass
                 # this will run for single layer
@@ -437,12 +445,13 @@ def get_threat_report2(id, formdata, mode='state'):
                     continue
                 if int(row[1]) > int(formvals['firesup']):
                     above = 1
-                    rank_data['firesup'].append(int(row[1]))
+                    rank = int(row[1])
                 else:
                     above = 0
-                    rank_data['firesup'].append(0)
+                    rank = 0
                 try:
                     hucs_dict[row[0]].append(above)
+                    rank_data['firesup'].append(rank)
                 except KeyError:
                     pass
 
@@ -466,12 +475,13 @@ def get_threat_report2(id, formdata, mode='state'):
                 # hucs_dict[row[0]].append(int(row[1]))
                 if int(row[1]) > int(formvals['hiway']):
                     above = 1
-                    rank_data['hiway'].append(int(row[1]))
+                    rank = int(row[1])
                 else:
                     above = 0
-                    rank_data['hiway'].append(0)
+                    rank = 0
                 try:
                     hucs_dict[row[0]].append(above)
+                    rank_data['hiway'].append(rank)
                 except KeyError:
                     pass
 
@@ -497,12 +507,13 @@ def get_threat_report2(id, formdata, mode='state'):
                 # hucs_dict[row[0]].append(int(row[1]))
                 if int(row[1]) > int(formvals['slr_up']):
                     above = 1
-                    rank_data['slr_up'].append(int(row[1]))
+                    rank = int(row[1])
                 else:
                     above = 0
-                    rank_data['slr_up'].append(0)
+                    rank = 0
                 try:
                     hucs_dict[row[0]].append(above)
+                    rank_data['slr_up'].append(rank)
                 except KeyError:
                     pass
 
@@ -528,12 +539,14 @@ def get_threat_report2(id, formdata, mode='state'):
                 # hucs_dict[row[0]].append(int(row[1]))
                 if int(row[1]) > int(formvals['slr_lc']):
                     above = 1
-                    rank_data['slr_lc'].append(int(row[1]))
+                    rank = int(row[1])
                 else:
                     above = 0
-                    rank_data['slr_lc'].append(0)
+                    rank = 0
                 try:
                     hucs_dict[row[0]].append(above)
+                    rank_data['slr_lc'].append(rank)
+
                 except KeyError:
                     pass
 
@@ -559,12 +572,14 @@ def get_threat_report2(id, formdata, mode='state'):
                 # hucs_dict[row[0]].append(int(row[1]))
                 if int(row[1]) > int(formvals['triassic']):
                     above = 1
-                    rank_data['triassic'].append(int(row[1]))
+                    rank = int(row[1])
                 else:
                     above = 0
-                    rank_data['triassic'].append(0)
+                    rank = 0
                 try:
                     hucs_dict[row[0]].append(above)
+                    rank_data['triassic'].append(rank)
+
                 except KeyError:
                     pass
 
@@ -590,12 +605,14 @@ def get_threat_report2(id, formdata, mode='state'):
                 # hucs_dict[row[0]].append(int(row[1]))
                 if int(row[1]) > int(formvals['wind']):
                     above = 1
-                    rank_data['wind'].append(int(row[1]))
+                    rank = int(row[1])
                 else:
                     above = 0
-                    rank_data['wind'].append(0)
+                    rank = 0
                 try:
                     hucs_dict[row[0]].append(above)
+                    rank_data['wind'].append(rank)
+
                 except KeyError:
                     pass
 
@@ -621,12 +638,14 @@ def get_threat_report2(id, formdata, mode='state'):
                 # hucs_dict[row[0]].append(int(row[1]))
                 if int(row[1]) > int(formvals['manure']):
                     above = 1
-                    rank_data['manure'].append(int(row[1]))
+                    rank = int(row[1])
                 else:
                     above = 0
-                    rank_data['manure'].append(0)
+                    rank = 0
                 try:
                     hucs_dict[row[0]].append(above)
+                    rank_data['manure'].append(rank)
+
                 except KeyError:
                     pass
 
@@ -652,12 +671,14 @@ def get_threat_report2(id, formdata, mode='state'):
                 # hucs_dict[row[0]].append(int(row[1]))
                 if int(row[1]) > int(formvals['nitrofrt']):
                     above = 1
-                    rank_data['nitrofrt'].append(int(row[1]))
+                    rank = int(row[1])
                 else:
                     above = 0
-                    rank_data['nitrofrt'].append(0)
+                    rank = 0
                 try:
                     hucs_dict[row[0]].append(above)
+                    rank_data['nitrofrt'].append(rank)
+
                 except KeyError:
                     pass
 
@@ -683,12 +704,14 @@ def get_threat_report2(id, formdata, mode='state'):
                 # hucs_dict[row[0]].append(int(row[1]))
                 if int(row[1]) > int(formvals['totnitro']):
                     above = 1
-                    rank_data['totnitro'].append(int(row[1]))
+                    rank = int(row[1])
                 else:
                     above = 0
-                    rank_data['totnitro'].append(0)
+                    rank = 0
                 try:
                     hucs_dict[row[0]].append(above)
+                    rank_data['totnitro'].append(rank)
+
                 except KeyError:
                     pass
 
@@ -714,12 +737,14 @@ def get_threat_report2(id, formdata, mode='state'):
                 # hucs_dict[row[0]].append(int(row[1]))
                 if int(row[1]) > int(formvals['totsulf']):
                     above = 1
-                    rank_data['totsulf'].append(int(row[1]))
+                    rank = int(row[1])
                 else:
                     above = 0
-                    rank_data['totsulf'].append(0)
+                    rank = 0
                 try:
                     hucs_dict[row[0]].append(above)
+                    rank_data['totsulf'].append(rank)
+
                 except KeyError:
                     pass
 
@@ -745,12 +770,14 @@ def get_threat_report2(id, formdata, mode='state'):
                 # hucs_dict[row[0]].append(int(row[1]))
                 if int(row[1]) > int(formvals['insectdisease']):
                     above = 1
-                    rank_data['insectdisease'].append(int(row[1]))
+                    rank = int(row[1])
                 else:
                     above = 0
-                    rank_data['insectdisease'].append(0)
+                    rank = 0
                 try:
                     hucs_dict[row[0]].append(above)
+                    rank_data['insectdisease'].append(rank)
+
                 except KeyError:
                     pass
 
@@ -776,12 +803,14 @@ def get_threat_report2(id, formdata, mode='state'):
                 # hucs_dict[row[0]].append(int(row[1]))
                 if int(row[1]) > int(formvals['ndams']):
                     above = 1
-                    rank_data['ndams'].append(int(row[1]))
+                    rank = int(row[1])
                 else:
                     above = 0
-                    rank_data['ndams'].append(0)
+                    rank = 0
                 try:
                     hucs_dict[row[0]].append(above)
+                    rank_data['ndams'].append(rank)
+
                 except KeyError:
                     pass
 
@@ -807,12 +836,14 @@ def get_threat_report2(id, formdata, mode='state'):
                 # logger.debug(row)
                 if int(row[1]) > int(formvals['impairbiota']):
                     above = 1
-                    rank_data['impairbiota'].append(int(row[1]))
+                    rank = int(row[1])
                 else:
                     above = 0
-                    rank_data['impairbiota'].append(0)
+                    rank = 0
                 try:
                     hucs_dict[row[0]].append(above)
+                    rank_data['impairbiota'].append(rank)
+
                 except KeyError:
                     pass
 
@@ -838,15 +869,17 @@ def get_threat_report2(id, formdata, mode='state'):
                 # logger.debug(row)
                 if int(row[1]) > int(formvals['impairmetal']):
                     above = 1
-                    rank_data['impairmetal'].append(int(row[1]))
+                    rank = int(row[1])
                 else:
                     above = 0
-                    rank_data['impairmetal'].append(0)
+                    rank = 0
                 try:
                     hucs_dict[row[0]].append(above)
+                    rank_data['impairmetal'].append(rank)
+
                 except KeyError:
                     pass
-    logger.debug(rank_data)
+    logger.debug(model_cols)
 
     tot_weight = len(model_wts)
     logger.debug(model_cols)
@@ -880,6 +913,7 @@ def get_threat_report2(id, formdata, mode='state'):
 
     # logger.debug(summary_params_list)
     report = []
+    report_rank = []
     for row in summary_params_list:
         report_row = [str(row)]
         mean = statistics.mean(summary_params_list[row])
@@ -893,11 +927,29 @@ def get_threat_report2(id, formdata, mode='state'):
 
         report.append(report_row)
 
-    logger.debug(report)
+
+    for i, threat in enumerate(rank_data):
+        logger.debug(threat)
+        logger.debug(model_cols[i + 1])
+        report_row = [model_cols[i + 1]]
+        mean = statistics.mean(rank_data[threat])
+        report_row.append(int(mean * 100) / 100.0)
+        stdev = statistics.stdev(rank_data[threat])
+        report_row.append(int(stdev * 10000) / 10000.0)
+        row_min = min(rank_data[threat])
+        report_row.append(row_min)
+        row_max = max(rank_data[threat])
+        report_row.append(row_max)
+
+        # add row to report
+        report_rank.append(report_row)
+
+    # logger.debug(report_rank)
 
     return {
         "res_arr": hucs_dict,
         "col_hdrs": model_cols,
         "year": year,
-        "report": report
+        "report": report,
+        "report_rank": report_rank
         }
