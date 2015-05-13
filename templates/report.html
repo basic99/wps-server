@@ -25,7 +25,7 @@
     <h4>Year {{year}}</h4>
   </div>
 
-  <h2 style="text-align: center;">Summary Statistics by AOI</h2>
+  <h2 style="text-align: center;">Threat Count Summary Statistics by AOI</h2>
   <h3 style="text-align: center;">Sample size - {{samplesize}}</h3>
 
 
@@ -38,6 +38,27 @@
       <th>Maximum value</th>
     </tr>
     {%for res_row in report%}
+    <tr>
+      {% for res in res_row%}
+      <td >{{res}}</td>
+      {% endfor %}
+    </tr>
+    {% endfor %}
+  </table>
+
+    <h2 style="text-align: center;">Threat Rank Summary Statistics by AOI</h2>
+  <h3 style="text-align: center;">Sample size - {{samplesize}}</h3>
+
+
+   <table class="table table-striped">
+    <tr>
+      <th></th>
+      <th>Mean</th>
+      <th>Standard Deviation</th>
+      <th>Minumum value</th>
+      <th>Maximum value</th>
+    </tr>
+    {%for res_row in report_rank%}
     <tr>
       {% for res in res_row%}
       <td >{{res}}</td>

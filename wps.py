@@ -603,7 +603,8 @@ def report(id):
             res_arr=res_arr,
             year=report_results['year'],
             report=report_results['report'],
-            samplesize=samplesize
+            samplesize=samplesize,
+            report_rank=report_results['report_rank']
             )
     else:
         results_state = model.get_threat_report2(id, request.args)
