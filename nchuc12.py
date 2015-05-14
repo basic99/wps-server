@@ -106,7 +106,9 @@ class NCHuc12():
         return geom_list
 
     def gethucsfromhucs(self, ident):
-        """Get list of huc12 for huc predefined type. """
+        """Get list of huc12 for huc predefined type.
+        Also accepts list of hus12 from custom type.
+        """
 
         query_str = """select wkb_geometry, huc_12 from huc12nc
         where huc_12 like %s  """
@@ -299,6 +301,8 @@ class NCHuc12():
                             self.buff_list5.append(huc[0])
                         if cust_huc[0] < 12000:
                             self.buff_list12.append(huc[0])
+
+                # from list of hucs12 set aoi_list
                 self.aoi_list = list(set(cust_huc12s))
                 self.predef_type = 'NC HUC 12'
                 self.gethucsfromhucs(ident)
@@ -307,6 +311,52 @@ class NCHuc12():
             elif self.sel_type == 'point_buffer':
                 logger.debug(self.pt_lon)
                 logger.debug(self.pt_lat)
+                query3 = "select huc12 from huc12nc order by huc12"
+                cur.execute(query3)
+                hucs = cur.fetchall()
+                cust_huc12s = []
+                buff_list5 = []
+                buff_list12 = []
+                # query = """
+                #     SELECT (ST_Transform(ST_Buffer(ST_Transform(
+                #     ST_GeomFromText('POINT(%s %s)', 4326),32119),
+                #     3000), 4326);
+                #  """
+                query2 = """
+                SELECT ST_Distance(
+                    ST_Transform((ST_GeomFromText('POINT(%s %s)', 4326)),32119),
+                    ST_Transform((select wkb_geometry from huc12nc where
+                     huc_12 = %s),32119)
+                );
+                """
+                # cur.execute(query2, (float(self.pt_lon), float(self.pt_lat), huc[0]))
+                cur.execute(query3)
+                hucs = cur.fetchall()
+                # input_geom = self.mkgeom()[0]
+
+                for huc in hucs:
+                    # logger.debug(huc[0])
+                    # logger.debug(query2 % (input_geom, huc[0]))
+                    try:
+                        cur.execute(query2, (float(self.pt_lon), float(self.pt_lat), huc[0]))
+                    except psycopg2.ProgrammingError:
+                        continue
+                    res = cur.fetchall()
+                    for cust_huc in res:
+                        if cust_huc[0] == 0:
+                            cust_huc12s.append(huc[0])
+                        if cust_huc[0] < 3000:
+                            self.buff_list5.append(huc[0])
+                        if cust_huc[0] < 12000:
+                            self.buff_list12.append(huc[0])
+
+                # from list of hucs12 set aoi_list
+                self.aoi_list = list(set(cust_huc12s))
+                self.predef_type = 'NC HUC 12'
+                self.gethucsfromhucs(ident)
+                # res = cur.fetchall()
+                # logger.debug(res[0][0])
+
 
 
             cur.execute(
