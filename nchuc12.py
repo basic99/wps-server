@@ -297,7 +297,7 @@ class NCHuc12():
                     for cust_huc in res:
                         if cust_huc[0] == 0:
                             cust_huc12s.append(huc[0])
-                        if cust_huc[0] < 3000:
+                        if cust_huc[0] < 5000:
                             self.buff_list5.append(huc[0])
                         if cust_huc[0] < 12000:
                             self.buff_list12.append(huc[0])
@@ -343,11 +343,11 @@ class NCHuc12():
                         continue
                     res = cur.fetchall()
                     for cust_huc in res:
-                        if cust_huc[0] == 0:
-                            cust_huc12s.append(huc[0])
                         if cust_huc[0] < 3000:
+                            cust_huc12s.append(huc[0])
+                        if cust_huc[0] < 8000:
                             self.buff_list5.append(huc[0])
-                        if cust_huc[0] < 12000:
+                        if cust_huc[0] < 15000:
                             self.buff_list12.append(huc[0])
 
                 # from list of hucs12 set aoi_list
