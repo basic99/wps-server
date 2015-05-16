@@ -755,7 +755,7 @@ def get_threat_report2(id, formdata, mode='state'):
         query = "select huc_12, FHlth_Rnk from static_rnk"
         model_wts.append(float(formvals['insectdisease']))
         model_cols.append(
-            "Foreset health - threshold(%s)" % formvals['insectdisease']
+            "Forest health - threshold(%s)" % formvals['insectdisease']
         )
         with g.db.cursor() as cur:
             cur.execute(query)
