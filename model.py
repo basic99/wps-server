@@ -918,8 +918,11 @@ def get_threat_report2(id, formdata, mode='state'):
         report_row = [str(row)]
         mean = statistics.mean(summary_params_list[row])
         report_row.append(int(mean * 100) / 100.0)
-        stdev = statistics.stdev(summary_params_list[row])
-        report_row.append(int(stdev * 10000) / 10000.0)
+        try:
+            stdev = statistics.stdev(summary_params_list[row])
+            report_row.append(int(stdev * 10000) / 10000.0)
+        except statistics.StatisticsError:
+            report_row.append('na')
         row_min = min(summary_params_list[row])
         report_row.append(row_min)
         row_max = max(summary_params_list[row])
@@ -934,8 +937,11 @@ def get_threat_report2(id, formdata, mode='state'):
             report_row = [model_cols[i + 1]]
             mean = statistics.mean(rank_data[threat])
             report_row.append(int(mean * 100) / 100.0)
-            stdev = statistics.stdev(rank_data[threat])
-            report_row.append(int(stdev * 10000) / 10000.0)
+            try:
+                stdev = statistics.stdev(rank_data[threat])
+                report_row.append(int(stdev * 10000) / 10000.0)
+            except statistics.StatisticsError:
+                report_row.append('na')
             row_min = min(rank_data[threat])
             report_row.append(row_min)
             row_max = max(rank_data[threat])
