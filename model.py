@@ -903,7 +903,6 @@ def get_threat_report2(id, formdata, mode='state'):
                 except KeyError:
                     pass
     logger.debug(model_cols)
-    logger.debug(hucs_dict_ranks['030202020604'])
     tot_weight = len(model_wts)
     logger.debug(model_cols)
     logger.debug(model_wts)
