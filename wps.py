@@ -639,11 +639,7 @@ def report(id):
             year=results_aoi['year'],
             col_hdrs=col_hdrs,
             res_arr=res_arr,
-            # report_aoi=results_aoi['report'],
             samplesize_aoi=samplesize,
-            # report_state=results_state['report'],
-            # report_5k=results_5k['report'],
-            # report_12k=results_12k['report'],
             samplesize_5k=samplesize_5k,
             samplesize_12k=samplesize_12k,
             report_rank_aoi=results_aoi['report_rank'],
@@ -654,7 +650,10 @@ def report(id):
             thrts_msg_state=results_state["thrts_included_msg"],
             thrts_msg_5k=results_5k["thrts_included_msg"],
             thrts_msg_12k=results_12k["thrts_included_msg"],
-            threats_summary_aoi=results_aoi['threat_summary']
+            threats_summary_aoi=results_aoi['threat_summary'],
+            threats_summary_5k=results_5k['threat_summary'],
+            threats_summary_12k=results_12k['threat_summary'],
+            threats_summary_state=results_state['threat_summary']
 
 
 
