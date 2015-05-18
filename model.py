@@ -962,8 +962,8 @@ def get_threat_report2(id, formdata, mode='state'):
             summary_params_list[model_col] = [
                 hucs_dict[x][idx] for x in hucs_dict
             ]
-
-    # logger.debug(summary_params_list)
+    if mode == 'aoi':
+        logger.debug(summary_params_list)
     report = []
     report_rank = []
     for row in summary_params_list:
@@ -987,7 +987,10 @@ def get_threat_report2(id, formdata, mode='state'):
         for i, threat in enumerate(rank_data):
             # logger.debug(threat)
             # logger.debug(model_cols[i + 1])
-            report_row = [model_cols[i + 1], "occurence"]
+            report_row = [model_cols[i + 1]]
+            cnts = summary_params_list[model_cols[i + 1]]
+            mean = statistics.mean(cnts)
+            report_row.append(int(mean * 100) / 100.0)
             mean = statistics.mean(rank_data[threat])
             report_row.append(int(mean * 100) / 100.0)
             try:
@@ -1007,7 +1010,7 @@ def get_threat_report2(id, formdata, mode='state'):
 
     # logger.debug(i + 1)
     # logger.debug(thrts_present)
-    thrts_included_msg = "%d of %d included threats within AOI" %(thrts_present, i + 1)
+    thrts_included_msg = "%d of %d " %(thrts_present, i + 1)
     logger.debug(thrts_included_msg)
 
 
