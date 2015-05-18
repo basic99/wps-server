@@ -902,40 +902,56 @@ def get_threat_report2(id, formdata, mode='state'):
 
                 except KeyError:
                     pass
-    logger.debug(model_cols)
-    tot_weight = len(model_wts)
-    logger.debug(model_cols)
-    logger.debug(model_wts)
-    logger.debug(tot_weight)
+    # tot_weight = len(model_wts)
 
     # calculate threat count for each huc
     threat_rank = []
     threat_count = []
     for huc in hucs_dict:
         threat = 0
+        threat_rnk = 0
 
         for idx, weight in enumerate(model_wts):
             threat += float(hucs_dict[huc][idx + 1])
-            threat_count.append(float(hucs_dict[huc][idx + 1]))
-            threat_rank.append(float(hucs_dict_ranks[huc][idx + 1]))
-
-        # hucs_dict[huc].append(threat)
+            threat_rnk += float(hucs_dict_ranks[huc][idx + 1])
         threat_raw = threat
-
-        # threat = threat / tot_weight
-        # threat = int(threat * 100) / 10.0
-        # hucs_dict[huc].append(threat)
-        hucs_dict[huc].append(threat_raw)
+        # hucs_dict[huc].append(threat_raw)
         hucs_dict_ranks[huc].append(threat_raw)
+        threat_rank.append(threat_rnk)
+        threat_count.append(threat)
 
-    mean_count = statistics.mean(threat_count)
-    mean_rank = statistics.mean(threat_rank)
+    # calculate composite thrts
+    thrt_counts_summary = []
+    thrt_counts_summary.append("Composite Threat Count")
+    mean = statistics.mean(threat_count)
+    thrt_counts_summary.append(int(mean * 100) / 100.0)
+    try:
+        stdev = statistics.stdev(threat_count)
+        thrt_counts_summary.append(int(stdev * 10000) / 10000.0)
+    except statistics.StatisticsError:
+        thrt_counts_summary.append('na')
+    thrt_counts_summary.append(min(threat_count))
+    thrt_counts_summary.append(max(threat_count))
 
-    logger.debug(mean_count)
-    logger.debug(mean_rank)
+    thrt_rank_summary = []
+    thrt_rank_summary.append("Composite Threat Rank")
+    mean = statistics.mean(threat_rank)
+    thrt_rank_summary.append(int(mean * 100) / 100.0)
+    try:
+        stdev = statistics.stdev(threat_rank)
+        thrt_rank_summary.append(int(stdev * 10000) / 10000.0)
+    except statistics.StatisticsError:
+        thrt_rank_summary.append('na')
+    thrt_rank_summary.append(min(threat_rank))
+    thrt_rank_summary.append(max(threat_rank))
+
+    threat_summary = [thrt_counts_summary, thrt_rank_summary]
+
+    if mode == 'aoi':
+        logger.debug(threat_summary)
 
 
-    # start making summary report
+       # start making summary report
     logger.debug(model_cols)
     summary_params_list = collections.OrderedDict()
     summary_params_list['Threat Count'] = [
@@ -969,9 +985,9 @@ def get_threat_report2(id, formdata, mode='state'):
     if formvals['mode'] != 'single':
         thrts_present = 0
         for i, threat in enumerate(rank_data):
-            logger.debug(threat)
-            logger.debug(model_cols[i + 1])
-            report_row = [model_cols[i + 1]]
+            # logger.debug(threat)
+            # logger.debug(model_cols[i + 1])
+            report_row = [model_cols[i + 1], "occurence"]
             mean = statistics.mean(rank_data[threat])
             report_row.append(int(mean * 100) / 100.0)
             try:
@@ -999,7 +1015,8 @@ def get_threat_report2(id, formdata, mode='state'):
         "res_arr": hucs_dict_ranks,
         "col_hdrs": model_cols,
         "year": year,
-        "report": report,
+        # "report": report,
         "report_rank": report_rank,
-        "thrts_included_msg": thrts_included_msg
+        "thrts_included_msg": thrts_included_msg,
+        "threat_summary":threat_summary
         }
