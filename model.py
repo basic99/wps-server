@@ -907,10 +907,18 @@ def get_threat_report2(id, formdata, mode='state'):
     logger.debug(model_cols)
     logger.debug(model_wts)
     logger.debug(tot_weight)
+
+    # calculate threat count for each huc
+    threat_rank = []
+    threat_count = []
     for huc in hucs_dict:
         threat = 0
+
         for idx, weight in enumerate(model_wts):
             threat += float(hucs_dict[huc][idx + 1])
+            threat_count.append(float(hucs_dict[huc][idx + 1]))
+            threat_rank.append(float(hucs_dict_ranks[huc][idx + 1]))
+
         # hucs_dict[huc].append(threat)
         threat_raw = threat
 
@@ -920,8 +928,12 @@ def get_threat_report2(id, formdata, mode='state'):
         hucs_dict[huc].append(threat_raw)
         hucs_dict_ranks[huc].append(threat_raw)
 
-        # logger.debug(threat)
-    # logger.debug(hucs_dict)
+    mean_count = statistics.mean(threat_count)
+    mean_rank = statistics.mean(threat_rank)
+
+    logger.debug(mean_count)
+    logger.debug(mean_rank)
+
 
     # start making summary report
     logger.debug(model_cols)
@@ -955,6 +967,7 @@ def get_threat_report2(id, formdata, mode='state'):
         report.append(report_row)
 
     if formvals['mode'] != 'single':
+        thrts_present = 0
         for i, threat in enumerate(rank_data):
             logger.debug(threat)
             logger.debug(model_cols[i + 1])
@@ -969,17 +982,24 @@ def get_threat_report2(id, formdata, mode='state'):
             row_min = min(rank_data[threat])
             report_row.append(row_min)
             row_max = max(rank_data[threat])
+            if row_max > 0:
+                thrts_present += 1
             report_row.append(row_max)
 
-        # add row to report
+            # add row to report
             report_rank.append(report_row)
 
-    # logger.debug(report_rank)
+    # logger.debug(i + 1)
+    # logger.debug(thrts_present)
+    thrts_included_msg = "%d of %d included threats within AOI" %(thrts_present, i + 1)
+    logger.debug(thrts_included_msg)
+
 
     return {
         "res_arr": hucs_dict_ranks,
         "col_hdrs": model_cols,
         "year": year,
         "report": report,
-        "report_rank": report_rank
+        "report_rank": report_rank,
+        "thrts_included_msg": thrts_included_msg
         }

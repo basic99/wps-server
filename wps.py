@@ -616,10 +616,10 @@ def report(id):
         results_5k = model.get_threat_report2(id, request.args, '5k')
         results_12k = model.get_threat_report2(id, request.args, '12k')
 
-        logger.debug(results_aoi['report_rank'])
-        logger.debug(results_5k['report_rank'])
-        logger.debug(results_12k['report_rank'])
-        logger.debug(results_5k['report_rank'])
+        # logger.debug(results_aoi['report_rank'])
+        # logger.debug(results_5k['report_rank'])
+        # logger.debug(results_12k['report_rank'])
+        # logger.debug(results_5k['report_rank'])
 
         res_arr = [results_aoi['res_arr'][x] for x in results_aoi['res_arr']]
         col_hdrs = results_aoi['col_hdrs']
@@ -649,7 +649,11 @@ def report(id):
             report_rank_aoi=results_aoi['report_rank'],
             report_rank_5k=results_5k['report_rank'],
             report_rank_12k=results_12k['report_rank'],
-            report_rank_state=results_state['report_rank']
+            report_rank_state=results_state['report_rank'],
+            thrts_msg_aoi=results_aoi["thrts_included_msg"],
+            thrts_msg_state=results_state["thrts_included_msg"],
+            thrts_msg_5k=results_5k["thrts_included_msg"],
+            thrts_msg_12k=results_12k["thrts_included_msg"]
 
 
 
