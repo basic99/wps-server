@@ -28,9 +28,9 @@
   <h2 >Summary for AOI</h2>
   <h4 >Number of Sub-watersheds: {{samplesize_aoi}}</h4>
   <h4 >Total Distinct Threat Count:{{thrts_msg_aoi}}</h4>
-  <h4>Composite Risk Rating:</h4>
-  <h4>Composite Occupancy Rating:</h4>
-  <h4>Composite Severity Rating:</h4>
+  <h4>Composite Risk Rating: {{other_stats_aoi.risk_rank}}%</h4>
+  <h4>Composite Occupancy Rating: {{other_stats_aoi.comp_occ}}%</h4>
+  <h4>Composite Severity Rating: {{other_stats_aoi.comp_sev}}%</h4>
    <table class="table table-striped">
     <tr>
       <th></th>
@@ -69,9 +69,9 @@
     <h2 >Summary w/in 5 km Neighborhood</h2>
   <h4 >Number of Sub-watersheds: {{samplesize_5k}}</h4>
   <h4 >Total Distinct Threat Count:{{thrts_msg_5k}}</h4>
-  <h4>Composite Risk Rating:</h4>
-  <h4>Composite Occupancy Rating:</h4>
-  <h4>Composite Severity Rating:</h4>
+  <h4>Composite Risk Rating: {{other_stats_5k.risk_rank}}%</h4>
+  <h4>Composite Occupancy Rating: {{other_stats_5k.comp_occ}}%</h4>
+  <h4>Composite Severity Rating: {{other_stats_5k.comp_sev}}%</h4>
    <table class="table table-striped">
     <tr>
       <th></th>
@@ -110,9 +110,9 @@
     <h2 >Summary w/in 12 km Neighborhood</h2>
   <h4 >Number of Sub-watersheds: {{samplesize_12k}}</h4>
   <h4 >Total Distinct Threat Count:{{thrts_msg_12k}}</h4>
-  <h4>Composite Risk Rating:</h4>
-  <h4>Composite Occupancy Rating:</h4>
-  <h4>Composite Severity Rating:</h4>
+  <h4>Composite Risk Rating: {{other_stats_12k.risk_rank}}%</h4>
+  <h4>Composite Occupancy Rating: {{other_stats_12k.comp_occ}}%</h4>
+  <h4>Composite Severity Rating: {{other_stats_12k.comp_sev}}%</h4>
    <table class="table table-striped">
     <tr>
       <th></th>
@@ -151,9 +151,9 @@
     <h2 >Summary for North Carolina</h2>
   <h4 >Number of Sub-watersheds: 1720</h4>
   <h4 >Total Distinct Threat Count:{{thrts_msg_state}}</h4>
-  <h4>Composite Risk Rating:</h4>
-  <h4>Composite Occupancy Rating:</h4>
-  <h4>Composite Severity Rating:</h4>
+   <h4>Composite Risk Rating: {{other_stats_state.risk_rank}}%</h4>
+  <h4>Composite Occupancy Rating: {{other_stats_state.comp_occ}}%</h4>
+  <h4>Composite Severity Rating: {{other_stats_state.comp_sev}}%</h4>
    <table class="table table-striped">
     <tr>
       <th></th>

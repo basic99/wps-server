@@ -611,7 +611,9 @@ def report(id):
             report_rank=report_results['report_rank'],
             threats_summary_state=report_results['threat_summary'],
             thrts_msg_state=report_results["thrts_included_msg"],
-            report_rank_state=report_results['report_rank']
+            report_rank_state=report_results['report_rank'],
+            other_stats_state=report_results['other_stats']
+
 
             )
     else:
@@ -657,7 +659,11 @@ def report(id):
             threats_summary_aoi=results_aoi['threat_summary'],
             threats_summary_5k=results_5k['threat_summary'],
             threats_summary_12k=results_12k['threat_summary'],
-            threats_summary_state=results_state['threat_summary']
+            threats_summary_state=results_state['threat_summary'],
+            other_stats_aoi=results_aoi['other_stats'],
+            other_stats_5k=results_5k['other_stats'],
+            other_stats_12k=results_12k['other_stats'],
+            other_stats_state=results_state['other_stats']
 
 
 

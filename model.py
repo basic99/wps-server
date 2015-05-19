@@ -964,6 +964,8 @@ def get_threat_report2(id, formdata, mode='state'):
             ]
     if mode == 'aoi':
         logger.debug(summary_params_list)
+
+
     report = []
     report_rank = []
     for row in summary_params_list:
@@ -984,14 +986,18 @@ def get_threat_report2(id, formdata, mode='state'):
 
     if formvals['mode'] != 'single':
         thrts_present = 0
+        occurences = []
+        severity = []
         for i, threat in enumerate(rank_data):
             # logger.debug(threat)
             # logger.debug(model_cols[i + 1])
             report_row = [model_cols[i + 1]]
             cnts = summary_params_list[model_cols[i + 1]]
             mean = statistics.mean(cnts)
+            occurences.append(mean)
             report_row.append(int(mean * 100) / 100.0)
             mean = statistics.mean(rank_data[threat])
+            severity.append(mean)
             report_row.append(int(mean * 100) / 100.0)
             try:
                 stdev = statistics.stdev(rank_data[threat])
@@ -1007,12 +1013,28 @@ def get_threat_report2(id, formdata, mode='state'):
 
             # add row to report
             report_rank.append(report_row)
+        num_threats = i + 1
+
+        other_stats = {}
+        other_stats['comp_occ'] = int(
+            sum(occurences) * 100 / num_threats
+        )
+        other_stats['comp_sev'] = int(
+            sum(severity) * 10 / num_threats**2
+        )
+        other_stats['risk_rank'] = (
+            other_stats['comp_occ'] * other_stats['comp_sev']
+        )
+        if mode == 'aoi':
+            logger.debug(occurences)
+            logger.debug(severity)
+            logger.debug(num_threats)
+            logger.debug(other_stats)
 
     # logger.debug(i + 1)
     # logger.debug(thrts_present)
-    thrts_included_msg = "%d of %d " %(thrts_present, i + 1)
+    thrts_included_msg = "%d of %d " % (thrts_present, i + 1)
     logger.debug(thrts_included_msg)
-
 
     return {
         "res_arr": hucs_dict_ranks,
@@ -1021,5 +1043,6 @@ def get_threat_report2(id, formdata, mode='state'):
         # "report": report,
         "report_rank": report_rank,
         "thrts_included_msg": thrts_included_msg,
-        "threat_summary":threat_summary
+        "threat_summary": threat_summary,
+        "other_stats": other_stats
         }
