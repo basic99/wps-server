@@ -943,7 +943,7 @@ def get_threat_report2(id, formdata, mode='state'):
     except statistics.StatisticsError:
         thrt_rank_summary.append('na')
     thrt_rank_summary.append(min(threat_rank))
-    thrt_rank_summary.append(max(threat_rank))
+    thrt_rank_summary.append(int(max(threat_rank) * 1000) / 1000.0)
 
     threat_summary = [thrt_counts_summary, thrt_rank_summary]
 
