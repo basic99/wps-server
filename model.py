@@ -917,7 +917,7 @@ def get_threat_report2(id, formdata, mode='state'):
         threat_raw = threat
         # hucs_dict[huc].append(threat_raw)
         hucs_dict_ranks[huc].append(threat_raw)
-        threat_rank.append(threat_rnk)
+        threat_rank.append(float(threat_rnk) / (idx + 1) )
         threat_count.append(threat)
 
     # calculate composite thrts
