@@ -945,7 +945,8 @@ def get_threat_report2(id, formdata, mode='state'):
     thrt_rank_summary.append(min(threat_rank))
     thrt_rank_summary.append(int(max(threat_rank) * 1000) / 1000.0)
 
-    threat_summary = [thrt_counts_summary, thrt_rank_summary]
+    # , thrt_rank_summary
+    threat_summary = [thrt_counts_summary]
 
     if mode == 'aoi':
         logger.debug(threat_summary)
