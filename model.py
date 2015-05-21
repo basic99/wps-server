@@ -310,6 +310,17 @@ def get_threat_report2(id, formdata, mode='state'):
                 except KeyError:
                     pass
 
+        pct_arr = []
+        with g.db.cursor() as cur:
+            cur.execute(query2)
+            for row in cur:
+                if row[0] in hucs_dict:
+                    pct_arr.append(row[1])
+
+        pct_mean = statistics.mean(pct_arr)
+        logger.debug(int(pct_mean * 10) / 10.0)
+        mean_pct_areas['ftwt'] = int(pct_mean * 10) / 10.0
+
     if 'hbwt' in formvals:
         rank_data['hbwt'] = []
 
@@ -352,6 +363,17 @@ def get_threat_report2(id, formdata, mode='state'):
                     rank_data['hbwt'].append(rank)
                 except KeyError:
                     pass
+
+        pct_arr = []
+        with g.db.cursor() as cur:
+            cur.execute(query2)
+            for row in cur:
+                if row[0] in hucs_dict:
+                    pct_arr.append(row[1])
+
+        pct_mean = statistics.mean(pct_arr)
+        logger.debug(int(pct_mean * 10) / 10.0)
+        mean_pct_areas['hbwt'] = int(pct_mean * 10) / 10.0
 
     if 'open' in formvals:
         rank_data['open'] = []
@@ -396,6 +418,17 @@ def get_threat_report2(id, formdata, mode='state'):
                 except KeyError:
                     pass
 
+        pct_arr = []
+        with g.db.cursor() as cur:
+            cur.execute(query2)
+            for row in cur:
+                if row[0] in hucs_dict:
+                    pct_arr.append(row[1])
+
+        pct_mean = statistics.mean(pct_arr)
+        logger.debug(int(pct_mean * 10) / 10.0)
+        mean_pct_areas['open'] = int(pct_mean * 10) / 10.0
+
     if 'shrb' in formvals:
         rank_data['shrb'] = []
 
@@ -438,11 +471,24 @@ def get_threat_report2(id, formdata, mode='state'):
                     rank_data['shrb'].append(rank)
                 except KeyError:
                     pass
+
+        pct_arr = []
+        with g.db.cursor() as cur:
+            cur.execute(query2)
+            for row in cur:
+                if row[0] in hucs_dict:
+                    pct_arr.append(row[1])
+
+        pct_mean = statistics.mean(pct_arr)
+        logger.debug(int(pct_mean * 10) / 10.0)
+        mean_pct_areas['shrb'] = int(pct_mean * 10) / 10.0
+
     # add urban growth if included
     if 'urbangrth' in formvals:
         rank_data['urbangrth'] = []
 
         query = "select huc_12, urb%sha_rnk from urban_ha_rnk" % year[2:]
+        query2 = "select huc_12, urb%spct  from urban_pct" % year[2:]
         logger.debug(query)
         model_wts.append(float(formvals['urbangrth']))
         model_cols.append("Urban Growth - limit(%s)" % formvals['urbangrth'])
@@ -469,6 +515,16 @@ def get_threat_report2(id, formdata, mode='state'):
                     pass
                 # this will run for single layer
 
+        pct_arr = []
+        with g.db.cursor() as cur:
+            cur.execute(query2)
+            for row in cur:
+                if row[0] in hucs_dict:
+                    pct_arr.append(row[1])
+
+        pct_mean = statistics.mean(pct_arr)
+        logger.debug(int(pct_mean * 10) / 10.0)
+        mean_pct_areas['urbangrth'] = int(pct_mean * 10) / 10.0
 
 
     # add fire suppression
@@ -952,8 +1008,8 @@ def get_threat_report2(id, formdata, mode='state'):
             threat_rnk += float(hucs_dict_ranks[huc][idx + 1])
         threat_raw = threat
         # hucs_dict[huc].append(threat_raw)
-        hucs_dict_ranks[huc].append(threat_raw)
-        threat_rank.append(float(threat_rnk) / (idx + 1) )
+        hucs_dict_ranks[huc].append(int(threat_raw))
+        threat_rank.append(float(threat_rnk) / (idx + 1))
         threat_count.append(threat)
 
     # calculate composite thrts
