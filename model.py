@@ -1149,6 +1149,7 @@ def get_threat_report2(id, formdata, mode='state'):
 
 def get_indiv_report(id, mymap_str, mode='state'):
     logger.debug(mymap_str)
+    logger.debug(mode)
     try:
         mymap = mymap_str.split(":")[0]
         # note year may be some other param
@@ -1171,7 +1172,7 @@ def get_indiv_report(id, mymap_str, mode='state'):
         with g.db.cursor() as cur:
             cur.execute("select huc12s from aoi_results where pk = %s", (id, ))
             huc12_str = cur.fetchone()
-        hucs = huc12_str[0].split(",")
+        hucs = huc12_str[0].split(", ")
 
     elif mode == '12k':
         with g.db.cursor() as cur:
@@ -1179,7 +1180,7 @@ def get_indiv_report(id, mymap_str, mode='state'):
                 "select huc12s_12k from aoi_results where pk = %s", (id, )
             )
             huc12_str = cur.fetchone()
-        hucs = huc12_str[0].split(",")
+        hucs = huc12_str[0].split(", ")
 
     elif mode == '5k':
         with g.db.cursor() as cur:
@@ -1187,7 +1188,7 @@ def get_indiv_report(id, mymap_str, mode='state'):
                 "select huc12s_5k from aoi_results where pk = %s", (id, )
             )
             huc12_str = cur.fetchone()
-        hucs = huc12_str[0].split(",")
+        hucs = huc12_str[0].split(", ")
 
 
     # hucs_dict_ranks = copy.deepcopy(hucs_dict)
@@ -1237,10 +1238,13 @@ def get_indiv_report(id, mymap_str, mode='state'):
 
 
     res_arr = []
+    logger.debug(hucs)
+
     with g.db.cursor() as cur:
         cur.execute(query1)
         for row in cur:
             if row[0] in hucs:
+                logger.debug(row[0])
                 results_dict[row[0]] = float(row[1])
                 res_arr.append(float(row[1]))
 
@@ -1250,6 +1254,10 @@ def get_indiv_report(id, mymap_str, mode='state'):
     res_min = max(res_arr)
 
     stats = [mean, stdev, res_max, res_min]
+    res_arr = [
+            [x, results_dict[x]]
+            for x in results_dict
+        ]
 
     # logger.debug(results_dict)
     logger.debug(mymap)
@@ -1258,8 +1266,9 @@ def get_indiv_report(id, mymap_str, mode='state'):
     # first 2 params for indiv map
     return {
         "legend_param": legend_param,
-        "results_dict": results_dict,
+        "res_arr": res_arr,
         'year': year,
-        "stats": stats
+        "stats": stats,
+        "results_dict": results_dict
 
     }
