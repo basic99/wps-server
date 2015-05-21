@@ -145,6 +145,7 @@ def get_threat_report2(id, formdata, mode='state'):
     formvals = {}
     model_cols = ["huc"]
     model_wts = []
+    mean_pct_areas = {}
 
     logger.debug(id)
     logger.debug(mode)
@@ -218,14 +219,19 @@ def get_threat_report2(id, formdata, mode='state'):
             year[2:],
             scenario
         )
-        logger.debug(query)
+        query2 = "select huc_12, %s%spct from lcscen_%s_pct" % (
+            'frst',
+            year[2:],
+            scenario
+        )
+        logger.debug(query2)
         model_wts.append(float(formvals['frst']))
-        model_cols.append(
-            "%s %s - limit(%s)" % (
+        model_col = "%s %s - limit(%s)" % (
                 col_names['frst'],
                 col_names[scenario],
-                formvals['frst'])
+                formvals['frst']
             )
+        model_cols.append(model_col)
         with g.db.cursor() as cur:
             cur.execute(query)
             for row in cur:
@@ -250,11 +256,26 @@ def get_threat_report2(id, formdata, mode='state'):
                     rank_data['frst'].append(rank)
                 except KeyError:
                     pass
+        pct_arr = []
+        with g.db.cursor() as cur:
+            cur.execute(query2)
+            for row in cur:
+                if row[0] in hucs_dict:
+                    pct_arr.append(row[1])
+
+        pct_mean = statistics.mean(pct_arr)
+        logger.debug(int(pct_mean * 10) / 10.0)
+        mean_pct_areas['frst'] = int(pct_mean * 10) / 10.0
 
     if 'ftwt' in formvals:
         rank_data['ftwt'] = []
 
         query = "select huc_12, %s%srnk from lcscen_%s_rnk" % (
+            'ftwt',
+            year[2:],
+            scenario
+        )
+        query2 = "select huc_12, %s%spct from lcscen_%s_pct" % (
             'ftwt',
             year[2:],
             scenario
@@ -297,6 +318,11 @@ def get_threat_report2(id, formdata, mode='state'):
             year[2:],
             scenario
         )
+        query2 = "select huc_12, %s%spct from lcscen_%s_pct" % (
+            'hbwt',
+            year[2:],
+            scenario
+        )
         model_wts.append(float(formvals['hbwt']))
         model_cols.append(
             "%s %s - limit(%s)" % (
@@ -335,6 +361,11 @@ def get_threat_report2(id, formdata, mode='state'):
             year[2:],
             scenario
         )
+        query2 = "select huc_12, %s%spct from lcscen_%s_pct" % (
+            'open',
+            year[2:],
+            scenario
+        )
         model_wts.append(float(formvals['open']))
         model_cols.append(
             "%s %s - limit(%s)" % (
@@ -369,6 +400,11 @@ def get_threat_report2(id, formdata, mode='state'):
         rank_data['shrb'] = []
 
         query = "select huc_12, %s%srnk from lcscen_%s_rnk" % (
+            'shrb',
+            year[2:],
+            scenario
+        )
+        query2 = "select huc_12, %s%spct from lcscen_%s_pct" % (
             'shrb',
             year[2:],
             scenario
@@ -983,6 +1019,8 @@ def get_threat_report2(id, formdata, mode='state'):
         row_max = max(summary_params_list[row])
         report_row.append(row_max)
 
+        logger.debug(report_row)
+
         report.append(report_row)
 
     if formvals['mode'] != 'single':
@@ -990,7 +1028,7 @@ def get_threat_report2(id, formdata, mode='state'):
         occurences = []
         severity = []
         for i, threat in enumerate(rank_data):
-            # logger.debug(threat)
+            logger.debug(threat)
             # logger.debug(model_cols[i + 1])
             report_row = [model_cols[i + 1]]
             cnts = summary_params_list[model_cols[i + 1]]
@@ -1011,6 +1049,10 @@ def get_threat_report2(id, formdata, mode='state'):
             if row_max > 0:
                 thrts_present += 1
             report_row.append(row_max)
+            try:
+                report_row.append(mean_pct_areas[threat])
+            except KeyError:
+                report_row.append('-')
 
             # add row to report
             report_rank.append(report_row)
@@ -1112,7 +1154,13 @@ def get_indiv_report(id, mymap_str):
             results_dict[row[0]] = float(row[1])
             res_arr.append(float(row[1]))
 
-    logger.debug(statistics.mean(res_arr))
+    mean = statistics.mean(res_arr)
+    stdev = statistics.stdev(res_arr)
+    res_max = max(res_arr)
+    res_min = min(res_arr)
+
+    stats = [mean, stdev, res_max, res_min]
+
     # logger.debug(results_dict)
     logger.debug(mymap)
     logger.debug(legend_param)
@@ -1120,5 +1168,8 @@ def get_indiv_report(id, mymap_str):
     # first 2 params for indiv map
     return {
         "legend_param": legend_param,
-        "results_dict": results_dict
+        "results_dict": results_dict,
+        'year': year,
+        "stats": stats
+
     }
