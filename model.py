@@ -1147,7 +1147,7 @@ def get_threat_report2(id, formdata, mode='state'):
         }
 
 
-def get_indiv_report(id, mymap_str):
+def get_indiv_report(id, mymap_str, mode='state'):
     logger.debug(mymap_str)
     try:
         mymap = mymap_str.split(":")[0]
@@ -1157,7 +1157,40 @@ def get_indiv_report(id, mymap_str):
     except IndexError:
         pass
 
-    results_dict = {}
+    results_dict = collections.OrderedDict()
+    # hucs_dict = collections.OrderedDict()
+    if int(id) == 0 or mode == 'state':
+        # could use any table here
+        query = "select huc_12 from forest_health order by huc_12"
+        with g.db.cursor() as cur:
+            cur.execute(query)
+            hucs_row = cur.fetchall()
+            hucs = [x[0] for x in hucs_row]
+
+    elif mode == 'aoi':
+        with g.db.cursor() as cur:
+            cur.execute("select huc12s from aoi_results where pk = %s", (id, ))
+            huc12_str = cur.fetchone()
+        hucs = huc12_str[0].split(",")
+
+    elif mode == '12k':
+        with g.db.cursor() as cur:
+            cur.execute(
+                "select huc12s_12k from aoi_results where pk = %s", (id, )
+            )
+            huc12_str = cur.fetchone()
+        hucs = huc12_str[0].split(",")
+
+    elif mode == '5k':
+        with g.db.cursor() as cur:
+            cur.execute(
+                "select huc12s_5k from aoi_results where pk = %s", (id, )
+            )
+            huc12_str = cur.fetchone()
+        hucs = huc12_str[0].split(",")
+
+
+    # hucs_dict_ranks = copy.deepcopy(hucs_dict)
     # results_list = []
     # rang = {}
 
@@ -1207,13 +1240,14 @@ def get_indiv_report(id, mymap_str):
     with g.db.cursor() as cur:
         cur.execute(query1)
         for row in cur:
-            results_dict[row[0]] = float(row[1])
-            res_arr.append(float(row[1]))
+            if row[0] in hucs:
+                results_dict[row[0]] = float(row[1])
+                res_arr.append(float(row[1]))
 
-    mean = statistics.mean(res_arr)
-    stdev = statistics.stdev(res_arr)
-    res_max = max(res_arr)
-    res_min = min(res_arr)
+    mean = int(statistics.mean(res_arr) * 1000) / 1000.0
+    stdev = int(statistics.stdev(res_arr) * 1000) / 1000.0
+    res_max = min(res_arr)
+    res_min = max(res_arr)
 
     stats = [mean, stdev, res_max, res_min]
 

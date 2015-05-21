@@ -649,17 +649,26 @@ def ssheet():
 @app.route('/<int:id>/report_indiv', methods=['GET', ])
 def report_indiv(id):
     mymap_str = request.args.get("map", "")
-    report_results = model.get_indiv_report(id, mymap_str)
-    res_arr = [
-        [x, report_results['results_dict'][x]] for x in report_results['results_dict']
-    ]
-    logger.debug(len(res_arr))
-    return render_template(
-            'report_indiv.html',
-            year=report_results['year'],
-            results_dict=res_arr,
-            stats=report_results['stats'],
-            )
+    if id == 0:
+        report_results = model.get_indiv_report(id, mymap_str)
+        res_arr = [
+            [x, report_results['results_dict'][x]]
+            for x in report_results['results_dict']
+        ]
+        # logger.debug(res_arr)
+        logger.debug(report_results['stats'])
+        return render_template(
+                'report_indiv.html',
+                year=report_results['year'],
+                results_dict=res_arr,
+                stats=report_results['stats'],
+                )
+
+    else:
+        results_state = model.get_indiv_report(id, mymap_str)
+        results_aoi = model.get_indiv_report(id, mymap_str, 'aoi')
+        results_5k = model.get_indiv_report(id, mymap_str, '5k')
+        results_12k = model.get_indiv_report(id, mymap_str, '12k')
 
 
 if __name__ == '__main__':
