@@ -452,7 +452,7 @@ def huc12_state():
 def huc12_map():
     mymap_str = request.args.get("map", "")
 
-    report_res = model.get_indiv_report(mymap_str)
+    report_res = model.get_indiv_report(0, mymap_str)
     legend_param = report_res['legend_param']
     results_dict = report_res['results_dict']
 
@@ -644,6 +644,13 @@ def ssheet():
     headers['Location'] = url_for('get_ssheet', fname=temp.name[5:])
     return ('', 201, headers)
     return "test"
+
+
+@app.route('/<int:id>/report_indiv', methods=['GET', ])
+def report_indiv(id):
+    mymap_str = request.args.get("map", "")
+    model.get_indiv_report(id, mymap_str)
+    return False
 
 
 if __name__ == '__main__':

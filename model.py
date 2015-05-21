@@ -1048,7 +1048,9 @@ def get_threat_report2(id, formdata, mode='state'):
         "other_stats": other_stats
         }
 
-def get_indiv_report(mymap_str):
+
+def get_indiv_report(id, mymap_str):
+    logger.debug(mymap_str)
     try:
         mymap = mymap_str.split(":")[0]
         # note year may be some other param
@@ -1056,6 +1058,7 @@ def get_indiv_report(mymap_str):
         scenario = mymap_str.split(":")[2]
     except IndexError:
         pass
+
     results_dict = {}
     # results_list = []
     # rang = {}
@@ -1101,16 +1104,20 @@ def get_indiv_report(mymap_str):
         query1 = "select huc_12, lc00%sha from slamm_lc_ha" % year
         legend_param = mymap
 
+
+    res_arr = []
     with g.db.cursor() as cur:
         cur.execute(query1)
         for row in cur:
             results_dict[row[0]] = float(row[1])
-            # results_list.append(row[1])
-    # logger.debug(len(results_list))
-    # results_list.sort()
+            res_arr.append(float(row[1]))
+
+    logger.debug(statistics.mean(res_arr))
+    # logger.debug(results_dict)
     logger.debug(mymap)
     logger.debug(legend_param)
 
+    # first 2 params for indiv map
     return {
         "legend_param": legend_param,
         "results_dict": results_dict
