@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html class="no-js">
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+  <title></title>
+  <meta name="description" content="">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  <link rel="stylesheet" href="{{url_for('static', filename='css/bootstrap.min.css')}}">
+  <style></style>
+  <link rel="stylesheet" href="{{url_for('static', filename='css/bootstrap-theme.min.css')}}">
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/main.css') }}">
+
+  <!--[if lt IE 9]>
+  <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+  <script>window.html5 || document.write('<script src="js/vendor/html5shiv.js"><\/script>')</script>
+<![endif]-->
+</head>
+<body>
+
+<div class="container">
+  <div class="well">
+    <h2>Report</h2>
+    <h4>Year {{year}}</h4>
+  </div>
+
+
+
+    <h2 >Summary for North Carolina</h2>
+  <h4 >Number of Sub-watersheds: 1720</h4>
+   <table class="table table-striped">
+    <tr>
+      <th>Mean</th>
+      <th>S.D.</th>
+      <th>Min.</th>
+      <th>Max</th>
+    </tr>
+    <tr>
+      {% for res in stats%}
+      <td >{{res}}</td>
+      {% endfor %}
+    </tr>
+  </table>
+
+
+
+
+
+
+  <h2 style="text-align: center;">AOI Threat Summary by HUC12</h2>
+  <table class="table table-striped">
+    <tr>
+     <th>huc12</th>
+     <th>blah</th>
+    </tr>
+    {%for res_row in results_dict%}
+    <tr>
+      {% for res in res_row%}
+      <td >{{res}}</td>
+      {% endfor %}
+    </tr>
+    {% endfor %}
+  </table>
+</div>
+
+
+<!-- /container -->
+<script src="//ajax.googleapis.com/ajax/libs/jquery/1.11.0/jquery.min.js"></script>
+<script>window.jQuery || document.write("<script src=\"{{url_for('static', filename='js/vendor/jquery-1.11.0.min.js')}}\"><\/script>")</script>
+
+<script src="{{url_for('static', filename='js/vendor/bootstrap.min.js')}}"></script>
+
+<script src="{{url_for('static', filename='js/main.js')}}"></script>
+</body>
+</html>
