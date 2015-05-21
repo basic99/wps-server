@@ -451,69 +451,12 @@ def huc12_state():
 @app.route('/huc12_map',  methods=['GET', ])
 def huc12_map():
     mymap_str = request.args.get("map", "")
-    # year = request.args.get("year", "")
-    # scenario = request.args.get("scenario", "")
-    try:
-        mymap = mymap_str.split(":")[0]
-        # note year may be some other param
-        year = mymap_str.split(":")[1]
-        scenario = mymap_str.split(":")[2]
-    except IndexError:
-        pass
-    results_dict = {}
-    results_list = []
-    rang = {}
 
-    logger.debug(request.args)
+    report_res = model.get_indiv_report(mymap_str)
+    legend_param = report_res['legend_param']
+    results_dict = report_res['results_dict']
 
     query2 = "select * from legend_data where layer_str = %s"
-    if mymap in [
-                "frst", 'ftwt', 'hbwt', 'open', 'shrb'
-            ]:
-        query1 = "select huc_12, %s%sha from lcscen_%s_ha" % (
-            mymap, year, scenario
-            )
-        legend_param = mymap
-
-    elif mymap in ['urban']:
-        query1 = "select huc_12, urb%sha from urban_ha" % year
-        legend_param = mymap
-    elif mymap in ['fire']:
-        query1 = "select huc_12, urb%sden from urban_den" % year
-        legend_param = mymap
-    elif mymap in ['trans']:
-        query1 = "select huc_12, rds%smha from transportation" % year
-        legend_param = mymap
-    elif mymap in ['nutrient']:
-        query1 = "select huc_12, %s from ea_pol" % year
-        legend_param = mymap_str
-    elif mymap in ['water']:
-        query1 = "select huc_12, %s from ea_h20" % year
-        legend_param = mymap_str
-    elif mymap in ['frsthlth']:
-        query1 = "select huc_12, fhlth_ha from forest_health"
-        legend_param = mymap
-    elif mymap in ['energydev']:
-        query1 = " select huc_12, triassic_ha from energy_dev"
-        legend_param = mymap
-    elif mymap in ['wind']:
-        query1 = "select * from wind_avg"
-        legend_param = mymap
-    elif mymap in ['slr_up']:
-        query1 = "select huc_12, up00%sha from slamm_up_ha" % year
-        legend_param = mymap
-    elif mymap in ['slr_lc']:
-        query1 = "select huc_12, lc00%sha from slamm_lc_ha" % year
-        legend_param = mymap
-
-    with g.db.cursor() as cur:
-        cur.execute(query1)
-        for row in cur:
-            results_dict[row[0]] = float(row[1])
-            results_list.append(row[1])
-    logger.debug(len(results_list))
-    results_list.sort()
-    logger.debug(mymap)
     logger.debug(query2)
     # with g.db.cursor(cursor_factory=psycopg2.extras.DictCursor) as cur:
     #     cur.execute(query2, (legend_param, ))
