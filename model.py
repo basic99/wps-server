@@ -1176,11 +1176,17 @@ def get_indiv_report(id, mymap_str, mode='state'):
     year = 10
     try:
         mymap = mymap_str.split(":")[0]
-        # note year may be some other param
+
+        # set year and param2 for queries where it is not year
         year = mymap_str.split(":")[1]
+        param2 = mymap_str.split(":")[1]
         scenario = mymap_str.split(":")[2]
     except IndexError:
         pass
+    try:
+        year = int(year)
+    except ValueError:
+        year = 10
 
     # try to assign column name from dict copied from javascript
     try:
@@ -1248,10 +1254,10 @@ def get_indiv_report(id, mymap_str, mode='state'):
         query1 = "select huc_12, rds%smha from transportation" % year
         legend_param = mymap
     elif mymap in ['nutrient']:
-        query1 = "select huc_12, %s from ea_pol" % year
+        query1 = "select huc_12, %s from ea_pol" % param2
         legend_param = mymap_str
     elif mymap in ['water']:
-        query1 = "select huc_12, %s from ea_h20" % year
+        query1 = "select huc_12, %s from ea_h20" % param2
         legend_param = mymap_str
     elif mymap in ['frsthlth']:
         query1 = "select huc_12, fhlth_ha from forest_health"
@@ -1271,7 +1277,7 @@ def get_indiv_report(id, mymap_str, mode='state'):
 
 
     res_arr = []
-    # logger.debug(hucs)
+    logger.debug(query1)
 
     with g.db.cursor() as cur:
         cur.execute(query1)
