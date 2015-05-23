@@ -22,7 +22,7 @@
 <div class="container">
   <div class="well">
     <h2>Report</h2>
-    <h4>Year {{year}}</h4>
+    <h4>Year 20{{year}}</h4>
   </div>
 
 
@@ -51,8 +51,8 @@
   <h2 style="text-align: center;">AOI Threat Summary by HUC12</h2>
   <table class="table table-striped">
     <tr>
-     <th>huc12</th>
-     <th>blah</th>
+     <th>Sub-watershed</th>
+     <th>{{col_name}}</th>
     </tr>
     {%for res_row in results_dict%}
     <tr>

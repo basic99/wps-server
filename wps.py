@@ -661,7 +661,8 @@ def report_indiv(id):
                 'report_indiv.html',
                 year=report_results['year'],
                 stats=report_results['stats'],
-                results_dict=report_results['res_arr']
+                results_dict=report_results['res_arr'],
+                col_name=report_results['col_name']
                 )
 
     else:
@@ -669,9 +670,15 @@ def report_indiv(id):
         results_aoi = model.get_indiv_report(id, mymap_str, 'aoi')
         results_5k = model.get_indiv_report(id, mymap_str, '5k')
         results_12k = model.get_indiv_report(id, mymap_str, '12k')
+        num_hucs = {}
+        num_hucs['aoi'] = results_aoi['num_hucs']
+        num_hucs['5k'] = results_5k['num_hucs']
+        num_hucs['12k'] = results_12k['num_hucs']
 
         return render_template(
                 'report_indiv2.html',
+                col_name=results_state['col_name'],
+                num_hucs=num_hucs,
                 year=results_state['year'],
                 results_dict_state=results_state['res_arr'],
                 stats_state=results_state['stats'],

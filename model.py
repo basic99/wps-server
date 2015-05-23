@@ -1150,6 +1150,29 @@ def get_threat_report2(id, formdata, mode='state'):
 def get_indiv_report(id, mymap_str, mode='state'):
     logger.debug(mymap_str)
     logger.debug(mode)
+    col_name = ""
+    legend_titles = {
+        'frst': 'Forest Habitat (ha)',
+        'ftwt': 'Wet Forest Habitat (ha)',
+        'hbwt': 'Wet Herbaceous Habitat (ha)',
+        'open': 'Open Habitat (ha)',
+        'shrb': 'Scrub/Shrub Habitat (ha)',
+        'urban': 'Urban Land Cover (ha)',
+        'fire': 'Mean Urban Density w/in 5 mile radius',
+        'trans': 'Mean Length/Area of Major Highways (m/ha)',
+        "nutrient:manu": "Manure Application (kg/ha/yr)",
+        "nutrient:fert": "Syn. Nitrogen Fertilizer Application (kg/ha/yr)",
+        "nutrient:td_n_t": "Total Nitrogen Deposition (kg/ha/yr)",
+        "nutrient:td_s_t": "Total Sulfur Deposition (kg/ha/yr)",
+        'frsthlth': "Forest Insect/Disease Risk (ha)",
+        'energydev': "Triassic basin (ha)",
+        "water:bioimplen": "Biota Impairments (km*stream density)",
+        "water:metimplen": "Metal Impariments (km*stream density)",
+        "water:NID": "Number of Dams (n)",
+        'wind': "Wind Power Class (mean)",
+        'slr_lc': "Terrestrial Landcover Change (ha)",
+        'slr_up': "Undeveloped Upland Change (ha)"
+    }
     year = 10
     try:
         mymap = mymap_str.split(":")[0]
@@ -1158,6 +1181,15 @@ def get_indiv_report(id, mymap_str, mode='state'):
         scenario = mymap_str.split(":")[2]
     except IndexError:
         pass
+
+    # try to assign column name from dict copied from javascript
+    try:
+        col_name = legend_titles[mymap]
+    except KeyError:
+        try:
+            col_name = legend_titles[mymap_str]
+        except KeyError:
+            pass
 
     results_dict = collections.OrderedDict()
     # hucs_dict = collections.OrderedDict()
@@ -1239,13 +1271,13 @@ def get_indiv_report(id, mymap_str, mode='state'):
 
 
     res_arr = []
-    logger.debug(hucs)
+    # logger.debug(hucs)
 
     with g.db.cursor() as cur:
         cur.execute(query1)
         for row in cur:
             if row[0] in hucs:
-                logger.debug(row[0])
+                # logger.debug(row[0])
                 results_dict[row[0]] = float(row[1])
                 res_arr.append(float(row[1]))
 
@@ -1253,6 +1285,7 @@ def get_indiv_report(id, mymap_str, mode='state'):
     stdev = int(statistics.stdev(res_arr) * 1000) / 1000.0
     res_max = min(res_arr)
     res_min = max(res_arr)
+    num_hucs = len(res_arr)
 
     stats = [mean, stdev, res_max, res_min]
     res_arr = [
@@ -1270,6 +1303,8 @@ def get_indiv_report(id, mymap_str, mode='state'):
         "res_arr": res_arr,
         'year': year,
         "stats": stats,
-        "results_dict": results_dict
+        "results_dict": results_dict,
+        "col_name": col_name,
+        "num_hucs": num_hucs
 
     }

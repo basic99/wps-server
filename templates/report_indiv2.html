@@ -28,7 +28,7 @@
 
 
     <h2 >Summary for AOI</h2>
-  <h4 >Number of Sub-watersheds: </h4>
+  <h4 >Number of Sub-watersheds: {{num_hucs['aoi']}}</h4>
    <table class="table table-striped">
     <tr>
       <th>Mean</th>
@@ -45,7 +45,7 @@
 
 
     <h2 >Summary w/in 5 km Neighborhood</h2>
-  <h4 >Number of Sub-watersheds: </h4>
+  <h4 >Number of Sub-watersheds:  {{num_hucs['5k']}}</h4>
    <table class="table table-striped">
     <tr>
       <th>Mean</th>
@@ -63,7 +63,7 @@
 
 
     <h2 >Summary w/in 12 km Neighborhood</h2>
-  <h4 >Number of Sub-watersheds:</h4>
+  <h4 >Number of Sub-watersheds: {{num_hucs['12k']}}</h4>
    <table class="table table-striped">
     <tr>
       <th>Mean</th>
@@ -99,8 +99,8 @@
   <h2 style="text-align: center;">AOI Threat Summary by HUC12</h2>
   <table class="table table-striped">
     <tr>
-     <th>huc12</th>
-     <th>blah</th>
+     <th>Sub-watershed</th>
+     <th>{{col_name}}</th>
     </tr>
     {%for res_row in results_dict_aoi%}
     <tr>
