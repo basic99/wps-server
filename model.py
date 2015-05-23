@@ -1150,6 +1150,7 @@ def get_threat_report2(id, formdata, mode='state'):
 def get_indiv_report(id, mymap_str, mode='state'):
     logger.debug(mymap_str)
     logger.debug(mode)
+    year = 10
     try:
         mymap = mymap_str.split(":")[0]
         # note year may be some other param
