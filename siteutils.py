@@ -227,20 +227,37 @@ def qrypttojson(lon, lat, lyr):
         "the_geom": geojson_obj,
         "the_huc": the_huc
     }
+    # logger.debug(ret_dict)
     return json.dumps(ret_dict)
 
 
-# def legend_ranges(a, b, c, d, e, f):
-#     x1 = a.split("-")
-#     x2 = b.split("-")
-#     x3 = c.split("-")
-#     x4 = d.split("-")
-#     x5 = e.split("-")
-#     x6 = f.split("-")
+def qryptbufferjson(lon, lat):
+    """
+    select ST_AsGeoJSON(ST_Transform(ST_Buffer(ST_Transform(
+        ST_SetSRID(ST_Point(-78.867, 35.968),4326), 32119), 3000), 4326))
+    """
 
+    query = "select ST_AsGeoJSON(ST_Transform(ST_Buffer(ST_Transform("
+    query += "ST_SetSRID(ST_Point(%s, %s),4326), 32119), 3000)"
+    query += ", 4326))"
+    logger.debug(lon)
+    logger.debug(lat)
+    logger.debug(query % (lon, lat))
+    with g.db.cursor() as cur:
+        cur.execute(query, (lon, lat))
+        res = cur.fetchone()
+        the_geom = json.loads(res[0])
 
-#     return_str = {
+    geojson_obj = {
+        "type": "Feature",
+        "geometry": {
+            "type": the_geom['type'],
+            "coordinates": the_geom['coordinates']
+        }
+    }
+    ret_dict = {
+        "the_geom": geojson_obj
+    }
+    logger.debug(ret_dict)
+    return json.dumps(ret_dict)
 
-#     }
-#     # logger.debug(return_str)
-#     return json.dumps(return_str)

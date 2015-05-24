@@ -432,6 +432,16 @@ def pttojson():
 
     return siteutils.qrypttojson(lon, lat, layer)
 
+@app.route('/ptbufferjson',  methods=['GET', ])
+def ptbufferjson():
+    """input layer and point, return geo and id """
+    # pt_obj = request.form['pt_obj']
+    # qry_lyr = request.form['qry_lyr']
+    lon = request.args.get("lon", "")
+    lat = request.args.get("lat", "")
+
+    return siteutils.qryptbufferjson(lon, lat)
+
 
 @app.route('/huc12_state',  methods=['GET', ])
 def huc12_state():
