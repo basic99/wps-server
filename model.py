@@ -1288,7 +1288,10 @@ def get_indiv_report(id, mymap_str, mode='state'):
                 res_arr.append(float(row[1]))
 
     mean = int(statistics.mean(res_arr) * 1000) / 1000.0
-    stdev = int(statistics.stdev(res_arr) * 1000) / 1000.0
+    try:
+        stdev = int(statistics.stdev(res_arr) * 1000) / 1000.0
+    except statistics.StatisticsError:
+        stdev = 'na'
     res_max = min(res_arr)
     res_min = max(res_arr)
     num_hucs = len(res_arr)
