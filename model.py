@@ -24,120 +24,120 @@ logger.addHandler(fh)
 
 
 
-def get_threat_report(huc12_str, query):
-    col_hdrs = []
-    outputType = []
-    huc12s = huc12_str.split(", ")
-    huc12s.sort()
-    for col_hdr in query.keys():
-        if col_hdr != 'year':
-            col_hdrs.append(col_hdr)
-    col_hdrs.sort()
-    col_hdrs.append("result")
-    # logger.debug(col_hdr)
+# def get_threat_report(huc12_str, query):
+#     col_hdrs = []
+#     outputType = []
+#     huc12s = huc12_str.split(", ")
+#     huc12s.sort()
+#     for col_hdr in query.keys():
+#         if col_hdr != 'year':
+#             col_hdrs.append(col_hdr)
+#     col_hdrs.sort()
+#     col_hdrs.append("result")
+#     # logger.debug(col_hdr)
 
-    col_len = len(huc12s)
-    outputType.append(("huc12", "U20"))
-    for col_hdr in col_hdrs:
-        outputType.append((col_hdr, 'i4'))
+#     col_len = len(huc12s)
+#     outputType.append(("huc12", "U20"))
+#     for col_hdr in col_hdrs:
+#         outputType.append((col_hdr, 'i4'))
 
-    dtype = np.dtype(outputType)
-    nparray = np.ones((col_len,), dtype=dtype)
+#     dtype = np.dtype(outputType)
+#     nparray = np.ones((col_len,), dtype=dtype)
 
-    for idx, row in enumerate(nparray):
-        huc12 = huc12s[idx]
-        # set huc12 value
-        row['huc12'] = huc12
-        # now rest of columns
-        num_factors = len(query.keys()) - 1
-        year = query.get('year')
-        threat = 0
-        if(query.get('urb', default='off') == 'on'):
-            with g.db.cursor(cursor_factory=psycopg2.extras.DictCursor) as cur:
-                cur.execute(
-                    "select * from nc_urb_mean where huc_12 = %s", (huc12, )
-                    )
-                rec = cur.fetchone()
-                try:
-                    threat += rec["yr" + year]
-                    row['urb'] = rec["yr" + year]
-                except KeyError:
-                    continue
+#     for idx, row in enumerate(nparray):
+#         huc12 = huc12s[idx]
+#         # set huc12 value
+#         row['huc12'] = huc12
+#         # now rest of columns
+#         num_factors = len(query.keys()) - 1
+#         year = query.get('year')
+#         threat = 0
+#         if(query.get('urb', default='off') == 'on'):
+#             with g.db.cursor(cursor_factory=psycopg2.extras.DictCursor) as cur:
+#                 cur.execute(
+#                     "select * from nc_urb_mean where huc_12 = %s", (huc12, )
+#                     )
+#                 rec = cur.fetchone()
+#                 try:
+#                     threat += rec["yr" + year]
+#                     row['urb'] = rec["yr" + year]
+#                 except KeyError:
+#                     continue
 
-        if(query.get('frag', default='off') == 'on'):
-            with g.db.cursor(cursor_factory=psycopg2.extras.DictCursor) as cur:
-                cur.execute(
-                    "select * from data_frag where huc_12 = %s", (huc12, )
-                    )
-                rec = cur.fetchone()
-                try:
-                    threat += rec["yr" + year]
-                    row['frag'] = rec["yr" + year]
-                except KeyError:
-                    continue
+#         if(query.get('frag', default='off') == 'on'):
+#             with g.db.cursor(cursor_factory=psycopg2.extras.DictCursor) as cur:
+#                 cur.execute(
+#                     "select * from data_frag where huc_12 = %s", (huc12, )
+#                     )
+#                 rec = cur.fetchone()
+#                 try:
+#                     threat += rec["yr" + year]
+#                     row['frag'] = rec["yr" + year]
+#                 except KeyError:
+#                     continue
 
-        with g.db.cursor(cursor_factory=psycopg2.extras.DictCursor) as cur:
-                cur.execute(
-                    "select * from data_static where huc_12 = %s", (huc12, )
-                    )
-                rec = cur.fetchone()
-                if(query.get('polu1', default='off') == 'on'):
-                    threat += rec['polu1']
-                    row['polu1'] = rec['polu1']
-                if(query.get('polu2', default='off') == 'on'):
-                    threat += rec['polu2']
-                    row['polu2'] = rec['polu2']
-                if(query.get('dise1', default='off') == 'on'):
-                    threat += rec['dise1']
-                    row['dise1'] = rec['dise1']
-                if(query.get('dise2', default='off') == 'on'):
-                    threat += rec['dise2']
-                    row['dise2'] = rec['dise2']
-                if(query.get('slr', default='off') == 'on'):
-                    threat += rec['slr']
-                    row['slr'] = rec['slr']
-                if(query.get('firp', default='off') == 'on'):
-                    threat += rec['firp']
-                    row['firp'] = rec['firp']
-                if(query.get('firs', default='off') == 'on'):
-                    threat += rec['firs']
-                    row['firs'] = rec['firs']
-                if(query.get('tran', default='off') == 'on'):
-                    threat += rec['tran']
-                    row['tran'] = rec['tran']
+#         with g.db.cursor(cursor_factory=psycopg2.extras.DictCursor) as cur:
+#                 cur.execute(
+#                     "select * from data_static where huc_12 = %s", (huc12, )
+#                     )
+#                 rec = cur.fetchone()
+#                 if(query.get('polu1', default='off') == 'on'):
+#                     threat += rec['polu1']
+#                     row['polu1'] = rec['polu1']
+#                 if(query.get('polu2', default='off') == 'on'):
+#                     threat += rec['polu2']
+#                     row['polu2'] = rec['polu2']
+#                 if(query.get('dise1', default='off') == 'on'):
+#                     threat += rec['dise1']
+#                     row['dise1'] = rec['dise1']
+#                 if(query.get('dise2', default='off') == 'on'):
+#                     threat += rec['dise2']
+#                     row['dise2'] = rec['dise2']
+#                 if(query.get('slr', default='off') == 'on'):
+#                     threat += rec['slr']
+#                     row['slr'] = rec['slr']
+#                 if(query.get('firp', default='off') == 'on'):
+#                     threat += rec['firp']
+#                     row['firp'] = rec['firp']
+#                 if(query.get('firs', default='off') == 'on'):
+#                     threat += rec['firs']
+#                     row['firs'] = rec['firs']
+#                 if(query.get('tran', default='off') == 'on'):
+#                     threat += rec['tran']
+#                     row['tran'] = rec['tran']
 
-        try:
-            threat = threat / (num_factors * 200) + 1
-        except ZeroDivisionError:
-            threat = 1
-            pass
-        if threat == 6:
-            threat = 5
-        row['result'] = threat
+#         try:
+#             threat = threat / (num_factors * 200) + 1
+#         except ZeroDivisionError:
+#             threat = 1
+#             pass
+#         if threat == 6:
+#             threat = 5
+#         row['result'] = threat
 
-    col_disp = []
-    for col in nparray.dtype.names:
-        col_disp.append(col_names[col])
+#     col_disp = []
+#     for col in nparray.dtype.names:
+#         col_disp.append(col_names[col])
 
-    return {
-        "res_arr": nparray.tolist(),
-        "col_hdrs": col_disp,
-        "year": year
-        }
+#     return {
+#         "res_arr": nparray.tolist(),
+#         "col_hdrs": col_disp,
+#         "year": year
+#         }
 
-col_names = {
-    'x': 'Baseline',
-    'a': 'Biofuel A',
-    'b': 'Biofuel B',
-    'c': 'Biofuel C',
-    'd': 'Biofuel D',
-    'e': 'Biofuel E',
-    'frst': 'Forest',
-    'ftwt': 'Wet forest',
-    'open': 'Open',
-    'shrb': 'Scrub',
-    'hbwt': 'Wet herbaceous'
-}
+# col_names = {
+#     'x': 'Baseline',
+#     'a': 'Biofuel A',
+#     'b': 'Biofuel B',
+#     'c': 'Biofuel C',
+#     'd': 'Biofuel D',
+#     'e': 'Biofuel E',
+#     'frst': 'Forest',
+#     'ftwt': 'Wet forest',
+#     'open': 'Open',
+#     'shrb': 'Scrub',
+#     'hbwt': 'Wet herbaceous'
+# }
 
 
 def get_threat_report2(id, formdata, mode='state'):
@@ -1315,5 +1315,49 @@ def get_indiv_report(id, mymap_str, mode='state'):
         "results_dict": results_dict,
         "col_name": col_name,
         "num_hucs": num_hucs
+
+    }
+
+
+def preview_map(data):
+    year = data.get('year')[2:]
+    mymap = data.get('map')[:-6]
+    scenario = data.get('scenario')
+    limit = data.get('limit')
+    # logger.debug(layer)
+    results_dict = collections.OrderedDict()
+    res_arr = []
+    query = "select huc12rng from huc_names order by huc12rng"
+    with g.db.cursor() as cur:
+        cur.execute(query)
+        hucs_row = cur.fetchall()
+        hucs = [x[0] for x in hucs_row]
+
+    if mymap in [
+                "frst", 'ftwt', 'hbwt', 'open', 'shrb'
+            ]:
+        query1 = "select huc_12, %s%sha from lcscen_%s_ha" % (
+            mymap, year, scenario
+            )
+    with g.db.cursor() as cur:
+        cur.execute(query1)
+        for row in cur:
+            if row[0] in hucs:
+                # logger.debug(row[0])
+                results_dict[row[0]] = float(row[1])
+                if float(row[1]) > float(limit):
+                    res_arr.append(float(row[1]))
+                    results_dict[row[0]] = float(row[1])
+                else:
+                    res_arr.append(0)
+                    results_dict[row[0]] = 0
+    return {
+        # "legend_param": legend_param,
+        "res_arr": res_arr,
+        'year': year,
+        # "stats": stats,
+        "results_dict": results_dict
+        # "col_name": col_name,
+        # "num_hucs": num_hucs
 
     }

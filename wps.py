@@ -701,5 +701,74 @@ def report_indiv(id):
                 )
 
 
+@app.route('/preview_map', methods=['POST', ])
+def limit_preview_map():
+    # logger.debug(request.form)
+    report_res = model.preview_map(request.form)
+    results_dict = report_res['results_dict']
+    layer = request.form.get("map")[:-6]
+
+    query2 = "select * from legend_data where layer_str = %s"
+    logger.debug(query2 % layer)
+    # with g.db.cursor(cursor_factory=psycopg2.extras.DictCursor) as cur:
+    #     cur.execute(query2, (legend_param, ))
+    #     for row in cur:
+    #         logger.debug(row)
+    #         pass
+    with g.db.cursor(cursor_factory=psycopg2.extras.DictCursor) as cur:
+        cur.execute(query2, (layer, ))
+        for row in cur:
+            logger.debug(row)
+            # ranges = siteutils.legend_ranges(
+            #     row['range1_vals'],
+            #     row['range2_vals'],
+            #     row['range3_vals'],
+            #     row['range4_vals'],
+            #     row['range5_vals'],
+            #     row['range6_vals']
+            # )
+            colors = [
+                row['color1'],
+                row['color2'],
+                row['color3'],
+                row['color4'],
+                row['color5'],
+                row['color6']
+            ]
+
+            lgd_text = [
+                row['range1'],
+                row['range2'],
+                row['range3'],
+                row['range4'],
+                row['range5'],
+                row['range6']
+            ]
+
+    # colors_json = json.dumps(colors)
+    # range_vals = json.loads(ranges)
+
+    for huc in results_dict:
+        if results_dict[huc] <= float(row['range1_high']):
+            results_dict[huc] = 0
+        elif results_dict[huc] <= float(row['range2_high']):
+            results_dict[huc] = 1
+        elif results_dict[huc] <= float(row['range3_high']):
+            results_dict[huc] = 2
+        elif results_dict[huc] <= float(row['range4_high']):
+            results_dict[huc] = 3
+        elif results_dict[huc] <= float(row['range5_high']):
+            results_dict[huc] = 4
+        else:
+            results_dict[huc] = 5
+
+    # return json.dumps(results)
+    return json.dumps({
+        # "map": legend_param,
+        "lgd_text": lgd_text,
+        "res": results_dict,
+        'colors': colors
+    })
+
 if __name__ == '__main__':
     app.run(debug=True)
