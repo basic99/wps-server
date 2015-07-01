@@ -703,10 +703,11 @@ def report_indiv(id):
 
 @app.route('/preview_map', methods=['POST', ])
 def limit_preview_map():
-    # logger.debug(request.form)
+    logger.debug(request.form)
     report_res = model.preview_map(request.form)
     results_dict = report_res['results_dict']
     layer = request.form.get("map")[:-6]
+    layer = "urban"
 
     query2 = "select * from legend_data where layer_str = %s"
     logger.debug(query2 % layer)

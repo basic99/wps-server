@@ -1321,10 +1321,10 @@ def get_indiv_report(id, mymap_str, mode='state'):
 
 def preview_map(data):
     year = data.get('year')[2:]
-    mymap = data.get('map')[:-6]
+    mymap = data.get('map')
     scenario = data.get('scenario')
-    limit = data.get('limit')
-    # logger.debug(layer)
+    limit = float(data.get('limit')) / 100.0
+    logger.debug(limit)
     results_dict = collections.OrderedDict()
     res_arr = []
     query = "select huc12rng from huc_names order by huc12rng"
@@ -1333,19 +1333,23 @@ def preview_map(data):
         hucs_row = cur.fetchall()
         hucs = [x[0] for x in hucs_row]
 
-    if mymap in [
-                "frst", 'ftwt', 'hbwt', 'open', 'shrb'
-            ]:
-        query1 = "select huc_12, %s%sha from lcscen_%s_ha" % (
-            mymap, year, scenario
-            )
+    # if mymap in [
+    #             "frst", 'ftwt', 'hbwt', 'open', 'shrb'
+    #         ]:
+    #     query1 = "select huc_12, %s%sha from lcscen_%s_ha" % (
+    #         mymap, year, scenario
+    #         )
+    if mymap == 'urbangrth_limit':
+        query1 = "select huc_12, urb%sha, urb%sps from urban" % (year, year)
+        logger.debug(query1)
     with g.db.cursor() as cur:
         cur.execute(query1)
         for row in cur:
+            # logger.debug(row)
             if row[0] in hucs:
                 # logger.debug(row[0])
-                results_dict[row[0]] = float(row[1])
-                if float(row[1]) > float(limit):
+                # results_dict[row[0]] = float(row[1])
+                if float(row[2]) > float(limit):
                     res_arr.append(float(row[1]))
                     results_dict[row[0]] = float(row[1])
                 else:
