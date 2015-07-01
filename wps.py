@@ -706,8 +706,12 @@ def limit_preview_map():
     logger.debug(request.form)
     report_res = model.preview_map(request.form)
     results_dict = report_res['results_dict']
-    layer = request.form.get("map")[:-6]
-    layer = "urban"
+    layer = request.form.get("map")
+    logger.debug(layer)
+    legend_crswlk = {
+        'urbangrth_limit': 'urban',
+        'firesup_limit': 'fire'
+    }
 
     query2 = "select * from legend_data where layer_str = %s"
     logger.debug(query2 % layer)
@@ -717,7 +721,7 @@ def limit_preview_map():
     #         logger.debug(row)
     #         pass
     with g.db.cursor(cursor_factory=psycopg2.extras.DictCursor) as cur:
-        cur.execute(query2, (layer, ))
+        cur.execute(query2, (legend_crswlk[layer], ))
         for row in cur:
             logger.debug(row)
             # ranges = siteutils.legend_ranges(

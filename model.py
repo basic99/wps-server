@@ -1341,6 +1341,8 @@ def preview_map(data):
     #         )
     if mymap == 'urbangrth_limit':
         query1 = "select huc_12, urb%sha, urb%sps from urban" % (year, year)
+    elif mymap == 'firesup_limit':
+        query1 = "select huc_12,fsupp%sdt, fsupp%sps from fsupp" % (year, year)
         logger.debug(query1)
     with g.db.cursor() as cur:
         cur.execute(query1)
