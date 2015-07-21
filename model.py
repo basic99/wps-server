@@ -1239,7 +1239,7 @@ def get_indiv_report(id, mymap_str, mode='state'):
     if mymap in [
                 "frst", 'ftwt', 'hbwt', 'open', 'shrb'
             ]:
-        query1 = "select huc_12, %s%sha from lcscen_%s_ha" % (
+        query1 = "select huc_12, %s%sdt from lcscen_%s" % (
             mymap, year, scenario
             )
         legend_param = mymap
