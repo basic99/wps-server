@@ -1341,8 +1341,10 @@ def preview_map(data):
     #         )
     if mymap == 'urbangrth_limit':
         query1 = "select huc_12, urb%sha, urb%sps from urban" % (year, year)
+        legend_param = 'urban'
     elif mymap == 'firesup_limit':
         query1 = "select huc_12,fsupp%sdt, fsupp%sps from fsupp" % (year, year)
+        legend_param = 'fire'
         logger.debug(query1)
     with g.db.cursor() as cur:
         cur.execute(query1)
@@ -1358,7 +1360,7 @@ def preview_map(data):
                     res_arr.append(0)
                     results_dict[row[0]] = 0
     return {
-        # "legend_param": legend_param,
+        "legend_param": legend_param,
         "res_arr": res_arr,
         'year': year,
         # "stats": stats,

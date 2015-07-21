@@ -706,6 +706,7 @@ def limit_preview_map():
     logger.debug(request.form)
     report_res = model.preview_map(request.form)
     results_dict = report_res['results_dict']
+    legend_param = report_res['legend_param']
     layer = request.form.get("map")
     logger.debug(layer)
     legend_crswlk = {
@@ -714,7 +715,7 @@ def limit_preview_map():
     }
 
     query2 = "select * from legend_data where layer_str = %s"
-    logger.debug(query2 % layer)
+    logger.debug(query2 % "'" + legend_crswlk[layer] + "'")
     # with g.db.cursor(cursor_factory=psycopg2.extras.DictCursor) as cur:
     #     cur.execute(query2, (legend_param, ))
     #     for row in cur:
@@ -769,7 +770,7 @@ def limit_preview_map():
 
     # return json.dumps(results)
     return json.dumps({
-        # "map": legend_param,
+        "map": legend_param,
         "lgd_text": lgd_text,
         "res": results_dict,
         'colors': colors
