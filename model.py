@@ -1201,7 +1201,7 @@ def get_indiv_report(id, mymap_str, mode='state'):
     # hucs_dict = collections.OrderedDict()
     if int(id) == 0 or mode == 'state':
         # could use any table here
-        query = "select huc_12 from forest_health order by huc_12"
+        query = "select huc_12 from huc12nc order by huc_12"
         with g.db.cursor() as cur:
             cur.execute(query)
             hucs_row = cur.fetchall()
@@ -1245,36 +1245,50 @@ def get_indiv_report(id, mymap_str, mode='state'):
         legend_param = mymap
 
     elif mymap in ['urban']:
-        query1 = "select huc_12, urb%sha from urban_ha" % year
+        query1 = "select huc_12, urb%sdt from urban" % year
         legend_param = mymap
     elif mymap in ['fire']:
-        query1 = "select huc_12, urb%sden from urban_den" % year
+        query1 = "select huc_12, fsupp%sdt from fsupp" % year
         legend_param = mymap
     elif mymap in ['trans']:
-        query1 = "select huc_12, rds%smha from transportation" % year
+        query1 = "select huc_12, rds%sdt from DCLRds" % year
         legend_param = mymap
-    elif mymap in ['nutrient']:
-        query1 = "select huc_12, %s from ea_pol" % param2
+    elif mymap_str in ['nutrient:manu']:
+        query1 = "select huc_12, manu_dt from Manu"
         legend_param = mymap_str
-    elif mymap in ['water']:
-        query1 = "select huc_12, %s from ea_h20" % param2
+    elif mymap_str in ['nutrient:fert']:
+        query1 = "select huc_12, fert_dt from Fert"
+        legend_param = mymap_str
+    elif mymap_str in ['nutrient:td_n_t']:
+        query1 = "select huc_12, tdnt_dt from TDNT"
+        legend_param = mymap_str
+    elif mymap_str in ['nutrient:td_s_t']:
+        query1 = "select huc_12, tdst_dt from TDST"
+        legend_param = mymap_str
+    elif mymap_str in ['water:NID']:
+        query1 = "select huc_12, nid_dt from NID"
         legend_param = mymap_str
     elif mymap in ['frsthlth']:
-        query1 = "select huc_12, fhlth_ha from forest_health"
+        query1 = "select huc_12, FHlth_dt from FHlth"
         legend_param = mymap
     elif mymap in ['energydev']:
-        query1 = " select huc_12, triassic_ha from energy_dev"
+        query1 = " select huc_12, triassic_dt from Triassic"
         legend_param = mymap
     elif mymap in ['wind']:
-        query1 = "select * from wind_avg"
+        query1 = "select huc_12, WPC_dt from WPC"
         legend_param = mymap
     elif mymap in ['slr_up']:
-        query1 = "select huc_12, up00%sha from slamm_up_ha" % year
+        query1 = "select huc_12, up%sdt from  SLRup" % year
         legend_param = mymap
     elif mymap in ['slr_lc']:
-        query1 = "select huc_12, lc00%sha from slamm_lc_ha" % year
+        query1 = "select huc_12, lc%sdt from SLRlc" % year
         legend_param = mymap
-
+    elif mymap_str in ['water:bioimplen']:
+        query1 = "select huc_12, BioImpLen_dt from BioImpLen"
+        legend_param = mymap_str
+    elif mymap_str in ['water:metimplen']:
+        query1 = "select huc_12, MetImpLen_dt from MetImpLen"
+        legend_param = mymap_str
 
     res_arr = []
     logger.debug(query1)
