@@ -706,13 +706,19 @@ def limit_preview_map():
     logger.debug(request.form)
     report_res = model.preview_map(request.form)
     results_dict = report_res['results_dict']
-    legend_param = report_res['legend_param']
+    # legend_param = report_res['legend_param']
     layer = request.form.get("map")
     logger.debug(layer)
     legend_crswlk = {
         'urbangrth_limit': 'urban',
-        'firesup_limit': 'fire'
+        'firesup_limit': 'fire',
+        'frst_limit': 'frst',
+        'ftwt_limit': 'ftwt',
+        'hbwt_limit': 'hbwt',
+        'open_limit': 'open',
+        'shrb_limit': 'shrb'
     }
+    legend_param = legend_crswlk[layer]
 
     query2 = "select * from legend_data where layer_str = %s"
     logger.debug(query2 % "'" + legend_crswlk[layer] + "'")

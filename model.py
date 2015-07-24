@@ -1229,7 +1229,6 @@ def get_indiv_report(id, mymap_str, mode='state'):
             huc12_str = cur.fetchone()
         hucs = huc12_str[0].split(", ")
 
-
     # hucs_dict_ranks = copy.deepcopy(hucs_dict)
     # results_list = []
     # rang = {}
@@ -1354,12 +1353,18 @@ def preview_map(data):
     #         mymap, year, scenario
     #         )
     if mymap == 'urbangrth_limit':
-        query1 = "select huc_12, urb%sha, urb%sps from urban" % (year, year)
-        legend_param = 'urban'
+        query1 = "select huc_12, urb%sdt, urb%sps from urban" % (year, year)
+        # legend_param = 'urban'
     elif mymap == 'firesup_limit':
         query1 = "select huc_12,fsupp%sdt, fsupp%sps from fsupp" % (year, year)
-        legend_param = 'fire'
-        logger.debug(query1)
+        # legend_param = 'fire'
+    elif mymap == 'frst_limit':
+        query1 = "select huc_12, frst%sdt, frst%sps from lcscen_%s" % (
+            year, year, scenario
+        )
+        # legend_param = 'frst'
+
+    logger.debug(query1)
     with g.db.cursor() as cur:
         cur.execute(query1)
         for row in cur:
@@ -1374,7 +1379,7 @@ def preview_map(data):
                     res_arr.append(0)
                     results_dict[row[0]] = 0
     return {
-        "legend_param": legend_param,
+        # "legend_param": legend_param,
         "res_arr": res_arr,
         'year': year,
         # "stats": stats,
