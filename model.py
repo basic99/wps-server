@@ -1357,12 +1357,58 @@ def preview_map(data):
         # legend_param = 'urban'
     elif mymap == 'firesup_limit':
         query1 = "select huc_12,fsupp%sdt, fsupp%sps from fsupp" % (year, year)
-        # legend_param = 'fire'
     elif mymap == 'frst_limit':
         query1 = "select huc_12, frst%sdt, frst%sps from lcscen_%s" % (
             year, year, scenario
         )
-        # legend_param = 'frst'
+    elif mymap == 'ftwt_limit':
+        query1 = "select huc_12, ftwt%sdt, ftwt%sps from lcscen_%s" % (
+            year, year, scenario
+        )
+    elif mymap == 'hbwt_limit':
+        query1 = "select huc_12, hbwt%sdt, hbwt%sps from lcscen_%s" % (
+            year, year, scenario
+        )
+    elif mymap == 'open_limit':
+        query1 = "select huc_12, open%sdt, open%sps from lcscen_%s" % (
+            year, year, scenario
+        )
+    elif mymap == 'shrb_limit':
+        query1 = "select huc_12, shrb%sdt, shrb%sps from lcscen_%s" % (
+            year, year, scenario
+        )
+    elif mymap == 'hiway_limit':
+        query1 = "select huc_12, rds%sdt, rds%sps from DCLRds" % (
+            year, year
+        )
+    elif mymap == 'slr_up_limit':
+        query1 = "select huc_12, up%sdt, up%sps from SLRup" % (
+            year, year
+        )
+    elif mymap == 'slr_lc_limit':
+        query1 = "select huc_12, lc%sdt, lc%sps from SLRlc" % (
+            year, year
+        )
+    elif mymap == 'triassic_limit':
+        query1 = "select huc_12, triassic_dt, triassic_ps from Triassic"
+    elif mymap == 'wind_limit':
+        query1 = "select huc_12, wpc_dt, wpc_ps from WPC"
+    elif mymap == 'manure_limit':
+        query1 = "select huc_12, manu_dt, manu_ps from manu"
+    elif mymap == 'nitrofrt_limit':
+        query1 = "select huc_12, fert_dt, fert_ps from fert"
+    elif mymap == 'totnitro_limit':
+        query1 = "select huc_12, tdnt_dt, tdnt_ps from tdnt"
+    elif mymap == 'totsulf_limit':
+        query1 = "select huc_12, tdst_dt, tdst_ps from tdst"
+    elif mymap == 'insectdisease_limit':
+        query1 = "select huc_12, fhlth_dt, fhlth_ps from fhlth"
+    elif mymap == 'ndams_limit':
+        query1 = "select huc_12, nid_dt, nid_ps from nid"
+    elif mymap == 'impairbiota_limit':
+        query1 = "select huc_12, bioimplen_dt, bioimplen_ps from bioimplen"
+    elif mymap == 'impairmetal_limit':
+        query1 = "select huc_12, metimplen_dt, metimplen_ps from metimplen"
 
     logger.debug(query1)
     with g.db.cursor() as cur:

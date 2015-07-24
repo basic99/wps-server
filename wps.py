@@ -716,7 +716,20 @@ def limit_preview_map():
         'ftwt_limit': 'ftwt',
         'hbwt_limit': 'hbwt',
         'open_limit': 'open',
-        'shrb_limit': 'shrb'
+        'shrb_limit': 'shrb',
+        'hiway_limit': 'trans',
+        'slr_up_limit': 'slr_up',
+        'slr_lc_limit': 'slr_lc',
+        'triassic_limit': 'energydev',
+        'wind_limit': 'wind',
+        'manure_limit': 'nutrient:manu',
+        'nitrofrt_limit': 'nutrient:fert',
+        'totnitro_limit': 'nutrient:td_n_t',
+        'totsulf_limit': 'nutrient:td_s_t',
+        'insectdisease_limit': 'frsthlth',
+        'ndams_limit': 'water:NID',
+        'impairbiota_limit': 'water:bioimplen',
+        'impairmetal_limit': 'water:metimplen'
     }
     legend_param = legend_crswlk[layer]
 
