@@ -125,19 +125,19 @@ logger.addHandler(fh)
 #         "year": year
 #         }
 
-# col_names = {
-#     'x': 'Baseline',
-#     'a': 'Biofuel A',
-#     'b': 'Biofuel B',
-#     'c': 'Biofuel C',
-#     'd': 'Biofuel D',
-#     'e': 'Biofuel E',
-#     'frst': 'Forest',
-#     'ftwt': 'Wet forest',
-#     'open': 'Open',
-#     'shrb': 'Scrub',
-#     'hbwt': 'Wet herbaceous'
-# }
+col_names = {
+    'x': 'Baseline',
+    'a': 'Biofuel A',
+    'b': 'Biofuel B',
+    'c': 'Biofuel C',
+    'd': 'Biofuel D',
+    'e': 'Biofuel E',
+    'frst': 'Forest',
+    'ftwt': 'Wet forest',
+    'open': 'Open',
+    'shrb': 'Scrub',
+    'hbwt': 'Wet herbaceous'
+}
 
 
 def get_threat_report2(id, formdata, mode='state'):
@@ -156,7 +156,7 @@ def get_threat_report2(id, formdata, mode='state'):
 
     if int(id) == 0 or mode == 'state':
         # could use any table here
-        query = "select huc_12 from forest_health order by huc_12"
+        query = "select huc12rng from huc_names order by huc12rng"
         with g.db.cursor() as cur:
             cur.execute(query)
             hucs = cur.fetchall()
@@ -209,23 +209,26 @@ def get_threat_report2(id, formdata, mode='state'):
         pass
     logger.info(formvals)
 
+    model_length = 0
+
 
 
     # add habitat in in model
     if 'frst' in formvals:
         rank_data['frst'] = []
-        query = "select huc_12, %s%srnk from lcscen_%s_rnk" % (
-            'frst',
+        query = "select huc_12, frst%sps, frst%sdt from lcscen_%s" % (
+            year[2:],
             year[2:],
             scenario
         )
-        query2 = "select huc_12, %s%spct from lcscen_%s_pct" % (
-            'frst',
-            year[2:],
-            scenario
-        )
-        logger.debug(query2)
-        model_wts.append(float(formvals['frst']))
+        # query2 = "select huc_12, %s%spct from lcscen_%s_pct" % (
+        #     'frst',
+        #     year[2:],
+        #     scenario
+        # )
+        logger.debug(query)
+        # model_wts.append(float(formvals['frst']))
+        model_length += 1
         model_col = "%s %s - limit(%s)" % (
                 col_names['frst'],
                 col_names[scenario],
@@ -236,36 +239,36 @@ def get_threat_report2(id, formdata, mode='state'):
             cur.execute(query)
             for row in cur:
                 # logger.debug(row)
-                if formvals['mode'] == 'single':
-                    try:
-                        hucs_dict[row[0]].append(row[1])
-                    except KeyError:
-                        pass
-                    continue
-                if int(row[1]) > int(formvals['frst']):
+                # if formvals['mode'] == 'single':
+                #     try:
+                #         hucs_dict[row[0]].append(row[1])
+                #     except KeyError:
+                #         pass
+                #     continue
+                if float(row[1]) > float(formvals['frst']):
                     above = 1
-                    rank = int(row[1])
+                    # rank = int(row[2])
                 else:
                     above = 0
-                    rank = 0
+                    # rank = 0
                 try:
                     hucs_dict[row[0]].append(above)
-                    hucs_dict_ranks[row[0]].append(rank)
+                    hucs_dict_ranks[row[0]].append(float(row[1]))
 
                     # must follow this line to get hucs correct
-                    rank_data['frst'].append(rank)
+                    rank_data['frst'].append(float(row[1]))
                 except KeyError:
                     pass
-        pct_arr = []
-        with g.db.cursor() as cur:
-            cur.execute(query2)
-            for row in cur:
-                if row[0] in hucs_dict:
-                    pct_arr.append(row[1])
+        # pct_arr = []
+        # with g.db.cursor() as cur:
+        #     cur.execute(query2)
+        #     for row in cur:
+        #         if row[0] in hucs_dict:
+        #             pct_arr.append(row[1])
 
-        pct_mean = statistics.mean(pct_arr)
-        logger.debug(int(pct_mean * 10) / 10.0)
-        mean_pct_areas['frst'] = int(pct_mean * 10) / 10.0
+        # pct_mean = statistics.mean(pct_arr)
+        # logger.debug(int(pct_mean * 10) / 10.0)
+        # mean_pct_areas['frst'] = int(pct_mean * 10) / 10.0
 
     if 'ftwt' in formvals:
         rank_data['ftwt'] = []
@@ -1003,7 +1006,8 @@ def get_threat_report2(id, formdata, mode='state'):
         threat = 0
         threat_rnk = 0
 
-        for idx, weight in enumerate(model_wts):
+        for idx in range(model_length):
+            logger.debug(idx)
             threat += float(hucs_dict[huc][idx + 1])
             threat_rnk += float(hucs_dict_ranks[huc][idx + 1])
         threat_raw = threat
@@ -1336,7 +1340,7 @@ def preview_map(data):
     year = data.get('year')[2:]
     mymap = data.get('map')
     scenario = data.get('scenario')
-    limit = float(data.get('limit')) / 100.0
+    limit = float(data.get('limit'))
     logger.debug(limit)
     results_dict = collections.OrderedDict()
     res_arr = []
