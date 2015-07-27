@@ -273,17 +273,15 @@ def get_threat_report2(id, formdata, mode='state'):
     if 'ftwt' in formvals:
         rank_data['ftwt'] = []
 
-        query = "select huc_12, %s%srnk from lcscen_%s_rnk" % (
-            'ftwt',
-            year[2:],
-            scenario
+        query = "select huc_12, ftwt%sps, ftwt%sdt from lcscen_%s" % (
+                year[2:],
+                year[2:],
+                scenario
         )
-        query2 = "select huc_12, %s%spct from lcscen_%s_pct" % (
-            'ftwt',
-            year[2:],
-            scenario
-        )
-        model_wts.append(float(formvals['ftwt']))
+
+        # model_wts.append(float(formvals['ftwt']))
+        logger.debug(query)
+        model_length += 1
         model_cols.append(
             "%s %s - limit(%s)" % (
                 col_names['ftwt'],
@@ -293,51 +291,38 @@ def get_threat_report2(id, formdata, mode='state'):
         with g.db.cursor() as cur:
             cur.execute(query)
             for row in cur:
-                if formvals['mode'] == 'single':
-                    try:
-                        hucs_dict[row[0]].append(row[1])
-                    except KeyError:
-                        pass
-                    continue
-                if int(row[1]) > int(formvals['ftwt']):
+                # if formvals['mode'] == 'single':
+                #     try:
+                #         hucs_dict[row[0]].append(row[1])
+                #     except KeyError:
+                #         pass
+                #     continue
+                if float(row[1]) > float(formvals['ftwt']):
                     above = 1
-                    rank = int(row[1])
+                    # rank = int(row[1])
                 else:
                     above = 0
-                    rank = 0
+                    # rank = 0
                 # logger.debug(row)
                 try:
                     hucs_dict[row[0]].append(above)
-                    hucs_dict_ranks[row[0]].append(rank)
-                    rank_data['ftwt'].append(rank)
+                    hucs_dict_ranks[row[0]].append(float(row[1]))
+                    rank_data['ftwt'].append(float(row[1]))
                 except KeyError:
                     pass
 
-        pct_arr = []
-        with g.db.cursor() as cur:
-            cur.execute(query2)
-            for row in cur:
-                if row[0] in hucs_dict:
-                    pct_arr.append(row[1])
 
-        pct_mean = statistics.mean(pct_arr)
-        logger.debug(int(pct_mean * 10) / 10.0)
-        mean_pct_areas['ftwt'] = int(pct_mean * 10) / 10.0
 
     if 'hbwt' in formvals:
         rank_data['hbwt'] = []
 
-        query = "select huc_12, %s%srnk from lcscen_%s_rnk" % (
-            'hbwt',
-            year[2:],
-            scenario
+        query = "select huc_12, hbwt%sps, hbwt%sdt from lcscen_%s" % (
+                year[2:],
+                year[2:],
+                scenario
         )
-        query2 = "select huc_12, %s%spct from lcscen_%s_pct" % (
-            'hbwt',
-            year[2:],
-            scenario
-        )
-        model_wts.append(float(formvals['hbwt']))
+        # model_wts.append(float(formvals['hbwt']))
+        model_length += 1
         model_cols.append(
             "%s %s - limit(%s)" % (
                 col_names['hbwt'],
@@ -347,51 +332,38 @@ def get_threat_report2(id, formdata, mode='state'):
         with g.db.cursor() as cur:
             cur.execute(query)
             for row in cur:
-                if formvals['mode'] == 'single':
-                    try:
-                        hucs_dict[row[0]].append(row[1])
-                    except KeyError:
-                        pass
-                    continue
+                # if formvals['mode'] == 'single':
+                #     try:
+                #         hucs_dict[row[0]].append(row[1])
+                #     except KeyError:
+                #         pass
+                #     continue
                 # logger.debug(row)
-                if int(row[1]) > int(formvals['hbwt']):
+                if float(row[1]) > float(formvals['hbwt']):
                     above = 1
-                    rank = int(row[1])
+                    # rank = int(row[1])
                 else:
                     above = 0
-                    rank = 0
+                    # rank = 0
                 try:
                     hucs_dict[row[0]].append(above)
-                    hucs_dict_ranks[row[0]].append(rank)
-                    rank_data['hbwt'].append(rank)
+                    hucs_dict_ranks[row[0]].append(float(row[1]))
+                    rank_data['hbwt'].append(float(row[1]))
                 except KeyError:
                     pass
 
-        pct_arr = []
-        with g.db.cursor() as cur:
-            cur.execute(query2)
-            for row in cur:
-                if row[0] in hucs_dict:
-                    pct_arr.append(row[1])
 
-        pct_mean = statistics.mean(pct_arr)
-        logger.debug(int(pct_mean * 10) / 10.0)
-        mean_pct_areas['hbwt'] = int(pct_mean * 10) / 10.0
 
     if 'open' in formvals:
         rank_data['open'] = []
 
-        query = "select huc_12, %s%srnk from lcscen_%s_rnk" % (
-            'open',
-            year[2:],
-            scenario
+        query = "select huc_12, open%sps, open%sdt from lcscen_%s" % (
+                year[2:],
+                year[2:],
+                scenario
         )
-        query2 = "select huc_12, %s%spct from lcscen_%s_pct" % (
-            'open',
-            year[2:],
-            scenario
-        )
-        model_wts.append(float(formvals['open']))
+        # model_wts.append(float(formvals['open']))
+        model_length += 1
         model_cols.append(
             "%s %s - limit(%s)" % (
                 col_names['open'],
@@ -401,51 +373,38 @@ def get_threat_report2(id, formdata, mode='state'):
         with g.db.cursor() as cur:
             cur.execute(query)
             for row in cur:
-                if formvals['mode'] == 'single':
-                    try:
-                        hucs_dict[row[0]].append(row[1])
-                    except KeyError:
-                        pass
-                    continue
+                # if formvals['mode'] == 'single':
+                #     try:
+                #         hucs_dict[row[0]].append(row[1])
+                #     except KeyError:
+                #         pass
+                #     continue
                 # logger.debug(row)
-                if int(row[1]) > int(formvals['open']):
+                if float(row[1]) > float(formvals['open']):
                     above = 1
-                    rank = int(row[1])
+                    # rank = int(row[1])
                 else:
                     above = 0
-                    rank = 0
+                    # rank = 0
                 try:
                     hucs_dict[row[0]].append(above)
-                    hucs_dict_ranks[row[0]].append(rank)
-                    rank_data['open'].append(rank)
+                    hucs_dict_ranks[row[0]].append(float(row[1]))
+                    rank_data['open'].append(float(row[1]))
                 except KeyError:
                     pass
 
-        pct_arr = []
-        with g.db.cursor() as cur:
-            cur.execute(query2)
-            for row in cur:
-                if row[0] in hucs_dict:
-                    pct_arr.append(row[1])
 
-        pct_mean = statistics.mean(pct_arr)
-        logger.debug(int(pct_mean * 10) / 10.0)
-        mean_pct_areas['open'] = int(pct_mean * 10) / 10.0
 
     if 'shrb' in formvals:
         rank_data['shrb'] = []
 
-        query = "select huc_12, %s%srnk from lcscen_%s_rnk" % (
-            'shrb',
-            year[2:],
-            scenario
+        query = "select huc_12, shrb%sps, shrb%sdt from lcscen_%s" % (
+                year[2:],
+                year[2:],
+                scenario
         )
-        query2 = "select huc_12, %s%spct from lcscen_%s_pct" % (
-            'shrb',
-            year[2:],
-            scenario
-        )
-        model_wts.append(float(formvals['shrb']))
+        # model_wts.append(float(formvals['shrb']))
+        model_length += 1
         model_cols.append(
             "%s %s - limit(%s)" % (
                 col_names['shrb'],
@@ -455,108 +414,87 @@ def get_threat_report2(id, formdata, mode='state'):
         with g.db.cursor() as cur:
             cur.execute(query)
             for row in cur:
-                if formvals['mode'] == 'single':
-                    try:
-                        hucs_dict[row[0]].append(row[1])
-                    except KeyError:
-                        pass
-                    continue
+                # if formvals['mode'] == 'single':
+                #     try:
+                #         hucs_dict[row[0]].append(row[1])
+                #     except KeyError:
+                #         pass
+                #     continue
                 # logger.debug(row)
-                if int(row[1]) > int(formvals['shrb']):
+                if float(row[1]) > float(formvals['shrb']):
                     above = 1
-                    rank = int(row[1])
+                    # rank = int(row[1])
                 else:
                     above = 0
-                    rank = 0
+                    # rank = 0
                 try:
                     hucs_dict[row[0]].append(above)
-                    hucs_dict_ranks[row[0]].append(rank)
-                    rank_data['shrb'].append(rank)
+                    hucs_dict_ranks[row[0]].append(float(row[1]))
+                    rank_data['shrb'].append(float(row[1]))
                 except KeyError:
                     pass
 
-        pct_arr = []
-        with g.db.cursor() as cur:
-            cur.execute(query2)
-            for row in cur:
-                if row[0] in hucs_dict:
-                    pct_arr.append(row[1])
 
-        pct_mean = statistics.mean(pct_arr)
-        logger.debug(int(pct_mean * 10) / 10.0)
-        mean_pct_areas['shrb'] = int(pct_mean * 10) / 10.0
 
     # add urban growth if included
     if 'urbangrth' in formvals:
         rank_data['urbangrth'] = []
 
-        query = "select huc_12, urb%sha_rnk from urban_ha_rnk" % year[2:]
-        query2 = "select huc_12, urb%spct  from urban_pct" % year[2:]
+        query = "select huc_12, urb%sps from urban" % year[2:]
         logger.debug(query)
-        model_wts.append(float(formvals['urbangrth']))
+        # model_wts.append(float(formvals['urbangrth']))
         model_cols.append("Urban Growth - limit(%s)" % formvals['urbangrth'])
+        model_length += 1
         with g.db.cursor() as cur:
             cur.execute(query)
             for row in cur:
-                if formvals['mode'] == 'single':
-                    try:
-                        hucs_dict[row[0]].append(row[1])
-                    except KeyError:
-                        pass
-                    continue
-                if int(row[1]) > int(formvals['urbangrth']):
+                # if formvals['mode'] == 'single':
+                #     try:
+                #         hucs_dict[row[0]].append(row[1])
+                #     except KeyError:
+                #         pass
+                #     continue
+                if float(row[1]) > float(formvals['urbangrth']):
                     above = 1
-                    rank = int(row[1])
+                    # rank = int(row[1])
                 else:
                     above = 0
-                    rank = 0
+                    # rank = 0
                 try:
                     hucs_dict[row[0]].append(above)
-                    hucs_dict_ranks[row[0]].append(rank)
-                    rank_data['urbangrth'].append(rank)
+                    hucs_dict_ranks[row[0]].append(float(row[1]))
+                    rank_data['urbangrth'].append(float(row[1]))
                 except KeyError:
                     pass
-                # this will run for single layer
-
-        pct_arr = []
-        with g.db.cursor() as cur:
-            cur.execute(query2)
-            for row in cur:
-                if row[0] in hucs_dict:
-                    pct_arr.append(row[1])
-
-        pct_mean = statistics.mean(pct_arr)
-        logger.debug(int(pct_mean * 10) / 10.0)
-        mean_pct_areas['urbangrth'] = int(pct_mean * 10) / 10.0
-
 
     # add fire suppression
     if 'firesup' in formvals:
         rank_data['firesup'] = []
 
-        query = "select huc_12, urb%sden_rnk from urban_den_rnk" % year[2:]
+        query = "select huc_12, fsupp%sps from fsupp" % year[2:]
         # logger.debug(query)
-        model_wts.append(float(formvals['firesup']))
+        # model_wts.append(float(formvals['firesup']))
+        model_length += 1
         model_cols.append("Fire Suppresion - limit(%s)" % formvals['firesup'])
         with g.db.cursor() as cur:
             cur.execute(query)
             for row in cur:
-                if formvals['mode'] == 'single':
-                    try:
-                        hucs_dict[row[0]].append(row[1])
-                    except KeyError:
-                        pass
-                    continue
-                if int(row[1]) > int(formvals['firesup']):
+                # if formvals['mode'] == 'single':
+                #     try:
+                #         hucs_dict[row[0]].append(row[1])
+                #     except KeyError:
+                #         pass
+                #     continue
+                if float(row[1]) > float(formvals['firesup']):
                     above = 1
-                    rank = int(row[1])
+                    # rank = int(row[1])
                 else:
                     above = 0
-                    rank = 0
+                    # rank = 0
                 try:
                     hucs_dict[row[0]].append(above)
-                    hucs_dict_ranks[row[0]].append(rank)
-                    rank_data['firesup'].append(rank)
+                    hucs_dict_ranks[row[0]].append(float(row[1]))
+                    rank_data['firesup'].append(float(row[1]))
                 except KeyError:
                     pass
 
@@ -564,30 +502,29 @@ def get_threat_report2(id, formdata, mode='state'):
     if 'hiway' in formvals:
         rank_data['hiway'] = []
 
-        query = "select huc_12, rds%srnk from transportation_rnk" % year[2:]
-        model_wts.append(float(formvals['hiway']))
+        query = "select huc_12, rds%sps from DCLRds" % year[2:]
+        # model_wts.append(float(formvals['hiway']))
+        model_length += 1
         model_cols.append("Highway - limit(%s)" % formvals['hiway'])
         with g.db.cursor() as cur:
             cur.execute(query)
             for row in cur:
-                if formvals['mode'] == 'single':
-                    try:
-                        hucs_dict[row[0]].append(row[1])
-                    except KeyError:
-                        pass
-                    continue
+                # if formvals['mode'] == 'single':
+                #     try:
+                #         hucs_dict[row[0]].append(row[1])
+                #     except KeyError:
+                #         pass
+                #     continue
                 # logger.debug(row)
                 # hucs_dict[row[0]].append(int(row[1]))
-                if int(row[1]) > int(formvals['hiway']):
+                if float(row[1]) > float(formvals['hiway']):
                     above = 1
-                    rank = int(row[1])
                 else:
                     above = 0
-                    rank = 0
                 try:
                     hucs_dict[row[0]].append(above)
-                    hucs_dict_ranks[row[0]].append(rank)
-                    rank_data['hiway'].append(rank)
+                    hucs_dict_ranks[row[0]].append(float(row[1]))
+                    rank_data['hiway'].append(float(row[1]))
                 except KeyError:
                     pass
 
@@ -595,32 +532,24 @@ def get_threat_report2(id, formdata, mode='state'):
     if 'slr_up' in formvals:
         rank_data['slr_up'] = []
 
-        query = "select huc_12, up00%srnk from slamm_up_rnk" % year[2:]
-        model_wts.append(float(formvals['slr_up']))
+        query = "select huc_12, up%sps from SLRup" % year[2:]
+        # model_wts.append(float(formvals['slr_up']))
+        model_length += 1
         model_cols.append(
             "Sea Level rise Upland change - limit(%s)" % formvals['slr_up']
         )
         with g.db.cursor() as cur:
             cur.execute(query)
             for row in cur:
-                if formvals['mode'] == 'single':
-                    try:
-                        hucs_dict[row[0]].append(row[1])
-                    except KeyError:
-                        pass
-                    continue
-                # logger.debug(row)
-                # hucs_dict[row[0]].append(int(row[1]))
-                if int(row[1]) > int(formvals['slr_up']):
+
+                if float(row[1]) > float(formvals['slr_up']):
                     above = 1
-                    rank = int(row[1])
                 else:
                     above = 0
-                    rank = 0
                 try:
                     hucs_dict[row[0]].append(above)
-                    hucs_dict_ranks[row[0]].append(rank)
-                    rank_data['slr_up'].append(rank)
+                    hucs_dict_ranks[row[0]].append(float(row[1]))
+                    rank_data['slr_up'].append(float(row[1]))
                 except KeyError:
                     pass
 
@@ -628,32 +557,24 @@ def get_threat_report2(id, formdata, mode='state'):
     if 'slr_lc' in formvals:
         rank_data['slr_lc'] = []
 
-        query = "select huc_12, lc00%srnk from slamm_lc_rnk" % year[2:]
-        model_wts.append(float(formvals['slr_lc']))
+        query = "select huc_12, lc%sps from SLRlc" % year[2:]
+        # model_wts.append(float(formvals['slr_lc']))
+        model_length += 1
         model_cols.append(
             "Sea Level rise landcover change - limit(%s)" % formvals['slr_lc']
         )
         with g.db.cursor() as cur:
             cur.execute(query)
             for row in cur:
-                if formvals['mode'] == 'single':
-                    try:
-                        hucs_dict[row[0]].append(row[1])
-                    except KeyError:
-                        pass
-                    continue
-                # logger.debug(row)
-                # hucs_dict[row[0]].append(int(row[1]))
-                if int(row[1]) > int(formvals['slr_lc']):
+
+                if float(row[1]) > float(formvals['slr_lc']):
                     above = 1
-                    rank = int(row[1])
                 else:
                     above = 0
-                    rank = 0
                 try:
                     hucs_dict[row[0]].append(above)
-                    hucs_dict_ranks[row[0]].append(rank)
-                    rank_data['slr_lc'].append(rank)
+                    hucs_dict_ranks[row[0]].append(float(row[1]))
+                    rank_data['slr_lc'].append(float(row[1]))
 
                 except KeyError:
                     pass
@@ -662,32 +583,24 @@ def get_threat_report2(id, formdata, mode='state'):
     if 'triassic' in formvals:
         rank_data['triassic'] = []
 
-        query = "select huc_12, triassic_rnk from static_rnk"
-        model_wts.append(float(formvals['triassic']))
+        query = "select huc_12, triassic_ps from Triassic"
+        # model_wts.append(float(formvals['triassic']))
+        model_length += 1
         model_cols.append(
             "Triassic Basin - limit(%s)" % formvals['triassic']
         )
         with g.db.cursor() as cur:
             cur.execute(query)
             for row in cur:
-                if formvals['mode'] == 'single':
-                    try:
-                        hucs_dict[row[0]].append(row[1])
-                    except KeyError:
-                        pass
-                    continue
-                # logger.debug(row)
-                # hucs_dict[row[0]].append(int(row[1]))
-                if int(row[1]) > int(formvals['triassic']):
+
+                if float(row[1]) > float(formvals['triassic']):
                     above = 1
-                    rank = int(row[1])
                 else:
                     above = 0
-                    rank = 0
                 try:
                     hucs_dict[row[0]].append(above)
-                    hucs_dict_ranks[row[0]].append(rank)
-                    rank_data['triassic'].append(rank)
+                    hucs_dict_ranks[row[0]].append(float(row[1]))
+                    rank_data['triassic'].append(float(row[1]))
 
                 except KeyError:
                     pass
@@ -696,32 +609,24 @@ def get_threat_report2(id, formdata, mode='state'):
     if 'wind' in formvals:
         rank_data['wind'] = []
 
-        query = "select huc_12, WPC_rnk from wind_rnk"
-        model_wts.append(float(formvals['wind']))
+        query = "select huc_12, WPC_ps from WPC"
+        # model_wts.append(float(formvals['wind']))
+        model_length += 1
         model_cols.append(
             "Wind Power - limit(%s)" % formvals['wind']
         )
         with g.db.cursor() as cur:
             cur.execute(query)
             for row in cur:
-                if formvals['mode'] == 'single':
-                    try:
-                        hucs_dict[row[0]].append(row[1])
-                    except KeyError:
-                        pass
-                    continue
-                # logger.debug(row)
-                # hucs_dict[row[0]].append(int(row[1]))
-                if int(row[1]) > int(formvals['wind']):
+
+                if float(row[1]) > float(formvals['wind']):
                     above = 1
-                    rank = int(row[1])
                 else:
                     above = 0
-                    rank = 0
                 try:
                     hucs_dict[row[0]].append(above)
-                    hucs_dict_ranks[row[0]].append(rank)
-                    rank_data['wind'].append(rank)
+                    hucs_dict_ranks[row[0]].append(float(row[1]))
+                    rank_data['wind'].append(float(row[1]))
 
                 except KeyError:
                     pass
@@ -730,32 +635,24 @@ def get_threat_report2(id, formdata, mode='state'):
     if 'manure' in formvals:
         rank_data['manure'] = []
 
-        query = "select huc_12, MANU_rnk from static_rnk"
-        model_wts.append(float(formvals['manure']))
+        query = "select huc_12, manu_ps from Manu"
+        # model_wts.append(float(formvals['manure']))
+        model_length += 1
         model_cols.append(
             "Manure Application - limit(%s)" % formvals['manure']
         )
         with g.db.cursor() as cur:
             cur.execute(query)
             for row in cur:
-                if formvals['mode'] == 'single':
-                    try:
-                        hucs_dict[row[0]].append(row[1])
-                    except KeyError:
-                        pass
-                    continue
-                # logger.debug(row)
-                # hucs_dict[row[0]].append(int(row[1]))
-                if int(row[1]) > int(formvals['manure']):
+
+                if float(row[1]) > float(formvals['manure']):
                     above = 1
-                    rank = int(row[1])
                 else:
                     above = 0
-                    rank = 0
                 try:
                     hucs_dict[row[0]].append(above)
-                    hucs_dict_ranks[row[0]].append(rank)
-                    rank_data['manure'].append(rank)
+                    hucs_dict_ranks[row[0]].append(float(row[1]))
+                    rank_data['manure'].append(float(row[1]))
 
                 except KeyError:
                     pass
@@ -764,32 +661,24 @@ def get_threat_report2(id, formdata, mode='state'):
     if 'nitrofrt' in formvals:
         rank_data['nitrofrt'] = []
 
-        query = "select huc_12, FERT_rnk from static_rnk"
-        model_wts.append(float(formvals['nitrofrt']))
+        query = "select huc_12, fert_ps from Fert"
+        # model_wts.append(float(formvals['nitrofrt']))
+        model_length += 1
         model_cols.append(
             "Synthetic Nitrogen - limit(%s)" % formvals['nitrofrt']
         )
         with g.db.cursor() as cur:
             cur.execute(query)
             for row in cur:
-                if formvals['mode'] == 'single':
-                    try:
-                        hucs_dict[row[0]].append(row[1])
-                    except KeyError:
-                        pass
-                    continue
-                # logger.debug(row)
-                # hucs_dict[row[0]].append(int(row[1]))
-                if int(row[1]) > int(formvals['nitrofrt']):
+
+                if float(row[1]) > float(formvals['nitrofrt']):
                     above = 1
-                    rank = int(row[1])
                 else:
                     above = 0
-                    rank = 0
                 try:
                     hucs_dict[row[0]].append(above)
-                    hucs_dict_ranks[row[0]].append(rank)
-                    rank_data['nitrofrt'].append(rank)
+                    hucs_dict_ranks[row[0]].append(float(row[1]))
+                    rank_data['nitrofrt'].append(float(row[1]))
 
                 except KeyError:
                     pass
@@ -798,32 +687,24 @@ def get_threat_report2(id, formdata, mode='state'):
     if 'totnitro' in formvals:
         rank_data['totnitro'] = []
 
-        query = "select huc_12, TD_N_T_rnk from static_rnk"
-        model_wts.append(float(formvals['totnitro']))
+        query = "select huc_12, tdnt_ps from TDNT"
+        # model_wts.append(float(formvals['totnitro']))
+        model_length += 1
         model_cols.append(
             "Total Nitrogen - limit(%s)" % formvals['totnitro']
         )
         with g.db.cursor() as cur:
             cur.execute(query)
             for row in cur:
-                if formvals['mode'] == 'single':
-                    try:
-                        hucs_dict[row[0]].append(row[1])
-                    except KeyError:
-                        pass
-                    continue
-                # logger.debug(row)
-                # hucs_dict[row[0]].append(int(row[1]))
-                if int(row[1]) > int(formvals['totnitro']):
+
+                if float(row[1]) > float(formvals['totnitro']):
                     above = 1
-                    rank = int(row[1])
                 else:
                     above = 0
-                    rank = 0
                 try:
                     hucs_dict[row[0]].append(above)
-                    hucs_dict_ranks[row[0]].append(rank)
-                    rank_data['totnitro'].append(rank)
+                    hucs_dict_ranks[row[0]].append(float(row[1]))
+                    rank_data['totnitro'].append(float(row[1]))
 
                 except KeyError:
                     pass
@@ -832,32 +713,25 @@ def get_threat_report2(id, formdata, mode='state'):
     if 'totsulf' in formvals:
         rank_data['totsulf'] = []
 
-        query = "select huc_12, TD_S_T_rnk from static_rnk"
-        model_wts.append(float(formvals['totsulf']))
+        query = "select huc_12, tdst_ps from TDST"
+        logger.debug(query)
+        # model_wts.append(float(formvals['totsulf']))
+        model_length += 1
         model_cols.append(
             "Total Sulfur - limit(%s)" % formvals['totsulf']
         )
         with g.db.cursor() as cur:
             cur.execute(query)
             for row in cur:
-                if formvals['mode'] == 'single':
-                    try:
-                        hucs_dict[row[0]].append(row[1])
-                    except KeyError:
-                        pass
-                    continue
-                # logger.debug(row)
-                # hucs_dict[row[0]].append(int(row[1]))
-                if int(row[1]) > int(formvals['totsulf']):
+
+                if float(row[1]) > float(formvals['totsulf']):
                     above = 1
-                    rank = int(row[1])
                 else:
                     above = 0
-                    rank = 0
                 try:
                     hucs_dict[row[0]].append(above)
-                    hucs_dict_ranks[row[0]].append(rank)
-                    rank_data['totsulf'].append(rank)
+                    hucs_dict_ranks[row[0]].append(float(row[1]))
+                    rank_data['totsulf'].append(float(row[1]))
 
                 except KeyError:
                     pass
@@ -866,32 +740,24 @@ def get_threat_report2(id, formdata, mode='state'):
     if 'insectdisease' in formvals:
         rank_data['insectdisease'] = []
 
-        query = "select huc_12, FHlth_Rnk from static_rnk"
-        model_wts.append(float(formvals['insectdisease']))
+        query = "select huc_12, FHlth_ps from FHlth"
+        # model_wts.append(float(formvals['insectdisease']))
+        model_length += 1
         model_cols.append(
             "Forest health - limit(%s)" % formvals['insectdisease']
         )
         with g.db.cursor() as cur:
             cur.execute(query)
             for row in cur:
-                if formvals['mode'] == 'single':
-                    try:
-                        hucs_dict[row[0]].append(row[1])
-                    except KeyError:
-                        pass
-                    continue
-                # logger.debug(row)
-                # hucs_dict[row[0]].append(int(row[1]))
-                if int(row[1]) > int(formvals['insectdisease']):
+
+                if float(row[1]) > float(formvals['insectdisease']):
                     above = 1
-                    rank = int(row[1])
                 else:
                     above = 0
-                    rank = 0
                 try:
                     hucs_dict[row[0]].append(above)
-                    hucs_dict_ranks[row[0]].append(rank)
-                    rank_data['insectdisease'].append(rank)
+                    hucs_dict_ranks[row[0]].append(float(row[1]))
+                    rank_data['insectdisease'].append(float(row[1]))
 
                 except KeyError:
                     pass
@@ -900,66 +766,55 @@ def get_threat_report2(id, formdata, mode='state'):
     if 'ndams' in formvals:
         rank_data['ndams'] = []
 
-        query = "select huc_12, NID_rnk from static_rnk"
-        model_wts.append(float(formvals['ndams']))
+        query = "select huc_12, nid_ps from NID"
+        logger.debug(query)
+        # model_wts.append(float(formvals['ndams']))
+        model_length += 1
         model_cols.append(
             "# of dams - limit(%s)" % formvals['ndams']
         )
         with g.db.cursor() as cur:
             cur.execute(query)
             for row in cur:
-                if formvals['mode'] == 'single':
-                    try:
-                        hucs_dict[row[0]].append(row[1])
-                    except KeyError:
-                        pass
-                    continue
-                # logger.debug(row)
-                # hucs_dict[row[0]].append(int(row[1]))
-                if int(row[1]) > int(formvals['ndams']):
+
+                if float(row[1]) > float(formvals['ndams']):
                     above = 1
-                    rank = int(row[1])
                 else:
                     above = 0
-                    rank = 0
                 try:
                     hucs_dict[row[0]].append(above)
-                    hucs_dict_ranks[row[0]].append(rank)
-                    rank_data['ndams'].append(rank)
+                    hucs_dict_ranks[row[0]].append(float(row[1]))
+                    rank_data['ndams'].append(float(row[1]))
 
                 except KeyError:
+                    logger.debug(row[0])
+                    # hucs_dict[row[0]].append(0)
+                    # hucs_dict_ranks[row[0]].append(0)
                     pass
 
     # add impaired biota
     if 'impairbiota' in formvals:
         rank_data['impairbiota'] = []
 
-        query = "select huc_12, BioImpLen_rnk from static_rnk"
+        query = "select huc_12, BioImpLen_ps from BioImpLen"
         logger.debug(query)
-        model_wts.append(float(formvals['impairbiota']))
+        # model_wts.append(float(formvals['impairbiota']))
+        model_length += 1
         model_cols.append(
             "Impaired biota - limit(%s)" % formvals['impairbiota']
         )
         with g.db.cursor() as cur:
             cur.execute(query)
             for row in cur:
-                if formvals['mode'] == 'single':
-                    try:
-                        hucs_dict[row[0]].append(row[1])
-                    except KeyError:
-                        pass
-                    continue
-                # logger.debug(row)
-                if int(row[1]) > int(formvals['impairbiota']):
+
+                if float(row[1]) > float(formvals['impairbiota']):
                     above = 1
-                    rank = int(row[1])
                 else:
                     above = 0
-                    rank = 0
                 try:
                     hucs_dict[row[0]].append(above)
-                    hucs_dict_ranks[row[0]].append(rank)
-                    rank_data['impairbiota'].append(rank)
+                    hucs_dict_ranks[row[0]].append(float(row[1]))
+                    rank_data['impairbiota'].append(float(row[1]))
 
                 except KeyError:
                     pass
@@ -968,32 +823,25 @@ def get_threat_report2(id, formdata, mode='state'):
     if 'impairmetal' in formvals:
         rank_data['impairmetal'] = []
 
-        query = "select huc_12, MetImpLen_rnk from static_rnk"
+        query = "select huc_12, MetImpLen_ps from MetImpLen"
         logger.debug(query)
-        model_wts.append(float(formvals['impairmetal']))
+        # model_wts.append(float(formvals['impairmetal']))
+        model_length += 1
         model_cols.append(
             "Impaired metal - threshold(%s)" % formvals['impairmetal']
         )
         with g.db.cursor() as cur:
             cur.execute(query)
             for row in cur:
-                if formvals['mode'] == 'single':
-                    try:
-                        hucs_dict[row[0]].append(row[1])
-                    except KeyError:
-                        pass
-                    continue
-                # logger.debug(row)
-                if int(row[1]) > int(formvals['impairmetal']):
+
+                if float(row[1]) > float(formvals['impairmetal']):
                     above = 1
-                    rank = int(row[1])
                 else:
                     above = 0
-                    rank = 0
                 try:
                     hucs_dict[row[0]].append(above)
-                    hucs_dict_ranks[row[0]].append(rank)
-                    rank_data['impairmetal'].append(rank)
+                    hucs_dict_ranks[row[0]].append(float(row[1]))
+                    rank_data['impairmetal'].append(float(row[1]))
 
                 except KeyError:
                     pass
@@ -1007,9 +855,14 @@ def get_threat_report2(id, formdata, mode='state'):
         threat_rnk = 0
 
         for idx in range(model_length):
-            logger.debug(idx)
-            threat += float(hucs_dict[huc][idx + 1])
-            threat_rnk += float(hucs_dict_ranks[huc][idx + 1])
+            # logger.debug(idx)
+            try:
+                threat += float(hucs_dict[huc][idx + 1])
+                threat_rnk += float(hucs_dict_ranks[huc][idx + 1])
+            except IndexError:
+                logger.debug(huc)
+                logger.debug(idx)
+
         threat_raw = threat
         # hucs_dict[huc].append(threat_raw)
         hucs_dict_ranks[huc].append(int(threat_raw))
