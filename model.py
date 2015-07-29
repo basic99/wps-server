@@ -856,17 +856,18 @@ def get_threat_report2(id, formdata, mode='state'):
     comp_thrt_dict = siteutils.make_composite_threat_count(
         hucs_dict, hucs_dict_ps, model_length
     )
-    logger.debug(comp_thrt_dict)
+    # logger.debug(comp_thrt_dict)
     thrt_counts_summary = comp_thrt_dict['thrt_counts_summary']
     threat_summary = [thrt_counts_summary]
 
 
    # start making summary report
     logger.debug(model_cols)
+    logger.debug('model_cols')
     summary_params_list = collections.OrderedDict()
-    summary_params_list['Threat Count'] = [
-        hucs_dict[x][-1] for x in hucs_dict
-    ]
+    # summary_params_list['Threat Count'] = [
+    #     hucs_dict[x][-1] for x in hucs_dict
+    # ]
     for idx, model_col in enumerate(model_cols):
         if idx != 0:
             summary_params_list[model_col] = [
@@ -900,7 +901,7 @@ def get_threat_report2(id, formdata, mode='state'):
     severity = []
     for i, threat in enumerate(rank_data):
         logger.debug(threat)
-        # logger.debug(model_cols[i + 1])
+        logger.debug(model_cols[i + 1])
         report_row = [model_cols[i + 1]]
         cnts = summary_params_list[model_cols[i + 1]]
         mean = statistics.mean(cnts)
@@ -929,30 +930,14 @@ def get_threat_report2(id, formdata, mode='state'):
         report_rank.append(report_row)
         num_threats = i + 1
 
+    ####################################################
+    # other stats
+    ###################################################
     other_stats = {}
     other_stats['comp_occ'] = int(
         sum(occurences) * 100 / num_threats
     )
-    # other_stats['comp_sev'] = int(
-    #     50
-    #     # sum(severity) * 10 / num_threats**2
-    # )
-    # other_stats['risk_rank'] = (
-    #     50
-    #     # other_stats['comp_occ'] * other_stats['comp_sev']
-    # )
-    # if mode == 'aoi':
-    logger.debug(occurences)
-    logger.debug(severity)
-    logger.debug(num_threats)
-    logger.debug(other_stats)
-
-    # logger.debug(i + 1)
-    # logger.debug(thrts_present)
     thrts_included_msg = "%d of %d " % (thrts_present, i + 1)
-    logger.debug(thrts_included_msg)
-
-    # hucs_dict_ps - dict of hucs wiht ps vals and threat
 
     return {
         "res_arr": hucs_dict_ps,
