@@ -192,7 +192,7 @@ def get_threat_report2(id, formdata, mode='state'):
             hucs_dict[huc.strip()] = []
             hucs_dict[huc.strip()].append(huc.strip())
 
-    hucs_dict_ranks = copy.deepcopy(hucs_dict)
+    hucs_dict_ps = copy.deepcopy(hucs_dict)
 
     # read formdata into formvals excluding notinclude
     for formval in formdata:
@@ -253,7 +253,7 @@ def get_threat_report2(id, formdata, mode='state'):
                     # rank = 0
                 try:
                     hucs_dict[row[0]].append(above)
-                    hucs_dict_ranks[row[0]].append(float(row[1]))
+                    hucs_dict_ps[row[0]].append(float(row[1]))
 
                     # must follow this line to get hucs correct
                     rank_data['frst'].append(float(row[1]))
@@ -306,7 +306,7 @@ def get_threat_report2(id, formdata, mode='state'):
                 # logger.debug(row)
                 try:
                     hucs_dict[row[0]].append(above)
-                    hucs_dict_ranks[row[0]].append(float(row[1]))
+                    hucs_dict_ps[row[0]].append(float(row[1]))
                     rank_data['ftwt'].append(float(row[1]))
                 except KeyError:
                     pass
@@ -347,7 +347,7 @@ def get_threat_report2(id, formdata, mode='state'):
                     # rank = 0
                 try:
                     hucs_dict[row[0]].append(above)
-                    hucs_dict_ranks[row[0]].append(float(row[1]))
+                    hucs_dict_ps[row[0]].append(float(row[1]))
                     rank_data['hbwt'].append(float(row[1]))
                 except KeyError:
                     pass
@@ -388,7 +388,7 @@ def get_threat_report2(id, formdata, mode='state'):
                     # rank = 0
                 try:
                     hucs_dict[row[0]].append(above)
-                    hucs_dict_ranks[row[0]].append(float(row[1]))
+                    hucs_dict_ps[row[0]].append(float(row[1]))
                     rank_data['open'].append(float(row[1]))
                 except KeyError:
                     pass
@@ -429,7 +429,7 @@ def get_threat_report2(id, formdata, mode='state'):
                     # rank = 0
                 try:
                     hucs_dict[row[0]].append(above)
-                    hucs_dict_ranks[row[0]].append(float(row[1]))
+                    hucs_dict_ps[row[0]].append(float(row[1]))
                     rank_data['shrb'].append(float(row[1]))
                 except KeyError:
                     pass
@@ -462,7 +462,7 @@ def get_threat_report2(id, formdata, mode='state'):
                     # rank = 0
                 try:
                     hucs_dict[row[0]].append(above)
-                    hucs_dict_ranks[row[0]].append(float(row[1]))
+                    hucs_dict_ps[row[0]].append(float(row[1]))
                     rank_data['urbangrth'].append(float(row[1]))
                 except KeyError:
                     pass
@@ -493,7 +493,7 @@ def get_threat_report2(id, formdata, mode='state'):
                     # rank = 0
                 try:
                     hucs_dict[row[0]].append(above)
-                    hucs_dict_ranks[row[0]].append(float(row[1]))
+                    hucs_dict_ps[row[0]].append(float(row[1]))
                     rank_data['firesup'].append(float(row[1]))
                 except KeyError:
                     pass
@@ -523,7 +523,7 @@ def get_threat_report2(id, formdata, mode='state'):
                     above = 0
                 try:
                     hucs_dict[row[0]].append(above)
-                    hucs_dict_ranks[row[0]].append(float(row[1]))
+                    hucs_dict_ps[row[0]].append(float(row[1]))
                     rank_data['hiway'].append(float(row[1]))
                 except KeyError:
                     pass
@@ -548,7 +548,7 @@ def get_threat_report2(id, formdata, mode='state'):
                     above = 0
                 try:
                     hucs_dict[row[0]].append(above)
-                    hucs_dict_ranks[row[0]].append(float(row[1]))
+                    hucs_dict_ps[row[0]].append(float(row[1]))
                     rank_data['slr_up'].append(float(row[1]))
                 except KeyError:
                     pass
@@ -573,7 +573,7 @@ def get_threat_report2(id, formdata, mode='state'):
                     above = 0
                 try:
                     hucs_dict[row[0]].append(above)
-                    hucs_dict_ranks[row[0]].append(float(row[1]))
+                    hucs_dict_ps[row[0]].append(float(row[1]))
                     rank_data['slr_lc'].append(float(row[1]))
 
                 except KeyError:
@@ -599,7 +599,7 @@ def get_threat_report2(id, formdata, mode='state'):
                     above = 0
                 try:
                     hucs_dict[row[0]].append(above)
-                    hucs_dict_ranks[row[0]].append(float(row[1]))
+                    hucs_dict_ps[row[0]].append(float(row[1]))
                     rank_data['triassic'].append(float(row[1]))
 
                 except KeyError:
@@ -625,7 +625,7 @@ def get_threat_report2(id, formdata, mode='state'):
                     above = 0
                 try:
                     hucs_dict[row[0]].append(above)
-                    hucs_dict_ranks[row[0]].append(float(row[1]))
+                    hucs_dict_ps[row[0]].append(float(row[1]))
                     rank_data['wind'].append(float(row[1]))
 
                 except KeyError:
@@ -651,7 +651,7 @@ def get_threat_report2(id, formdata, mode='state'):
                     above = 0
                 try:
                     hucs_dict[row[0]].append(above)
-                    hucs_dict_ranks[row[0]].append(float(row[1]))
+                    hucs_dict_ps[row[0]].append(float(row[1]))
                     rank_data['manure'].append(float(row[1]))
 
                 except KeyError:
@@ -677,7 +677,7 @@ def get_threat_report2(id, formdata, mode='state'):
                     above = 0
                 try:
                     hucs_dict[row[0]].append(above)
-                    hucs_dict_ranks[row[0]].append(float(row[1]))
+                    hucs_dict_ps[row[0]].append(float(row[1]))
                     rank_data['nitrofrt'].append(float(row[1]))
 
                 except KeyError:
@@ -703,7 +703,7 @@ def get_threat_report2(id, formdata, mode='state'):
                     above = 0
                 try:
                     hucs_dict[row[0]].append(above)
-                    hucs_dict_ranks[row[0]].append(float(row[1]))
+                    hucs_dict_ps[row[0]].append(float(row[1]))
                     rank_data['totnitro'].append(float(row[1]))
 
                 except KeyError:
@@ -730,7 +730,7 @@ def get_threat_report2(id, formdata, mode='state'):
                     above = 0
                 try:
                     hucs_dict[row[0]].append(above)
-                    hucs_dict_ranks[row[0]].append(float(row[1]))
+                    hucs_dict_ps[row[0]].append(float(row[1]))
                     rank_data['totsulf'].append(float(row[1]))
 
                 except KeyError:
@@ -756,7 +756,7 @@ def get_threat_report2(id, formdata, mode='state'):
                     above = 0
                 try:
                     hucs_dict[row[0]].append(above)
-                    hucs_dict_ranks[row[0]].append(float(row[1]))
+                    hucs_dict_ps[row[0]].append(float(row[1]))
                     rank_data['insectdisease'].append(float(row[1]))
 
                 except KeyError:
@@ -783,13 +783,13 @@ def get_threat_report2(id, formdata, mode='state'):
                     above = 0
                 try:
                     hucs_dict[row[0]].append(above)
-                    hucs_dict_ranks[row[0]].append(float(row[1]))
+                    hucs_dict_ps[row[0]].append(float(row[1]))
                     rank_data['ndams'].append(float(row[1]))
 
                 except KeyError:
                     logger.debug(row[0])
                     # hucs_dict[row[0]].append(0)
-                    # hucs_dict_ranks[row[0]].append(0)
+                    # hucs_dict_ps[row[0]].append(0)
                     pass
 
     # add impaired biota
@@ -813,7 +813,7 @@ def get_threat_report2(id, formdata, mode='state'):
                     above = 0
                 try:
                     hucs_dict[row[0]].append(above)
-                    hucs_dict_ranks[row[0]].append(float(row[1]))
+                    hucs_dict_ps[row[0]].append(float(row[1]))
                     rank_data['impairbiota'].append(float(row[1]))
 
                 except KeyError:
@@ -840,7 +840,7 @@ def get_threat_report2(id, formdata, mode='state'):
                     above = 0
                 try:
                     hucs_dict[row[0]].append(above)
-                    hucs_dict_ranks[row[0]].append(float(row[1]))
+                    hucs_dict_ps[row[0]].append(float(row[1]))
                     rank_data['impairmetal'].append(float(row[1]))
 
                 except KeyError:
@@ -848,25 +848,25 @@ def get_threat_report2(id, formdata, mode='state'):
     # tot_weight = len(model_wts)
 
     # calculate threat count for each huc
-    threat_rank = []
+    # threat_rank = []
     threat_count = []
     for huc in hucs_dict:
         threat = 0
-        threat_rnk = 0
+        # threat_rnk = 0
 
         for idx in range(model_length):
             # logger.debug(idx)
             try:
                 threat += float(hucs_dict[huc][idx + 1])
-                threat_rnk += float(hucs_dict_ranks[huc][idx + 1])
+                # threat_rnk += float(hucs_dict_ps[huc][idx + 1])
             except IndexError:
                 logger.debug(huc)
                 logger.debug(idx)
 
         threat_raw = threat
         # hucs_dict[huc].append(threat_raw)
-        hucs_dict_ranks[huc].append(int(threat_raw))
-        threat_rank.append(float(threat_rnk) / (idx + 1))
+        hucs_dict_ps[huc].append(int(threat_raw))
+        # threat_rank.append(float(threat_rnk) / (idx + 1))
         threat_count.append(threat)
 
     # calculate composite thrts
@@ -882,17 +882,17 @@ def get_threat_report2(id, formdata, mode='state'):
     thrt_counts_summary.append(min(threat_count))
     thrt_counts_summary.append(max(threat_count))
 
-    thrt_rank_summary = []
-    thrt_rank_summary.append("Composite Threat Rank")
-    mean = statistics.mean(threat_rank)
-    thrt_rank_summary.append(int(mean * 100) / 100.0)
-    try:
-        stdev = statistics.stdev(threat_rank)
-        thrt_rank_summary.append(int(stdev * 10000) / 10000.0)
-    except statistics.StatisticsError:
-        thrt_rank_summary.append('na')
-    thrt_rank_summary.append(min(threat_rank))
-    thrt_rank_summary.append(int(max(threat_rank) * 1000) / 1000.0)
+    # thrt_rank_summary = []
+    # thrt_rank_summary.append("Composite Threat Rank")
+    # # mean = statistics.mean(threat_rank)
+    # thrt_rank_summary.append(int(mean * 100) / 100.0)
+    # try:
+    #     stdev = statistics.stdev(threat_rank)
+    #     thrt_rank_summary.append(int(stdev * 10000) / 10000.0)
+    # except statistics.StatisticsError:
+    #     thrt_rank_summary.append('na')
+    # thrt_rank_summary.append(min(threat_rank))
+    # thrt_rank_summary.append(int(max(threat_rank) * 1000) / 1000.0)
 
     # , thrt_rank_summary
     threat_summary = [thrt_counts_summary]
@@ -936,64 +936,68 @@ def get_threat_report2(id, formdata, mode='state'):
 
         report.append(report_row)
 
-    if formvals['mode'] != 'single':
-        thrts_present = 0
-        occurences = []
-        severity = []
-        for i, threat in enumerate(rank_data):
-            logger.debug(threat)
-            # logger.debug(model_cols[i + 1])
-            report_row = [model_cols[i + 1]]
-            cnts = summary_params_list[model_cols[i + 1]]
-            mean = statistics.mean(cnts)
-            occurences.append(mean)
-            report_row.append(int(mean * 100) / 100.0)
-            mean = statistics.mean(rank_data[threat])
-            severity.append(mean)
-            report_row.append(int(mean * 100) / 100.0)
-            try:
-                stdev = statistics.stdev(rank_data[threat])
-                report_row.append(int(stdev * 10000) / 10000.0)
-            except statistics.StatisticsError:
-                report_row.append('na')
-            row_min = min(rank_data[threat])
-            report_row.append(row_min)
-            row_max = max(rank_data[threat])
-            if row_max > 0:
-                thrts_present += 1
-            report_row.append(row_max)
-            try:
-                report_row.append(mean_pct_areas[threat])
-            except KeyError:
-                report_row.append('-')
+    # if formvals['mode'] != 'single':
+    thrts_present = 0
+    occurences = []
+    severity = []
+    for i, threat in enumerate(rank_data):
+        logger.debug(threat)
+        # logger.debug(model_cols[i + 1])
+        report_row = [model_cols[i + 1]]
+        cnts = summary_params_list[model_cols[i + 1]]
+        mean = statistics.mean(cnts)
+        occurences.append(mean)
+        report_row.append(int(mean * 100) / 100.0)
+        mean = statistics.mean(rank_data[threat])
+        severity.append(mean)
+        report_row.append(int(mean * 100) / 100.0)
+        try:
+            stdev = statistics.stdev(rank_data[threat])
+            report_row.append(int(stdev * 10000) / 10000.0)
+        except statistics.StatisticsError:
+            report_row.append('na')
+        row_min = min(rank_data[threat])
+        report_row.append(row_min)
+        row_max = max(rank_data[threat])
+        if row_max > 0:
+            thrts_present += 1
+        report_row.append(row_max)
+        try:
+            report_row.append(mean_pct_areas[threat])
+        except KeyError:
+            report_row.append('-')
 
-            # add row to report
-            report_rank.append(report_row)
+        # add row to report
+        report_rank.append(report_row)
         num_threats = i + 1
 
-        other_stats = {}
-        other_stats['comp_occ'] = int(
-            sum(occurences) * 100 / num_threats
-        )
-        other_stats['comp_sev'] = int(
-            sum(severity) * 10 / num_threats**2
-        )
-        other_stats['risk_rank'] = (
-            other_stats['comp_occ'] * other_stats['comp_sev']
-        )
-        if mode == 'aoi':
-            logger.debug(occurences)
-            logger.debug(severity)
-            logger.debug(num_threats)
-            logger.debug(other_stats)
+    other_stats = {}
+    other_stats['comp_occ'] = int(
+        sum(occurences) * 100 / num_threats
+    )
+    # other_stats['comp_sev'] = int(
+    #     50
+    #     # sum(severity) * 10 / num_threats**2
+    # )
+    # other_stats['risk_rank'] = (
+    #     50
+    #     # other_stats['comp_occ'] * other_stats['comp_sev']
+    # )
+    # if mode == 'aoi':
+    logger.debug(occurences)
+    logger.debug(severity)
+    logger.debug(num_threats)
+    logger.debug(other_stats)
 
     # logger.debug(i + 1)
     # logger.debug(thrts_present)
     thrts_included_msg = "%d of %d " % (thrts_present, i + 1)
     logger.debug(thrts_included_msg)
 
+    # hucs_dict_ps - dict of hucs wiht ps vals and threat
+
     return {
-        "res_arr": hucs_dict_ranks,
+        "res_arr": hucs_dict_ps,
         "col_hdrs": model_cols,
         "year": year,
         # "report": report,
@@ -1086,7 +1090,7 @@ def get_indiv_report(id, mymap_str, mode='state'):
             huc12_str = cur.fetchone()
         hucs = huc12_str[0].split(", ")
 
-    # hucs_dict_ranks = copy.deepcopy(hucs_dict)
+    # hucs_dict_ps = copy.deepcopy(hucs_dict)
     # results_list = []
     # rang = {}
 
