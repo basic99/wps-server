@@ -860,75 +860,17 @@ def get_threat_report2(id, formdata, mode='state'):
     thrt_counts_summary = comp_thrt_dict['thrt_counts_summary']
     threat_summary = [thrt_counts_summary]
 
+    threats_summ_dict = siteutils.make_report_threats_summary(
+            model_cols,
+            hucs_dict,
+            rank_data,
+            mean_pct_areas
+        )
 
-   # start making summary report
-    logger.debug(model_cols)
-    logger.debug('model_cols')
-    summary_params_list = collections.OrderedDict()
-    # summary_params_list['Threat Count'] = [
-    #     hucs_dict[x][-1] for x in hucs_dict
-    # ]
-    for idx, model_col in enumerate(model_cols):
-        if idx != 0:
-            summary_params_list[model_col] = [
-                hucs_dict[x][idx] for x in hucs_dict
-            ]
-
-
-    report = []
-    report_rank = []
-    for row in summary_params_list:
-        report_row = [str(row)]
-        mean = statistics.mean(summary_params_list[row])
-        report_row.append(int(mean * 100) / 100.0)
-        try:
-            stdev = statistics.stdev(summary_params_list[row])
-            report_row.append(int(stdev * 10000) / 10000.0)
-        except statistics.StatisticsError:
-            report_row.append('na')
-        row_min = min(summary_params_list[row])
-        report_row.append(row_min)
-        row_max = max(summary_params_list[row])
-        report_row.append(row_max)
-
-        logger.debug(report_row)
-
-        report.append(report_row)
-
-    # if formvals['mode'] != 'single':
-    thrts_present = 0
-    occurences = []
-    severity = []
-    for i, threat in enumerate(rank_data):
-        logger.debug(threat)
-        logger.debug(model_cols[i + 1])
-        report_row = [model_cols[i + 1]]
-        cnts = summary_params_list[model_cols[i + 1]]
-        mean = statistics.mean(cnts)
-        occurences.append(mean)
-        report_row.append(int(mean * 100) / 100.0)
-        mean = statistics.mean(rank_data[threat])
-        severity.append(mean)
-        report_row.append(int(mean * 100) / 100.0)
-        try:
-            stdev = statistics.stdev(rank_data[threat])
-            report_row.append(int(stdev * 10000) / 10000.0)
-        except statistics.StatisticsError:
-            report_row.append('na')
-        row_min = min(rank_data[threat])
-        report_row.append(row_min)
-        row_max = max(rank_data[threat])
-        if row_max > 0:
-            thrts_present += 1
-        report_row.append(row_max)
-        try:
-            report_row.append(mean_pct_areas[threat])
-        except KeyError:
-            report_row.append('-')
-
-        # add row to report
-        report_rank.append(report_row)
-        num_threats = i + 1
+    report_rank = threats_summ_dict['report_rank']
+    num_threats = threats_summ_dict['num_threats']
+    occurences = threats_summ_dict['occurences']
+    thrts_included_msg = threats_summ_dict['thrts_included_msg']
 
     ####################################################
     # other stats
@@ -937,7 +879,7 @@ def get_threat_report2(id, formdata, mode='state'):
     other_stats['comp_occ'] = int(
         sum(occurences) * 100 / num_threats
     )
-    thrts_included_msg = "%d of %d " % (thrts_present, i + 1)
+    # thrts_included_msg = "%d of %d " % (thrts_present, i + 1)
 
     return {
         "res_arr": hucs_dict_ps,
