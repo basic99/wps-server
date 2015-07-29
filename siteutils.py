@@ -10,6 +10,7 @@ import string
 from email.message import Message
 import email.utils
 import smtplib
+import statistics
 
 
 cwd = os.path.dirname(os.path.realpath(__file__))
@@ -261,3 +262,46 @@ def qryptbufferjson(lon, lat):
     logger.debug(ret_dict)
     return json.dumps(ret_dict)
 
+
+def make_composite_threat_count(hucs_dict, hucs_dict_ps, model_length):
+    """
+    Function creates report for composite threat count. Also
+    adds Threat Count column to hucs_dict_ps.
+
+     """
+    threat_count = []
+    for huc in hucs_dict:
+        threat = 0
+        # threat_rnk = 0
+
+        for idx in range(model_length):
+            # logger.debug(idx)
+            try:
+                threat += float(hucs_dict[huc][idx + 1])
+                # threat_rnk += float(hucs_dict_ps[huc][idx + 1])
+            except IndexError:
+                logger.debug(huc)
+                logger.debug(idx)
+
+        threat_raw = threat
+        # hucs_dict[huc].append(threat_raw)
+        hucs_dict_ps[huc].append(int(threat_raw))
+        # threat_rank.append(float(threat_rnk) / (idx + 1))
+        threat_count.append(threat)
+
+    # calculate composite thrts
+    thrt_counts_summary = []
+    thrt_counts_summary.append("Composite Threat Count")
+    mean = statistics.mean(threat_count)
+    thrt_counts_summary.append(int(mean * 100) / 100.0)
+    try:
+        stdev = statistics.stdev(threat_count)
+        thrt_counts_summary.append(int(stdev * 10000) / 10000.0)
+    except statistics.StatisticsError:
+        thrt_counts_summary.append('na')
+    thrt_counts_summary.append(min(threat_count))
+    thrt_counts_summary.append(max(threat_count))
+    logger.debug(thrt_counts_summary)
+    return {
+        "thrt_counts_summary": thrt_counts_summary
+    }

@@ -2,14 +2,15 @@
 
 
 import logging
-import psycopg2
-import psycopg2.extras
+# import psycopg2
+# import psycopg2.extras
 from flask import g
 import os
-import numpy as np
+# import numpy as np
 import collections
 import statistics
 import copy
+import siteutils
 
 cwd = os.path.dirname(os.path.realpath(__file__))
 logger = logging.getLogger(__name__)
@@ -845,63 +846,22 @@ def get_threat_report2(id, formdata, mode='state'):
 
                 except KeyError:
                     pass
-    # tot_weight = len(model_wts)
 
-    # calculate threat count for each huc
-    # threat_rank = []
-    threat_count = []
-    for huc in hucs_dict:
-        threat = 0
-        # threat_rnk = 0
+    ##################################################################
+    # start statistics
+    # call function to get Composite Threat Count
+    # also modifies hucs_dict_ps by reference
+    ################################################################
 
-        for idx in range(model_length):
-            # logger.debug(idx)
-            try:
-                threat += float(hucs_dict[huc][idx + 1])
-                # threat_rnk += float(hucs_dict_ps[huc][idx + 1])
-            except IndexError:
-                logger.debug(huc)
-                logger.debug(idx)
-
-        threat_raw = threat
-        # hucs_dict[huc].append(threat_raw)
-        hucs_dict_ps[huc].append(int(threat_raw))
-        # threat_rank.append(float(threat_rnk) / (idx + 1))
-        threat_count.append(threat)
-
-    # calculate composite thrts
-    thrt_counts_summary = []
-    thrt_counts_summary.append("Composite Threat Count")
-    mean = statistics.mean(threat_count)
-    thrt_counts_summary.append(int(mean * 100) / 100.0)
-    try:
-        stdev = statistics.stdev(threat_count)
-        thrt_counts_summary.append(int(stdev * 10000) / 10000.0)
-    except statistics.StatisticsError:
-        thrt_counts_summary.append('na')
-    thrt_counts_summary.append(min(threat_count))
-    thrt_counts_summary.append(max(threat_count))
-
-    # thrt_rank_summary = []
-    # thrt_rank_summary.append("Composite Threat Rank")
-    # # mean = statistics.mean(threat_rank)
-    # thrt_rank_summary.append(int(mean * 100) / 100.0)
-    # try:
-    #     stdev = statistics.stdev(threat_rank)
-    #     thrt_rank_summary.append(int(stdev * 10000) / 10000.0)
-    # except statistics.StatisticsError:
-    #     thrt_rank_summary.append('na')
-    # thrt_rank_summary.append(min(threat_rank))
-    # thrt_rank_summary.append(int(max(threat_rank) * 1000) / 1000.0)
-
-    # , thrt_rank_summary
+    comp_thrt_dict = siteutils.make_composite_threat_count(
+        hucs_dict, hucs_dict_ps, model_length
+    )
+    logger.debug(comp_thrt_dict)
+    thrt_counts_summary = comp_thrt_dict['thrt_counts_summary']
     threat_summary = [thrt_counts_summary]
 
-    if mode == 'aoi':
-        logger.debug(threat_summary)
 
-
-       # start making summary report
+   # start making summary report
     logger.debug(model_cols)
     summary_params_list = collections.OrderedDict()
     summary_params_list['Threat Count'] = [
@@ -912,8 +872,6 @@ def get_threat_report2(id, formdata, mode='state'):
             summary_params_list[model_col] = [
                 hucs_dict[x][idx] for x in hucs_dict
             ]
-    if mode == 'aoi':
-        logger.debug(summary_params_list)
 
 
     report = []
