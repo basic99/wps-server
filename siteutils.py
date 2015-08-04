@@ -311,35 +311,48 @@ def make_composite_threat_count(hucs_dict, hucs_dict_ps, model_length):
 def make_report_threats_summary(
             model_cols, hucs_dict, rank_data, mean_pct_areas
         ):
+    """
+    model_cols -list of column headers for AOI Threat Summary by HUC12
+    hucs_dict -dict of huc12 - list with first item huc and rest threats 0/1
+    rank_data -dict of threat name, eg firesup - list of threats ps percents
+    mean_pct_areas - not used presently
+
+    returns:
+    report_rank - occurence and severity stats per threat
+    occurences - used to calculate Occurrence Rating
+    num_threats - total number present
+    thrts_included_msg - Distinct Threat Count text
+
+
+    """
+
     summary_params_list = collections.OrderedDict()
-    # summary_params_list['Threat Count'] = [
-    #     hucs_dict[x][-1] for x in hucs_dict
-    # ]
     for idx, model_col in enumerate(model_cols):
         if idx != 0:
             summary_params_list[model_col] = [
                 hucs_dict[x][idx] for x in hucs_dict
             ]
-
+    logger.debug(summary_params_list)
     report = []
     report_rank = []
-    for row in summary_params_list:
-        report_row = [str(row)]
-        mean = statistics.mean(summary_params_list[row])
-        report_row.append(int(mean * 100) / 100.0)
-        try:
-            stdev = statistics.stdev(summary_params_list[row])
-            report_row.append(int(stdev * 10000) / 10000.0)
-        except statistics.StatisticsError:
-            report_row.append('na')
-        row_min = min(summary_params_list[row])
-        report_row.append(row_min)
-        row_max = max(summary_params_list[row])
-        report_row.append(row_max)
+    # for row in summary_params_list:
+    #     report_row = [str(row)]
+    #     mean = statistics.mean(summary_params_list[row])
+    #     report_row.append(int(mean * 100) / 100.0)
+    #     try:
+    #         stdev = statistics.stdev(summary_params_list[row])
+    #         report_row.append(int(stdev * 10000) / 10000.0)
+    #     except statistics.StatisticsError:
+    #         report_row.append('na')
+    #     row_min = min(summary_params_list[row])
+    #     report_row.append(row_min)
+    #     row_max = max(summary_params_list[row])
+    #     report_row.append(row_max)
 
-        logger.debug(report_row)
+    #     logger.debug(report_row)
 
-        report.append(report_row)
+    #     report.append(report_row)
+
 
     # if formvals['mode'] != 'single':
     thrts_present = 0
@@ -351,6 +364,8 @@ def make_report_threats_summary(
         report_row = [model_cols[i + 1]]
         cnts = summary_params_list[model_cols[i + 1]]
         mean = statistics.mean(cnts)
+        if mean > 0:
+            thrts_present += 1
         occurences.append(mean)
         report_row.append(int(mean * 100) / 100.0)
         mean = statistics.mean(rank_data[threat])
@@ -364,8 +379,8 @@ def make_report_threats_summary(
         row_min = min(rank_data[threat])
         report_row.append(row_min)
         row_max = max(rank_data[threat])
-        if row_max > 0:
-            thrts_present += 1
+        # if row_max > 0:
+        #     thrts_present += 1
         report_row.append(row_max)
         try:
             report_row.append(mean_pct_areas[threat])
@@ -374,8 +389,9 @@ def make_report_threats_summary(
 
         # add row to report
         report_rank.append(report_row)
-        num_threats = i + 1
-    thrts_included_msg = "%d of %d " % (thrts_present, i + 1)
+    num_threats = i + 1
+    thrts_included_msg = "%d of %d " % (thrts_present, num_threats)
+    # logger.debug(num_threats)
 
     return {
         "report_rank": report_rank,
