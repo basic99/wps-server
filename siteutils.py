@@ -12,6 +12,7 @@ import email.utils
 import smtplib
 import statistics
 import collections
+import math
 
 
 cwd = os.path.dirname(os.path.realpath(__file__))
@@ -332,7 +333,7 @@ def make_report_threats_summary(
             summary_params_list[model_col] = [
                 hucs_dict[x][idx] for x in hucs_dict
             ]
-    logger.debug(summary_params_list)
+    # logger.debug(summary_params_list)
     report = []
     report_rank = []
     # for row in summary_params_list:
@@ -364,10 +365,11 @@ def make_report_threats_summary(
         report_row = [model_cols[i + 1]]
         cnts = summary_params_list[model_cols[i + 1]]
         mean = statistics.mean(cnts)
+        logger.debug(mean)
         if mean > 0:
             thrts_present += 1
         occurences.append(mean)
-        report_row.append(int(mean * 100) / 100.0)
+        report_row.append(math.ceil(mean * 100) / 100.0)
         mean = statistics.mean(rank_data[threat])
         severity.append(mean)
         report_row.append(int(mean * 100) / 100.0)
