@@ -1164,7 +1164,7 @@ def preview_map(data):
             if row[0] in hucs:
                 # logger.debug(row[0])
                 # results_dict[row[0]] = float(row[1])
-                if float(row[2]) > float(limit):
+                if float(row[1]) > float(limit):
                     res_arr.append(float(row[1]))
                     results_dict[row[0]] = float(row[1])
                 else:
