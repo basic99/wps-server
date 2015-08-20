@@ -90,6 +90,7 @@ class NCHuc12():
         self.buff_list12 = []
         self.pt_lon = ""
         self.pt_lat = ""
+        self.ptbuffer_km = ''
 
     def mkgeom(self):
         """ Convert GML into list of Well-Known Text representations."""

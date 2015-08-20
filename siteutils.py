@@ -234,20 +234,21 @@ def qrypttojson(lon, lat, lyr):
     return json.dumps(ret_dict)
 
 
-def qryptbufferjson(lon, lat):
+def qryptbufferjson(lon, lat, ptradius):
     """
     select ST_AsGeoJSON(ST_Transform(ST_Buffer(ST_Transform(
         ST_SetSRID(ST_Point(-78.867, 35.968),4326), 32119), 3000), 4326))
     """
 
     query = "select ST_AsGeoJSON(ST_Transform(ST_Buffer(ST_Transform("
-    query += "ST_SetSRID(ST_Point(%s, %s),4326), 32119), 3000)"
+    query += "ST_SetSRID(ST_Point(%s, %s),4326), 32119), %s)"
     query += ", 4326))"
     logger.debug(lon)
     logger.debug(lat)
-    logger.debug(query % (lon, lat))
+    buffmeters = 1000 * float(ptradius)
+    # logger.debug(query % (lon, lat, buffmeters))
     with g.db.cursor() as cur:
-        cur.execute(query, (lon, lat))
+        cur.execute(query, (lon, lat, buffmeters))
         res = cur.fetchone()
         the_geom = json.loads(res[0])
 

@@ -115,6 +115,8 @@ def post_aoi():
     huc.gml = request.form['gml']
     huc.pt_lon = request.form.get('point_buffer[lon]')
     huc.pt_lat = request.form.get('point_buffer[lat]')
+    huc.ptbuffer_km = request.form.get('ptradius')
+    logger.debug(huc.ptbuffer_km)
     # huc.aoi_list = request.form.getlist('aoi_list[]')
     huc.aoi_list = request.form.get('aoi_list').split(":")
     logger.debug(huc.aoi_list)
@@ -439,8 +441,9 @@ def ptbufferjson():
     # qry_lyr = request.form['qry_lyr']
     lon = request.args.get("lon", "")
     lat = request.args.get("lat", "")
+    ptradius = request.args.get("ptradius", "")
 
-    return siteutils.qryptbufferjson(lon, lat)
+    return siteutils.qryptbufferjson(lon, lat, ptradius)
 
 
 @app.route('/huc12_state',  methods=['GET', ])
