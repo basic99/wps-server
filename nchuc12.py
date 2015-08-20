@@ -297,6 +297,11 @@ class NCHuc12():
             elif self.sel_type == 'point_buffer':
                 logger.debug(self.pt_lon)
                 logger.debug(self.pt_lat)
+                logger.debug(self.ptbuffer_km)
+                lim1 = int(1000 * float(self.ptbuffer_km))
+                lim2 = int(1000 * float(self.ptbuffer_km) + 5000)
+                lim3 = int(1000 * float(self.ptbuffer_km) + 12000)
+                logger.debug("%d %d %d" % (lim1, lim2, lim3))
                 query3 = "select huc12 from huc12nc order by huc12"
                 cur.execute(query3)
                 hucs = cur.fetchall()
@@ -325,12 +330,14 @@ class NCHuc12():
                     except psycopg2.ProgrammingError:
                         continue
                     res = cur.fetchall()
+                    # limit = float(self.ptbuffer_km)
+
                     for cust_huc in res:
-                        if cust_huc[0] < 3000:
+                        if cust_huc[0] < lim1:
                             cust_huc12s.append(huc[0])
-                        if cust_huc[0] < 8000:
+                        if cust_huc[0] < lim2:
                             self.buff_list5.append(huc[0])
-                        if cust_huc[0] < 15000:
+                        if cust_huc[0] < lim3:
                             self.buff_list12.append(huc[0])
 
                 # from list of hucs12 set aoi_list
