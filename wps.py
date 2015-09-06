@@ -308,12 +308,16 @@ def shptojson():
     fluff = "data:application/octet-stream;base64,"  # for firefox
     fluff2 = "data:;base64,"  # for chrome
     fluff3 = urllib.urlencode({'fluff': fluff2}).replace('fluff=', '')  # ie
+    fluff4 = "data:application/x-dbf;base64,"
     for key, data in request.form.iterlists():
+        logger.debug(key)
         shp[key] = str(data[0])
         shp[key] = shp[key].replace(fluff, '')
         shp[key] = shp[key].replace(fluff2, '')
         shp[key] = shp[key].replace(fluff3, '')
+        shp[key] = shp[key].replace(fluff4, '')
         shp[key] = base64.b64decode(shp[key])
+
         with open(shp_dir + "/shape." + key, "wb") as temp:
             temp.write(shp[key])
             temp.flush()
