@@ -32,6 +32,7 @@ import nchuc12
 import model
 import siteutils
 import siteprivate
+import re
 
 # from gevent import monkey
 # monkey.patch_all()
@@ -305,19 +306,22 @@ def shptojson():
     shp = {}
     shp_dir = tempfile.mkdtemp()
     cmd1 = "/usr/local/bin/ogr2ogr"
-    fluff = "data:application/octet-stream;base64,"  # for firefox
-    fluff2 = "data:;base64,"  # for chrome
-    fluff3 = urllib.urlencode({'fluff': fluff2}).replace('fluff=', '')  # ie
-    fluff4 = "data:application/x-dbf;base64,"
+    pattern1 = re.compile('data.+base64,')
+    # fluff = "data:application/octet-stream;base64,"  # for firefox
+    # fluff2 = "data:;base64,"  # for chrome
+    # fluff3 = urllib.urlencode({'fluff': fluff2}).replace('fluff=', '')  # ie
     for key, data in request.form.iterlists():
-        logger.debug(key)
         shp[key] = str(data[0])
+        mymatch = re.search(pattern1, shp[key])
+        fluff = mymatch.group()
+        logger.debug(key)
+        logger.debug(fluff)
         shp[key] = shp[key].replace(fluff, '')
-        shp[key] = shp[key].replace(fluff2, '')
-        shp[key] = shp[key].replace(fluff3, '')
-        shp[key] = shp[key].replace(fluff4, '')
-        shp[key] = base64.b64decode(shp[key])
-
+        # shp[key] = shp[key].replace(fluff2, '') # add something for ie
+        try:
+            shp[key] = base64.b64decode(shp[key])
+        except TypeError:
+            logger.debug(shp[key])
         with open(shp_dir + "/shape." + key, "wb") as temp:
             temp.write(shp[key])
             temp.flush()
