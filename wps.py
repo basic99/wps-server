@@ -147,6 +147,22 @@ def post_aoi():
         201, headers
         )
 
+@app.route('/batch', methods=['POST', ])
+def post_batch():
+    logger.debug(request.form)
+    for name in request.form:
+        logger.debug(request.form.get(name))
+    with g.db.cursor() as cur:
+        cur.execute("select max(batch_id) from batch")
+        rec = cur.fetchone()
+        logger.debug(rec[0])
+        for name in request.form:
+            cur.execute(
+                "insert into batch(batch_id, name, resource) values(%s, %s, %s)",
+                (rec[0] + 1, name, request.form.get(name))
+            )
+    g.db.commit()
+    return json.encode({"batch_id": batch_id})
 
 @app.route('/<int:id>', methods=['GET', ])
 def resource_aoi(id):
