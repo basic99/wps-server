@@ -156,13 +156,28 @@ def post_batch():
         cur.execute("select max(batch_id) from batch")
         rec = cur.fetchone()
         logger.debug(rec[0])
+        rec_id = rec[0] + 1
         for name in request.form:
             cur.execute(
                 "insert into batch(batch_id, name, resource) values(%s, %s, %s)",
-                (rec[0] + 1, name, request.form.get(name))
+                (rec_id, name, request.form.get(name))
             )
     g.db.commit()
-    return json.encode({"batch_id": batch_id})
+    resource = url_for(
+        'resource_batch',
+        id=rec_id
+        )
+    headers = dict()
+    headers['Location'] = resource
+    # headers['Content-Type'] = 'application/json'
+
+    return (
+        json.dumps({
+            'status': "created"
+            }),
+        201, headers
+        )
+
 
 @app.route('/<int:id>', methods=['GET', ])
 def resource_aoi(id):
@@ -186,6 +201,17 @@ def resource_aoi(id):
         username=username
         # permalink=permalink
         )
+
+
+@app.route('/batch/<int:id>', methods=['GET', ])
+def resource_batch(id):
+    aoi_list = []
+    with g.db.cursor(cursor_factory=psycopg2.extras.DictCursor) as cur:
+        cur.execute("select name from batch where batch_id = %s", (id, ))
+        for rec in cur:
+            aoi_list.append(rec[0])
+    return json.dumps(aoi_list)
+
 
 
 @app.route('/<int:id>/saved', methods=['GET', ])
