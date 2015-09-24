@@ -39,13 +39,13 @@
       <th>Min.</th>
       <th>Max</th>
     </tr>
-    <!-- {%for res_row in threats_summary_aoi%} -->
+    {%for res_row in value.aoi.threat_summary%}
     <tr>
-      <!-- {% for res in res_row%} -->
-      <td ></td>
-      <!-- {% endfor %} -->
+      {% for res in res_row%}
+      <td >{{res}}</td>
+      {% endfor %}
     </tr>
-    <!-- {% endfor %} -->
+    {% endfor %}
   </table>
 
    <table class="table table-striped">
@@ -58,13 +58,13 @@
       <th>Severity <br> Max.</th>
       <th>Mean Pct. <br> Area</th>
     </tr>
-    <!-- {%for res_row in report_rank_aoi%} -->
+    {%for res_row in value.aoi.report_rank%}
     <tr>
-      <!-- {% for res in res_row%} -->
+      {% for res in res_row%}
       <td >{{res}}</td>
-      <!-- {% endfor %} -->
+      {% endfor %}
     </tr>
-    <!-- {% endfor %} -->
+    {% endfor %}
   </table>
   {% endfor %}
 </div>
