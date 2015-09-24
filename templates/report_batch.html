@@ -26,12 +26,13 @@
   </div>
   {% for key, value in results.iteritems() %}
   <h2>Polygon for: {{ key|e }}</h2>
+
   <h2 >Summary for AOI</h2>
   <h4 >Number of Sub-watersheds: {{value.samplesize.aoi}}</h4>
   <h4 >Distinct Threat Count: {{value.aoi.thrts_included_msg}}</h4>
   <h4>Occurrence Rating: {{value.aoi.other_stats.comp_occ}}%</h4>
 
-     <table class="table table-striped">
+  <table class="table table-striped">
     <tr>
       <th></th>
       <th>Mean</th>
@@ -48,17 +49,135 @@
     {% endfor %}
   </table>
 
-   <table class="table table-striped">
+  <table class="table table-striped">
     <tr>
       <th></th>
-      <th>Occurrence <br> (0 -1)</th>
-      <th>Severity <br> (0 -1)</th>
-      <th>Severity  <br>S.D.</th>
-      <th>Severity  <br>Min.</th>
-      <th>Severity <br> Max.</th>
-      <th>Mean Pct. <br> Area</th>
+      <th>
+        Occurrence
+        <br>(0 -1)</th>
+      <th>
+        Severity
+        <br>(0 -1)</th>
+      <th>
+        Severity
+        <br>S.D.</th>
+      <th>
+        Severity
+        <br>Min.</th>
+      <th>
+        Severity
+        <br>Max.</th>
+      <th>
+        Mean Pct.
+        <br>Area</th>
     </tr>
     {%for res_row in value.aoi.report_rank%}
+    <tr>
+      {% for res in res_row%}
+      <td >{{res}}</td>
+      {% endfor %}
+    </tr>
+    {% endfor %}
+  </table>
+
+  <h2 >Summary w/in 5 km Neighborhood</h2>
+  <h4 >Number of Sub-watersheds: {{value.samplesize['5k']}}</h4>
+  <h4 >Distinct Threat Count: {{value['5k'].thrts_included_msg}}</h4>
+  <h4>Occurrence Rating: {{value['5k'].other_stats.comp_occ}}%</h4>
+
+  <table class="table table-striped">
+    <tr>
+      <th></th>
+      <th>Mean</th>
+      <th>S.D.</th>
+      <th>Min.</th>
+      <th>Max</th>
+    </tr>
+    {%for res_row in value['5k'].threat_summary%}
+    <tr>
+      {% for res in res_row%}
+      <td >{{res}}</td>
+      {% endfor %}
+    </tr>
+    {% endfor %}
+  </table>
+
+  <table class="table table-striped">
+    <tr>
+      <th></th>
+      <th>
+        Occurrence
+        <br>(0 -1)</th>
+      <th>
+        Severity
+        <br>(0 -1)</th>
+      <th>
+        Severity
+        <br>S.D.</th>
+      <th>
+        Severity
+        <br>Min.</th>
+      <th>
+        Severity
+        <br>Max.</th>
+      <th>
+        Mean Pct.
+        <br>Area</th>
+    </tr>
+    {%for res_row in value['5k'].report_rank%}
+    <tr>
+      {% for res in res_row%}
+      <td >{{res}}</td>
+      {% endfor %}
+    </tr>
+    {% endfor %}
+  </table>
+
+  <h2 >Summary w/in 12 km Neighborhood</h2>
+  <h4 >Number of Sub-watersheds: {{value.samplesize['12k']}}</h4>
+  <h4 >Distinct Threat Count: {{value['12k'].thrts_included_msg}}</h4>
+  <h4>Occurrence Rating: {{value['12k'].other_stats.comp_occ}}%</h4>
+
+  <table class="table table-striped">
+    <tr>
+      <th></th>
+      <th>Mean</th>
+      <th>S.D.</th>
+      <th>Min.</th>
+      <th>Max</th>
+    </tr>
+    {%for res_row in value['12k'].threat_summary%}
+    <tr>
+      {% for res in res_row%}
+      <td >{{res}}</td>
+      {% endfor %}
+    </tr>
+    {% endfor %}
+  </table>
+
+  <table class="table table-striped">
+    <tr>
+      <th></th>
+      <th>
+        Occurrence
+        <br>(0 -1)</th>
+      <th>
+        Severity
+        <br>(0 -1)</th>
+      <th>
+        Severity
+        <br>S.D.</th>
+      <th>
+        Severity
+        <br>Min.</th>
+      <th>
+        Severity
+        <br>Max.</th>
+      <th>
+        Mean Pct.
+        <br>Area</th>
+    </tr>
+    {%for res_row in value['12k'].report_rank%}
     <tr>
       {% for res in res_row%}
       <td >{{res}}</td>
