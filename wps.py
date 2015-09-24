@@ -592,7 +592,6 @@ def map():
 
 
 @app.route('/<int:id>/report', methods=['GET', ])
-# @app.route('/report',  methods=['GET', ])
 def report(id):
     logger.debug(id)
     logger.debug(request.args)
@@ -671,6 +670,56 @@ def report(id):
         )
 
 
+@app.route('/batch/<int:id>/report', methods=['GET', ])
+def report_batch(id):
+    query = "select * from batch where batch_id = %s"
+    batch_results = {}
+    with g.db.cursor(cursor_factory=psycopg2.extras.DictCursor) as cur:
+        cur.execute(query, (id, ))
+        for row in cur:
+            name = row['name']
+            aoi_id = row['resource'].split("/")[-1]
+            logger.debug(name)
+            logger.debug(aoi_id)
+
+            results_aoi = model.get_threat_report2(aoi_id, request.args, 'aoi')
+            results_5k = model.get_threat_report2(aoi_id, request.args, '5k')
+            results_12k = model.get_threat_report2(aoi_id, request.args, '12k')
+
+            res_arr = [results_aoi['res_arr'][x] for x in results_aoi['res_arr']]
+            col_hdrs = results_aoi['col_hdrs']
+            # col_hdrs.append("results (normalized) ")
+            col_hdrs.append("Threat Count")
+            logger.debug(col_hdrs)
+            samplesize = {}
+            samplesize['aoi'] = len(res_arr)
+            samplesize['5k'] = len(
+                [results_5k['res_arr'][x] for x in results_5k['res_arr']]
+            )
+            samplesize['12k'] = len(
+                [results_12k['res_arr'][x] for x in results_12k['res_arr']]
+            )
+
+
+            batch_results[name] = {}
+            batch_results[name]['aoi'] = results_aoi
+            batch_results[name]['5k'] = results_5k
+            batch_results[name]['12k'] = results_12k
+            batch_results[name]['samplesize'] = samplesize
+
+
+    year = results_aoi['year']
+    logger.debug(request.args)
+    logger.debug(batch_results)
+    logger.debug(year)
+    return render_template(
+                'report_batch.html',
+                year=year,
+                results=batch_results
+                )
+    return "hello world"
+
+
 @app.route('/ssheet',  methods=['GET', ])
 def ssheet():
     logger.debug(request.args)
@@ -700,7 +749,6 @@ def ssheet():
     headers = dict()
     headers['Location'] = url_for('get_ssheet', fname=temp.name[5:])
     return ('', 201, headers)
-    return "test"
 
 
 @app.route('/<int:id>/report_indiv', methods=['GET', ])
@@ -770,7 +818,7 @@ def report_indiv_batch(id):
             batch_results[name]['5k'] = results_5k
             batch_results[name]['12k'] = results_12k
             batch_results[name]['num_hucs'] = num_hucs
-    year=results_aoi['year']
+    year = results_aoi['year']
     logger.debug(request.args)
     logger.debug(batch_results)
     logger.debug(year)
