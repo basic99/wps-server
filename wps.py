@@ -668,11 +668,7 @@ def report(id):
             other_stats_5k=results_5k['other_stats'],
             other_stats_12k=results_12k['other_stats'],
             other_stats_state=results_state['other_stats']
-
-
-
-            )
-
+        )
 
 
 @app.route('/ssheet',  methods=['GET', ])
@@ -750,6 +746,40 @@ def report_indiv(id):
                 results_dict_12k=results_12k['res_arr'],
                 stats_12k=results_12k['stats']
                 )
+
+
+@app.route('/batch/<int:id>/report_indiv', methods=['GET', ])
+def report_indiv_batch(id):
+    mymap_str = request.args.get("map", "")
+    query = "select * from batch where batch_id = %s"
+    batch_results = {}
+    with g.db.cursor(cursor_factory=psycopg2.extras.DictCursor) as cur:
+        cur.execute(query, (id, ))
+        for row in cur:
+            name = row['name']
+            aoi_id = row['resource'].split("/")[-1]
+            results_aoi = model.get_indiv_report(aoi_id, mymap_str, 'aoi')
+            results_5k = model.get_indiv_report(aoi_id, mymap_str, '5k')
+            results_12k = model.get_indiv_report(aoi_id, mymap_str, '12k')
+            num_hucs = {}
+            num_hucs['aoi'] = results_aoi['num_hucs']
+            num_hucs['5k'] = results_5k['num_hucs']
+            num_hucs['12k'] = results_12k['num_hucs']
+            batch_results[name] = {}
+            batch_results[name]['aoi'] = results_aoi
+            batch_results[name]['5k'] = results_5k
+            batch_results[name]['12k'] = results_12k
+            batch_results[name]['num_hucs'] = num_hucs
+    year=results_aoi['year']
+    logger.debug(request.args)
+    logger.debug(batch_results)
+    logger.debug(year)
+    return render_template(
+                'report_batch_indiv.html',
+                year=year,
+                results=batch_results
+                )
+    # return "hello world"
 
 
 @app.route('/preview_map', methods=['POST', ])
@@ -845,6 +875,8 @@ def limit_preview_map():
         "res": results_dict,
         'colors': colors
     })
+
+
 
 if __name__ == '__main__':
     app.run(debug=True)
