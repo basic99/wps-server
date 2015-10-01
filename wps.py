@@ -159,7 +159,7 @@ def post_batch():
         rec_id = rec[0] + 1
         for name in request.form:
             cur.execute(
-                "insert into batch(batch_id, name, resource) values(%s, %s, %s)",
+                "insert into batch(batch_id, name, resource, date) values(%s, %s, %s, now())",
                 (rec_id, name, request.form.get(name))
             )
     g.db.commit()
