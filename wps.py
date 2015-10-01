@@ -209,7 +209,10 @@ def resource_batch(id):
     with g.db.cursor(cursor_factory=psycopg2.extras.DictCursor) as cur:
         cur.execute("select * from batch where batch_id = %s", (id, ))
         for rec in cur:
-            aoi_list.append([rec[2], rec[3]])
+            aoi_list.append({
+                "name": rec[2],
+                "url": rec[3]
+            })
             mydate = rec['date']
 
     return render_template(
