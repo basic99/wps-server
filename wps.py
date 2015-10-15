@@ -256,6 +256,19 @@ def saved_aoi(id):
     )
 
 
+@app.route('/batch/<int:id>/saved', methods=['GET', ])
+def saved_batch(id):
+    """Return geojson and extent given aoi id. """
+
+    query = "select * from batch where batch_id = %s"
+    with g.db.cursor(cursor_factory=psycopg2.extras.DictCursor) as cur:
+        cur.execute(query, (id,))
+        for rec in cur:
+            logger.debug(rec)
+
+    return "testing"
+
+
 @app.route('/<int:id>/map', methods=['GET', ])
 def map_aoi(id):
     """Run model on AOI to create map.
