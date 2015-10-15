@@ -25,7 +25,7 @@
     <h4>Year 20{{year}}</h4>
   </div>
   {% for key, value in results.iteritems() %}
-  <h2>Polygon for: {{ key|e }}</h2>
+  <h2>Polygon name: {{ key|e }}</h2>
   <h2 >Summary for AOI</h2>
   <h4 >Number of Sub-watersheds: {{value.num_hucs.aoi}}</h4>
   <table class="table table-striped">

@@ -38,16 +38,24 @@ td {
 </div>
 
 <div class="row">
+
   <div class="col-sm-offset-2 col-sm-8">
-    <table>
+  <h3>Permalink</h3>
+  <p>
+  <a href='{{permalink}}'> {{permalink}}</a>
+  </p>
+  <h3>Resources</h3>
+    <table class="table">
       <tr>
-        <th></th>
-        <th></th>
+        <th>polygon name</th>
+        <th>resource url</th>
       </tr>
       {% for res in aoi_list%}
       <tr>
-      <td>{{res['name']}}</td>
-      <td><a href='{{res['url']}}'>{{res['url']}}</a></td>
+        <td>{{res['name']}}</td>
+        <td>
+          <a href='{{res['url']}}'>{{res['url']}}</a>
+        </td>
       </tr>
       {% endfor %}
     </table>

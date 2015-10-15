@@ -205,6 +205,13 @@ def resource_aoi(id):
 
 @app.route('/batch/<int:id>', methods=['GET', ])
 def resource_batch(id):
+    try:
+        referer = request.environ['HTTP_REFERER']
+        permalink = referer + "#batch_%s" % id
+    except:
+        permalink = ""
+
+    logger.debug(permalink)
     aoi_list = []
     with g.db.cursor(cursor_factory=psycopg2.extras.DictCursor) as cur:
         cur.execute("select * from batch where batch_id = %s", (id, ))
@@ -213,13 +220,14 @@ def resource_batch(id):
                 "name": rec[2],
                 "url": rec[3]
             })
-            mydate = rec['date']
+        mydate = rec['date']
 
     return render_template(
         'batch_resource.html',
         batch_id=id,
         date=mydate,
-        aoi_list=aoi_list
+        aoi_list=aoi_list,
+        permalink=permalink
 
     )
 
