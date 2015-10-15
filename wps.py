@@ -150,6 +150,10 @@ def post_aoi():
 @app.route('/batch', methods=['POST', ])
 def post_batch():
     logger.debug(request.form)
+    try:
+        referer = request.environ['HTTP_REFERER']
+    except:
+        referer = ''
     for name in request.form:
         logger.debug(request.form.get(name))
     with g.db.cursor() as cur:
@@ -157,10 +161,11 @@ def post_batch():
         rec = cur.fetchone()
         logger.debug(rec[0])
         rec_id = rec[0] + 1
+        permalink = referer + "#batch_%s" % rec_id
         for name in request.form:
             cur.execute(
-                "insert into batch(batch_id, name, resource, date) values(%s, %s, %s, now())",
-                (rec_id, name, request.form.get(name))
+                "insert into batch(batch_id, name, resource, permalink, date) values(%s, %s, %s, %s, now())",
+                (rec_id, name, request.form.get(name), permalink)
             )
     g.db.commit()
     resource = url_for(
