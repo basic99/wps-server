@@ -261,26 +261,26 @@ def saved_batch(id):
     """Return geojson and extent given aoi id. """
 
     query = "select * from batch where batch_id = %s"
+    rec_pk_list = []
+    results_list = []
     with g.db.cursor(cursor_factory=psycopg2.extras.DictCursor) as cur:
         cur.execute(query, (id,))
-        # for rec in cur:
-        #     logger.debug(rec)
-        rec = cur.fetchone()
-        rec_pk = rec['resource'].split("/")[-1]
-        logger.debug(rec_pk)
-    with g.db.cursor(cursor_factory=psycopg2.extras.DictCursor) as cur:
-        cur.execute("select * from aoi_results where pk = %s", (rec_pk, ))
-        rec = cur.fetchone()
-        logger.debug(type(rec['huc12s']))
-        results = nchuc12.getgeojson(rec['huc12s'])
-        return (
-            json.dumps({
-                'geojson': results
-            })
-        )
-
-
-
+        for rec in cur:
+            logger.debug(rec)
+            rec_pk = rec['resource'].split("/")[-1]
+            rec_pk_list.append(rec_pk)
+    for rec_pk in rec_pk_list:
+        with g.db.cursor(cursor_factory=psycopg2.extras.DictCursor) as cur:
+            cur.execute("select * from aoi_results where pk = %s", (rec_pk, ))
+            rec = cur.fetchone()
+            logger.debug(type(rec['huc12s']))
+            results = nchuc12.getgeojson(rec['huc12s'])
+            results_list.append(results)
+    return (
+        json.dumps({
+            'geojson': results_list
+        })
+    )
 
 @app.route('/<int:id>/map', methods=['GET', ])
 def map_aoi(id):
