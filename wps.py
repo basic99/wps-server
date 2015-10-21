@@ -263,9 +263,11 @@ def saved_batch(id):
     query = "select * from batch where batch_id = %s"
     rec_pk_list = []
     results_list = []
+    resource = {}
     with g.db.cursor(cursor_factory=psycopg2.extras.DictCursor) as cur:
         cur.execute(query, (id,))
         for rec in cur:
+            resource[rec['name']] = rec['resource']
             logger.debug(rec)
             rec_pk = rec['resource'].split("/")[-1]
             rec_pk_list.append(rec_pk)
@@ -278,7 +280,8 @@ def saved_batch(id):
             results_list.append(results)
     return (
         json.dumps({
-            'geojson': results_list
+            'geojson': results_list,
+            'resource': resource
         })
     )
 
