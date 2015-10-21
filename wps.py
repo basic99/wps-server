@@ -285,6 +285,7 @@ def saved_batch(id):
         })
     )
 
+
 @app.route('/<int:id>/map', methods=['GET', ])
 def map_aoi(id):
     """Run model on AOI to create map.
@@ -328,32 +329,49 @@ def map_aoi(id):
 @app.route('/<int:id>/ssheet', methods=['GET', ])
 def ssheet_aoi(id):
     """Create model report as csv from aoi id. """
-    with g.db.cursor(cursor_factory=psycopg2.extras.DictCursor) as cur:
-        cur.execute("select * from aoi_results where pk = %s", (id, ))
-        rec = cur.fetchone()
-    huc12_str = rec['huc12s']
-    report_results = model.get_threat_report(huc12_str, request.args)
-    with tempfile.NamedTemporaryFile(
-            delete=False,
-            suffix=".txt",
-            dir='/tmp',
-            prefix='ncthreats'
-            ) as temp:
-        csvwriter = csv.writer(temp, quoting=csv.QUOTE_ALL, delimiter='\t')
-        csvwriter.writerow(["Year - " + str(report_results['year'])])
-        csvwriter.writerow(report_results['col_hdrs'])
-        for row in report_results['res_arr']:
-            # row_esc = ['="' + str(x) + '"' for x in row]
-            # huc12_col = '="' + str(row[0]) + '"'
-            # huc12_col = "'%s'" % str(row[0])
-            # row_esc = [huc12_col]
-            # for x in row[1:]:
-            #     row_esc.append(x)
-            csvwriter.writerow(row)
+    # with g.db.cursor(cursor_factory=psycopg2.extras.DictCursor) as cur:
+    #     cur.execute("select * from aoi_results where pk = %s", (id, ))
+    #     rec = cur.fetchone()
+    # huc12_str = rec['huc12s']
+    # report_results = model.get_threat_report2(huc12_str, request.args)
+    # with tempfile.NamedTemporaryFile(
+    #         delete=False,
+    #         suffix=".txt",
+    #         dir='/tmp',
+    #         prefix='ncthreats'
+    #         ) as temp:
+    #     csvwriter = csv.writer(temp, quoting=csv.QUOTE_ALL, delimiter='\t')
+    #     csvwriter.writerow(["Year - " + str(report_results['year'])])
+    #     csvwriter.writerow(report_results['col_hdrs'])
+    #     for row in report_results['res_arr']:
+    #         # row_esc = ['="' + str(x) + '"' for x in row]
+    #         # huc12_col = '="' + str(row[0]) + '"'
+    #         # huc12_col = "'%s'" % str(row[0])
+    #         # row_esc = [huc12_col]
+    #         # for x in row[1:]:
+    #         #     row_esc.append(x)
+    #         csvwriter.writerow(row)
 
-    headers = dict()
-    headers['Location'] = url_for('get_ssheet', fname=temp.name[5:])
-    return ('', 201, headers)
+    # headers = dict()
+    # headers['Location'] = url_for('get_ssheet', fname=temp.name[5:])
+    # return ('', 201, headers)
+    if id == 0:
+        report_results = model.get_threat_report2(id, request.args)
+        # logger.debug(report_results)
+        res_arr = [report_results['res_arr'][x] for x in report_results['res_arr']]
+        col_hdrs = report_results['col_hdrs']
+        # col_hdrs.append("results (normalized) ")
+        col_hdrs.append("Threat Count")
+        logger.debug(col_hdrs)
+        samplesize = len(res_arr)
+
+    else:
+        results_state = model.get_threat_report2(id, request.args)
+        results_aoi = model.get_threat_report2(id, request.args, 'aoi')
+        results_5k = model.get_threat_report2(id, request.args, '5k')
+        results_12k = model.get_threat_report2(id, request.args, '12k')
+
+    return "hello world"
 
 
 @app.route('/ssheet/<path:fname>')
@@ -749,7 +767,6 @@ def report_batch(id):
                 [results_12k['res_arr'][x] for x in results_12k['res_arr']]
             )
 
-
             batch_results[name] = {}
             batch_results[name]['aoi'] = results_aoi
             batch_results[name]['5k'] = results_5k
@@ -766,7 +783,6 @@ def report_batch(id):
                 year=year,
                 results=batch_results
                 )
-    return "hello world"
 
 
 @app.route('/ssheet',  methods=['GET', ])
