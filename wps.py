@@ -329,32 +329,7 @@ def map_aoi(id):
 @app.route('/<int:id>/ssheet', methods=['GET', ])
 def ssheet_aoi(id):
     """Create model report as csv from aoi id. """
-    # with g.db.cursor(cursor_factory=psycopg2.extras.DictCursor) as cur:
-    #     cur.execute("select * from aoi_results where pk = %s", (id, ))
-    #     rec = cur.fetchone()
-    # huc12_str = rec['huc12s']
-    # report_results = model.get_threat_report2(huc12_str, request.args)
-    # with tempfile.NamedTemporaryFile(
-    #         delete=False,
-    #         suffix=".txt",
-    #         dir='/tmp',
-    #         prefix='ncthreats'
-    #         ) as temp:
-    #     csvwriter = csv.writer(temp, quoting=csv.QUOTE_ALL, delimiter='\t')
-    #     csvwriter.writerow(["Year - " + str(report_results['year'])])
-    #     csvwriter.writerow(report_results['col_hdrs'])
-    #     for row in report_results['res_arr']:
-    #         # row_esc = ['="' + str(x) + '"' for x in row]
-    #         # huc12_col = '="' + str(row[0]) + '"'
-    #         # huc12_col = "'%s'" % str(row[0])
-    #         # row_esc = [huc12_col]
-    #         # for x in row[1:]:
-    #         #     row_esc.append(x)
-    #         csvwriter.writerow(row)
 
-    # headers = dict()
-    # headers['Location'] = url_for('get_ssheet', fname=temp.name[5:])
-    # return ('', 201, headers)
     logger.debug(id)
     if id == 0:
         report_results = model.get_threat_report2(id, request.args)
@@ -367,9 +342,11 @@ def ssheet_aoi(id):
         a = report_results["thrts_included_msg"].split("of")
         report_results["thrts_included_msg"] = a
 
+        results_complete = {
+            "state": report_results
+        }
 
-
-        return json.dumps(report_results, indent=4)
+        # return json.dumps(report_results, indent=4)
 
     else:
         results_state = model.get_threat_report2(id, request.args)
@@ -404,46 +381,47 @@ def ssheet_aoi(id):
             "12k": results_12k
         }
 
-        fieldnames = [
-            "Report Year",
-            "Summary",
-            "# swds",
-            "DTC",
-            "MTC",
-            "Occr",
-            "CTC mean",
-            "CTC sd",
-            "CTC min",
-            "CTC max"
-        ]
+    fieldnames = [
+        "Report Year",
+        "Summary",
+        "# swds",
+        "DTC",
+        "MTC",
+        "Occr",
+        "CTC mean",
+        "CTC sd",
+        "CTC min",
+        "CTC max"
+    ]
 
-        with tempfile.NamedTemporaryFile(
-            delete=False,
-            suffix=".csv",
-            dir='/tmp',
-            prefix='ncthreats'
-        ) as temp:
-            csvwriter = csv.DictWriter(temp, fieldnames=fieldnames)
-            csvwriter.writeheader()
-            for summary in results_complete:
-                row = {}
-                row["Report Year"] = results_complete[summary]['year']
-                row["Summary"] = summary
-                row["# swds"] = results_complete[summary]["samplesize"]
-                row["DTC"] = results_complete[summary]["thrts_included_msg"][0].strip()
-                row["MTC"] = results_complete[summary]["thrts_included_msg"][1].strip()
-                row["Occr"] = results_complete[summary]["other_stats"]['comp_occ']
-                row["CTC mean"] = results_complete[summary]["threat_summary"][0][1]
-                row["CTC sd"] = results_complete[summary]["threat_summary"][0][2]
-                row["CTC min"] = results_complete[summary]["threat_summary"][0][3]
-                row["CTC max"] = results_complete[summary]["threat_summary"][0][4]
+    with tempfile.NamedTemporaryFile(
+        delete=False,
+        suffix=".csv",
+        dir='/tmp',
+        prefix='ncthreats'
+    ) as temp:
+        csvwriter = csv.DictWriter(temp, fieldnames=fieldnames)
+        csvwriter.writeheader()
+        for summary in results_complete:
+            row = {}
+            row["Report Year"] = results_complete[summary]['year']
+            row["Summary"] = summary
+            row["# swds"] = results_complete[summary]["samplesize"]
+            row["DTC"] = results_complete[summary]["thrts_included_msg"][0].strip()
+            row["MTC"] = results_complete[summary]["thrts_included_msg"][1].strip()
+            row["Occr"] = results_complete[summary]["other_stats"]['comp_occ']
+            row["CTC mean"] = results_complete[summary]["threat_summary"][0][1]
+            row["CTC sd"] = results_complete[summary]["threat_summary"][0][2]
+            row["CTC min"] = results_complete[summary]["threat_summary"][0][3]
+            row["CTC max"] = results_complete[summary]["threat_summary"][0][4]
 
-                csvwriter.writerow(row)
+            csvwriter.writerow(row)
 
-
-        return temp.name
-
-        return json.dumps(results_complete, indent=4)
+    headers = dict()
+    headers['Location'] = url_for('get_ssheet', fname=temp.name[5:])
+    return ('', 201, headers)
+    # return temp.name
+    # return json.dumps(results_complete, indent=4)
 
 
 
