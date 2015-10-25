@@ -326,17 +326,13 @@ def map_aoi(id):
 #         )
 
 
-@app.route('/<int:id>/ssheet', methods=['GET', ])
+@app.route('/<int:id>/ssheet1', methods=['GET', ])
 def ssheet_aoi(id):
     """Create model report as csv from aoi id. """
 
     logger.debug(id)
     if id == 0:
         report_results = model.get_threat_report2(id, request.args)
-        # res_arr = [
-        #     report_results['res_arr'][x] for x in report_results['res_arr']
-        # ]
-
         report_results['samplesize'] = len(report_results['res_arr'])
         del(report_results["res_arr"])
         a = report_results["thrts_included_msg"].split("of")
@@ -345,7 +341,6 @@ def ssheet_aoi(id):
         results_complete = {
             "state": report_results
         }
-
         # return json.dumps(report_results, indent=4)
 
     else:
@@ -420,9 +415,99 @@ def ssheet_aoi(id):
     headers = dict()
     headers['Location'] = url_for('get_ssheet', fname=temp.name[5:])
     return ('', 201, headers)
-    # return temp.name
-    # return json.dumps(results_complete, indent=4)
 
+
+@app.route('/<int:id>/ssheet2', methods=['GET', ])
+def ssheet_aoi2(id):
+    """Create model report as csv from aoi id. """
+
+    logger.debug(id)
+    if id == 0:
+        report_results = model.get_threat_report2(id, request.args)
+        report_results['samplesize'] = len(report_results['res_arr'])
+        del(report_results["res_arr"])
+        a = report_results["thrts_included_msg"].split("of")
+        report_results["thrts_included_msg"] = a
+
+        results_complete = {
+            "state": report_results
+        }
+        # return json.dumps(report_results, indent=4)
+
+    else:
+        results_state = model.get_threat_report2(id, request.args)
+        results_aoi = model.get_threat_report2(id, request.args, 'aoi')
+        results_5k = model.get_threat_report2(id, request.args, '5k')
+        results_12k = model.get_threat_report2(id, request.args, '12k')
+
+        results_state['samplesize'] = len(results_state['res_arr'])
+        del(results_state["res_arr"])
+        a = results_state["thrts_included_msg"].split("of")
+        results_state["thrts_included_msg"] = a
+
+        results_aoi['samplesize'] = len(results_aoi['res_arr'])
+        del(results_aoi["res_arr"])
+        a = results_aoi["thrts_included_msg"].split("of")
+        results_aoi["thrts_included_msg"] = a
+
+        results_5k['samplesize'] = len(results_5k['res_arr'])
+        del(results_5k["res_arr"])
+        a = results_5k["thrts_included_msg"].split("of")
+        results_5k["thrts_included_msg"] = a
+
+        results_12k['samplesize'] = len(results_12k['res_arr'])
+        del(results_12k["res_arr"])
+        a = results_12k["thrts_included_msg"].split("of")
+        results_12k["thrts_included_msg"] = a
+
+        results_complete = {
+            "state": results_state,
+            "aoi": results_aoi,
+            "5k": results_5k,
+            "12k": results_12k
+        }
+
+    fieldnames = [
+        "Report Year",
+        "Summary",
+        "Threat Name",
+        "Occurence",
+        "Severity",
+        "Severity s.d.",
+        "Severity min.",
+        "Severity max."
+    ]
+
+    with tempfile.NamedTemporaryFile(
+        delete=False,
+        suffix=".csv",
+        dir='/tmp',
+        prefix='ncthreats'
+    ) as temp:
+        csvwriter = csv.DictWriter(temp, fieldnames=fieldnames)
+        csvwriter.writeheader()
+        for summary in results_complete:
+            row = {}
+            for rept_rank in results_complete[summary]['report_rank']:
+                row["Report Year"] = results_complete[summary]['year']
+                row["Summary"] = summary
+                row["Threat Name"] = rept_rank[0]
+                row["Occurence"] = rept_rank[1]
+                row["Severity"] = rept_rank[2]
+                row["Severity s.d."] = rept_rank[3]
+                row["Severity min."] = rept_rank[4]
+                row["Severity max."] = rept_rank[5]
+
+
+
+
+                csvwriter.writerow(row)
+
+    headers = dict()
+    headers['Location'] = url_for('get_ssheet', fname=temp.name[5:])
+    return ('', 201, headers)
+
+    return json.dumps(results_complete, indent=4)
 
 
 
