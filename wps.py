@@ -355,6 +355,7 @@ def ssheet_aoi(id):
     # headers = dict()
     # headers['Location'] = url_for('get_ssheet', fname=temp.name[5:])
     # return ('', 201, headers)
+    logger.debug(id)
     if id == 0:
         report_results = model.get_threat_report2(id, request.args)
         # logger.debug(report_results)
@@ -364,6 +365,8 @@ def ssheet_aoi(id):
         col_hdrs.append("Threat Count")
         logger.debug(col_hdrs)
         samplesize = len(res_arr)
+        del(report_results["res_arr"])
+        return json.dumps(report_results, indent=4)
 
     else:
         results_state = model.get_threat_report2(id, request.args)
@@ -371,7 +374,9 @@ def ssheet_aoi(id):
         results_5k = model.get_threat_report2(id, request.args, '5k')
         results_12k = model.get_threat_report2(id, request.args, '12k')
 
-    return "hello world"
+
+
+
 
 
 @app.route('/ssheet/<path:fname>')
