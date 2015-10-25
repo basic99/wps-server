@@ -358,14 +358,17 @@ def ssheet_aoi(id):
     logger.debug(id)
     if id == 0:
         report_results = model.get_threat_report2(id, request.args)
-        # logger.debug(report_results)
-        res_arr = [report_results['res_arr'][x] for x in report_results['res_arr']]
-        col_hdrs = report_results['col_hdrs']
-        # col_hdrs.append("results (normalized) ")
-        col_hdrs.append("Threat Count")
-        logger.debug(col_hdrs)
-        samplesize = len(res_arr)
+        # res_arr = [
+        #     report_results['res_arr'][x] for x in report_results['res_arr']
+        # ]
+
+        report_results['samplesize'] = len(report_results['res_arr'])
         del(report_results["res_arr"])
+        a = report_results["thrts_included_msg"].split("of")
+        report_results["thrts_included_msg"] = a
+
+
+
         return json.dumps(report_results, indent=4)
 
     else:
@@ -373,6 +376,74 @@ def ssheet_aoi(id):
         results_aoi = model.get_threat_report2(id, request.args, 'aoi')
         results_5k = model.get_threat_report2(id, request.args, '5k')
         results_12k = model.get_threat_report2(id, request.args, '12k')
+
+        results_state['samplesize'] = len(results_state['res_arr'])
+        del(results_state["res_arr"])
+        a = results_state["thrts_included_msg"].split("of")
+        results_state["thrts_included_msg"] = a
+
+        results_aoi['samplesize'] = len(results_aoi['res_arr'])
+        del(results_aoi["res_arr"])
+        a = results_aoi["thrts_included_msg"].split("of")
+        results_aoi["thrts_included_msg"] = a
+
+        results_5k['samplesize'] = len(results_5k['res_arr'])
+        del(results_5k["res_arr"])
+        a = results_5k["thrts_included_msg"].split("of")
+        results_5k["thrts_included_msg"] = a
+
+        results_12k['samplesize'] = len(results_12k['res_arr'])
+        del(results_12k["res_arr"])
+        a = results_12k["thrts_included_msg"].split("of")
+        results_12k["thrts_included_msg"] = a
+
+        results_complete = {
+            "state": results_state,
+            "aoi": results_aoi,
+            "5k": results_5k,
+            "12k": results_12k
+        }
+
+        fieldnames = [
+            "Report Year",
+            "Summary",
+            "# swds",
+            "DTC",
+            "MTC",
+            "Occr",
+            "CTC mean",
+            "CTC sd",
+            "CTC min",
+            "CTC max"
+        ]
+
+        with tempfile.NamedTemporaryFile(
+            delete=False,
+            suffix=".csv",
+            dir='/tmp',
+            prefix='ncthreats'
+        ) as temp:
+            csvwriter = csv.DictWriter(temp, fieldnames=fieldnames)
+            csvwriter.writeheader()
+            for summary in results_complete:
+                row = {}
+                row["Report Year"] = results_complete[summary]['year']
+                row["Summary"] = summary
+                row["# swds"] = results_complete[summary]["samplesize"]
+                row["DTC"] = results_complete[summary]["thrts_included_msg"][0].strip()
+                row["MTC"] = results_complete[summary]["thrts_included_msg"][1].strip()
+                row["Occr"] = results_complete[summary]["other_stats"]['comp_occ']
+                row["CTC mean"] = results_complete[summary]["threat_summary"][0][1]
+                row["CTC sd"] = results_complete[summary]["threat_summary"][0][2]
+                row["CTC min"] = results_complete[summary]["threat_summary"][0][3]
+                row["CTC max"] = results_complete[summary]["threat_summary"][0][4]
+
+                csvwriter.writerow(row)
+
+
+        return temp.name
+
+        return json.dumps(results_complete, indent=4)
 
 
 
