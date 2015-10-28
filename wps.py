@@ -543,13 +543,41 @@ def ssheet_batch(id):
             batch_results[name]['aoi'] = results_aoi
             batch_results[name]['5k'] = results_5k
             batch_results[name]['12k'] = results_12k
-            batch_results[name]['samplesize'] = samplesize
+            # batch_results[name]['samplesize'] = samplesize
 
-    year = results_aoi['year']
-    logger.debug(request.args)
-    # logger.debug(batch_results)
-    logger.debug(year)
-    return json.dumps(batch_results)
+            fieldnames = [
+                "Report Year",
+                "Polygon",
+                "Summary",
+                "# swds",
+                "DTC",
+                "MTC",
+                "Occr",
+                "CTC mean",
+                "CTC sd",
+                "CTC min",
+                "CTC max"
+            ]
+            results = []
+            for polygon in batch_results:
+                for summary in batch_results[polygon]:
+                    row = {}
+                    row["Report Year"] = batch_results[polygon][summary]['year']
+                    row['Polygon'] = polygon
+                    row["Summary"] = summary
+                    row["# swds"] = batch_results[polygon][summary]["samplesize"]
+                    row["DTC"] = batch_results[polygon][summary]["thrts_included_msg"][0].strip()
+                    row["MTC"] = batch_results[polygon][summary]["thrts_included_msg"][1].strip()
+                    row["Occr"] = batch_results[polygon][summary]["other_stats"]['comp_occ']
+                    row["CTC mean"] = batch_results[polygon][summary]["threat_summary"][0][1]
+                    row["CTC sd"] = batch_results[polygon][summary]["threat_summary"][0][2]
+                    row["CTC min"] = batch_results[polygon][summary]["threat_summary"][0][3]
+                    row["CTC max"] = batch_results[polygon][summary]["threat_summary"][0][4]
+
+                    results.append(row)
+
+
+    return json.dumps(results, indent=4)
 
     #     results_state = model.get_threat_report2(id, request.args)
     #     results_aoi = model.get_threat_report2(id, request.args, 'aoi')
