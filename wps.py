@@ -545,23 +545,23 @@ def ssheet_batch(id):
             batch_results[name]['12k'] = results_12k
             # batch_results[name]['samplesize'] = samplesize
 
-            results = []
-            for polygon in batch_results:
-                for summary in batch_results[polygon]:
-                    row = {}
-                    row["Report Year"] = batch_results[polygon][summary]['year']
-                    row['Polygon'] = polygon
-                    row["Summary"] = summary
-                    row["# swds"] = batch_results[polygon][summary]["samplesize"]
-                    row["DTC"] = batch_results[polygon][summary]["thrts_included_msg"][0].strip()
-                    row["MTC"] = batch_results[polygon][summary]["thrts_included_msg"][1].strip()
-                    row["Occr"] = batch_results[polygon][summary]["other_stats"]['comp_occ']
-                    row["CTC mean"] = batch_results[polygon][summary]["threat_summary"][0][1]
-                    row["CTC sd"] = batch_results[polygon][summary]["threat_summary"][0][2]
-                    row["CTC min"] = batch_results[polygon][summary]["threat_summary"][0][3]
-                    row["CTC max"] = batch_results[polygon][summary]["threat_summary"][0][4]
+    results = []
+    for polygon in batch_results:
+        for summary in batch_results[polygon]:
+            row = {}
+            row["Report Year"] = batch_results[polygon][summary]['year']
+            row['Polygon'] = polygon
+            row["Summary"] = summary
+            row["# swds"] = batch_results[polygon][summary]["samplesize"]
+            row["DTC"] = batch_results[polygon][summary]["thrts_included_msg"][0].strip()
+            row["MTC"] = batch_results[polygon][summary]["thrts_included_msg"][1].strip()
+            row["Occr"] = batch_results[polygon][summary]["other_stats"]['comp_occ']
+            row["CTC mean"] = batch_results[polygon][summary]["threat_summary"][0][1]
+            row["CTC sd"] = batch_results[polygon][summary]["threat_summary"][0][2]
+            row["CTC min"] = batch_results[polygon][summary]["threat_summary"][0][3]
+            row["CTC max"] = batch_results[polygon][summary]["threat_summary"][0][4]
 
-                    results.append(row)
+            results.append(row)
                     # csvwriter.writerow(row)
 
     fieldnames = [
@@ -587,9 +587,55 @@ def ssheet_batch(id):
         csvwriter.writeheader()
         csvwriter.writerows(results)
 
+    ############################################################
+    # start ss 2
+    #######################################################
+
+    fieldnames = [
+        "Report Year",
+        'Polygon',
+        "Summary",
+        "Threat Name",
+        "Occurence",
+        "Severity",
+        "Severity s.d.",
+        "Severity min.",
+        "Severity max."
+    ]
+
+    results = []
+    for polygon in batch_results:
+        for summary in batch_results[polygon]:
+
+            rept_rank = batch_results[polygon][summary]['report_rank']
+            for threat in rept_rank:
+                row = {}
+                logger.debug(threat)
+                row["Report Year"] = batch_results[polygon][summary]['year']
+                row['Polygon'] = polygon
+                row["Summary"] = summary
+                row["Threat Name"] = threat[0]
+                row["Occurence"] = threat[1]
+                row["Severity"] = threat[2]
+                row["Severity s.d."] = threat[3]
+                row["Severity min."] = threat[4]
+                row["Severity max."] = threat[5]
+
+                results.append(row)
+    with tempfile.NamedTemporaryFile(
+        delete=False,
+        suffix=".csv",
+        dir='/tmp',
+        prefix='ncthreats'
+    ) as temp:
+        csvwriter = csv.DictWriter(temp, fieldnames=fieldnames)
+        csvwriter.writeheader()
+        csvwriter.writerows(results)
+
     headers = dict()
     headers['Location'] = url_for('get_ssheet', fname=temp.name[5:])
     return ('', 201, headers)
+    return json.dumps(results, indent=4)
 
 
     # return json.dumps(results, indent=4)
