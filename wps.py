@@ -559,32 +559,42 @@ def ssheet_batch(id):
                 "CTC max"
             ]
 
-            with tempfile.NamedTemporaryFile(
-                delete=False,
-                suffix=".csv",
-                dir='/tmp',
-                prefix='ncthreats'
-            ) as temp:
-                csvwriter = csv.DictWriter(temp, fieldnames=fieldnames)
-                csvwriter.writeheader()
-                results = []
-                for polygon in batch_results:
-                    for summary in batch_results[polygon]:
-                        row = {}
-                        row["Report Year"] = batch_results[polygon][summary]['year']
-                        row['Polygon'] = polygon
-                        row["Summary"] = summary
-                        row["# swds"] = batch_results[polygon][summary]["samplesize"]
-                        row["DTC"] = batch_results[polygon][summary]["thrts_included_msg"][0].strip()
-                        row["MTC"] = batch_results[polygon][summary]["thrts_included_msg"][1].strip()
-                        row["Occr"] = batch_results[polygon][summary]["other_stats"]['comp_occ']
-                        row["CTC mean"] = batch_results[polygon][summary]["threat_summary"][0][1]
-                        row["CTC sd"] = batch_results[polygon][summary]["threat_summary"][0][2]
-                        row["CTC min"] = batch_results[polygon][summary]["threat_summary"][0][3]
-                        row["CTC max"] = batch_results[polygon][summary]["threat_summary"][0][4]
+            # with tempfile.NamedTemporaryFile(
+            #     delete=False,
+            #     suffix=".csv",
+            #     dir='/tmp',
+            #     prefix='ncthreats'
+            # ) as temp:
+            #     csvwriter = csv.DictWriter(temp, fieldnames=fieldnames)
+            #     csvwriter.writeheader()
+            results = []
+            for polygon in batch_results:
+                for summary in batch_results[polygon]:
+                    row = {}
+                    row["Report Year"] = batch_results[polygon][summary]['year']
+                    row['Polygon'] = polygon
+                    row["Summary"] = summary
+                    row["# swds"] = batch_results[polygon][summary]["samplesize"]
+                    row["DTC"] = batch_results[polygon][summary]["thrts_included_msg"][0].strip()
+                    row["MTC"] = batch_results[polygon][summary]["thrts_included_msg"][1].strip()
+                    row["Occr"] = batch_results[polygon][summary]["other_stats"]['comp_occ']
+                    row["CTC mean"] = batch_results[polygon][summary]["threat_summary"][0][1]
+                    row["CTC sd"] = batch_results[polygon][summary]["threat_summary"][0][2]
+                    row["CTC min"] = batch_results[polygon][summary]["threat_summary"][0][3]
+                    row["CTC max"] = batch_results[polygon][summary]["threat_summary"][0][4]
 
-                        # results.append(row)
-                        csvwriter.writerow(row)
+                    results.append(row)
+                    # csvwriter.writerow(row)
+
+    with tempfile.NamedTemporaryFile(
+        delete=False,
+        suffix=".csv",
+        dir='/tmp',
+        prefix='ncthreats'
+    ) as temp:
+        csvwriter = csv.DictWriter(temp, fieldnames=fieldnames)
+        csvwriter.writeheader()
+        csvwriter.writerows(results)
 
     headers = dict()
     headers['Location'] = url_for('get_ssheet', fname=temp.name[5:])
