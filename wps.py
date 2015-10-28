@@ -33,6 +33,7 @@ import model
 import siteutils
 import siteprivate
 import re
+import zipfile
 
 # from gevent import monkey
 # monkey.patch_all()
@@ -506,6 +507,7 @@ def ssheet_aoi2(id):
 
     return json.dumps(results_complete, indent=4)
 
+
 @app.route('/batch/<int:id>/ssheet1', methods=['GET', ])
 def ssheet_batch(id):
     """Create model report as csv from aoi id. """
@@ -635,6 +637,19 @@ def ssheet_batch(id):
 
     logger.debug(temp_name1)
     logger.debug(temp_name2)
+
+    with tempfile.NamedTemporaryFile(
+        delete=False,
+        suffix=".zip",
+        dir='/tmp',
+        prefix='ncthreats'
+    ) as temp:
+
+        zf = zipfile.ZipFile(temp, mode='w')
+        zf.write(temp_name1, "spreadsheet1.csv")
+        zf.write(temp_name2, "spreadsheet2.csv")
+        zf.write("/var/www/html/pages/README.txt", "README.txt")
+        zf.close()
 
     headers = dict()
     headers['Location'] = url_for('get_ssheet', fname=temp.name[5:])
