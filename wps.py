@@ -545,28 +545,6 @@ def ssheet_batch(id):
             batch_results[name]['12k'] = results_12k
             # batch_results[name]['samplesize'] = samplesize
 
-            fieldnames = [
-                "Report Year",
-                "Polygon",
-                "Summary",
-                "# swds",
-                "DTC",
-                "MTC",
-                "Occr",
-                "CTC mean",
-                "CTC sd",
-                "CTC min",
-                "CTC max"
-            ]
-
-            # with tempfile.NamedTemporaryFile(
-            #     delete=False,
-            #     suffix=".csv",
-            #     dir='/tmp',
-            #     prefix='ncthreats'
-            # ) as temp:
-            #     csvwriter = csv.DictWriter(temp, fieldnames=fieldnames)
-            #     csvwriter.writeheader()
             results = []
             for polygon in batch_results:
                 for summary in batch_results[polygon]:
@@ -586,6 +564,19 @@ def ssheet_batch(id):
                     results.append(row)
                     # csvwriter.writerow(row)
 
+    fieldnames = [
+        "Report Year",
+        "Polygon",
+        "Summary",
+        "# swds",
+        "DTC",
+        "MTC",
+        "Occr",
+        "CTC mean",
+        "CTC sd",
+        "CTC min",
+        "CTC max"
+    ]
     with tempfile.NamedTemporaryFile(
         delete=False,
         suffix=".csv",
