@@ -412,6 +412,58 @@ def ssheet_aoi(id):
             row["CTC max"] = results_complete[summary]["threat_summary"][0][4]
 
             csvwriter.writerow(row)
+        temp_name1 = temp.name
+
+
+    ##################################################################
+    # start ssheet2
+    ##################################################################
+
+    fieldnames = [
+        "Report Year",
+        "Summary",
+        "Threat Name",
+        "Occurence",
+        "Severity",
+        "Severity s.d.",
+        "Severity min.",
+        "Severity max."
+    ]
+
+    with tempfile.NamedTemporaryFile(
+        delete=False,
+        suffix=".csv",
+        dir='/tmp',
+        prefix='ncthreats'
+    ) as temp:
+        csvwriter = csv.DictWriter(temp, fieldnames=fieldnames)
+        csvwriter.writeheader()
+        for summary in results_complete:
+            row = {}
+            for rept_rank in results_complete[summary]['report_rank']:
+                row["Report Year"] = results_complete[summary]['year']
+                row["Summary"] = summary
+                row["Threat Name"] = rept_rank[0]
+                row["Occurence"] = rept_rank[1]
+                row["Severity"] = rept_rank[2]
+                row["Severity s.d."] = rept_rank[3]
+                row["Severity min."] = rept_rank[4]
+                row["Severity max."] = rept_rank[5]
+                csvwriter.writerow(row)
+
+        temp_name2 = temp.name
+
+    with tempfile.NamedTemporaryFile(
+        delete=False,
+        suffix=".zip",
+        dir='/tmp',
+        prefix='ncthreats'
+    ) as temp:
+        zf = zipfile.ZipFile(temp, mode='w')
+        zf.write(temp_name1, "spreadsheet1.csv")
+        zf.write(temp_name2, "spreadsheet2.csv")
+        zf.write("/var/www/html/pages/README.txt", "README.txt")
+        zf.close()
 
     headers = dict()
     headers['Location'] = url_for('get_ssheet', fname=temp.name[5:])
