@@ -524,19 +524,20 @@ def ssheet_batch(id):
             results_5k = model.get_threat_report2(aoi_id, request.args, '5k')
             results_12k = model.get_threat_report2(aoi_id, request.args, '12k')
 
-            res_arr = [results_aoi['res_arr'][x] for x in results_aoi['res_arr']]
-            col_hdrs = results_aoi['col_hdrs']
-            # col_hdrs.append("results (normalized) ")
-            col_hdrs.append("Threat Count")
-            logger.debug(col_hdrs)
-            samplesize = {}
-            samplesize['aoi'] = len(res_arr)
-            samplesize['5k'] = len(
-                [results_5k['res_arr'][x] for x in results_5k['res_arr']]
-            )
-            samplesize['12k'] = len(
-                [results_12k['res_arr'][x] for x in results_12k['res_arr']]
-            )
+            results_aoi['samplesize'] = len(results_aoi['res_arr'])
+            del(results_aoi["res_arr"])
+            a = results_aoi["thrts_included_msg"].split("of")
+            results_aoi["thrts_included_msg"] = a
+
+            results_5k['samplesize'] = len(results_5k['res_arr'])
+            del(results_5k["res_arr"])
+            a = results_5k["thrts_included_msg"].split("of")
+            results_5k["thrts_included_msg"] = a
+
+            results_12k['samplesize'] = len(results_12k['res_arr'])
+            del(results_12k["res_arr"])
+            a = results_12k["thrts_included_msg"].split("of")
+            results_12k["thrts_included_msg"] = a
 
             batch_results[name] = {}
             batch_results[name]['aoi'] = results_aoi
@@ -548,22 +549,8 @@ def ssheet_batch(id):
     logger.debug(request.args)
     # logger.debug(batch_results)
     logger.debug(year)
-    return "hello world"
+    return json.dumps(batch_results)
 
-    # logger.debug(id)
-    # if id == 0:
-    #     report_results = model.get_threat_report2(id, request.args)
-    #     report_results['samplesize'] = len(report_results['res_arr'])
-    #     del(report_results["res_arr"])
-    #     a = report_results["thrts_included_msg"].split("of")
-    #     report_results["thrts_included_msg"] = a
-
-    #     results_complete = {
-    #         "state": report_results
-    #     }
-    #     # return json.dumps(report_results, indent=4)
-
-    # else:
     #     results_state = model.get_threat_report2(id, request.args)
     #     results_aoi = model.get_threat_report2(id, request.args, 'aoi')
     #     results_5k = model.get_threat_report2(id, request.args, '5k')
