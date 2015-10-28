@@ -498,9 +498,6 @@ def ssheet_aoi2(id):
                 row["Severity min."] = rept_rank[4]
                 row["Severity max."] = rept_rank[5]
 
-
-
-
                 csvwriter.writerow(row)
 
     headers = dict()
@@ -509,7 +506,135 @@ def ssheet_aoi2(id):
 
     return json.dumps(results_complete, indent=4)
 
+@app.route('/batch/<int:id>/ssheet1', methods=['GET', ])
+def ssheet_batch(id):
+    """Create model report as csv from aoi id. """
 
+    query = "select * from batch where batch_id = %s"
+    batch_results = {}
+    with g.db.cursor(cursor_factory=psycopg2.extras.DictCursor) as cur:
+        cur.execute(query, (id, ))
+        for row in cur:
+            name = row['name']
+            aoi_id = row['resource'].split("/")[-1]
+            logger.debug(name)
+            logger.debug(aoi_id)
+
+            results_aoi = model.get_threat_report2(aoi_id, request.args, 'aoi')
+            results_5k = model.get_threat_report2(aoi_id, request.args, '5k')
+            results_12k = model.get_threat_report2(aoi_id, request.args, '12k')
+
+            res_arr = [results_aoi['res_arr'][x] for x in results_aoi['res_arr']]
+            col_hdrs = results_aoi['col_hdrs']
+            # col_hdrs.append("results (normalized) ")
+            col_hdrs.append("Threat Count")
+            logger.debug(col_hdrs)
+            samplesize = {}
+            samplesize['aoi'] = len(res_arr)
+            samplesize['5k'] = len(
+                [results_5k['res_arr'][x] for x in results_5k['res_arr']]
+            )
+            samplesize['12k'] = len(
+                [results_12k['res_arr'][x] for x in results_12k['res_arr']]
+            )
+
+            batch_results[name] = {}
+            batch_results[name]['aoi'] = results_aoi
+            batch_results[name]['5k'] = results_5k
+            batch_results[name]['12k'] = results_12k
+            batch_results[name]['samplesize'] = samplesize
+
+    year = results_aoi['year']
+    logger.debug(request.args)
+    # logger.debug(batch_results)
+    logger.debug(year)
+    return "hello world"
+
+    # logger.debug(id)
+    # if id == 0:
+    #     report_results = model.get_threat_report2(id, request.args)
+    #     report_results['samplesize'] = len(report_results['res_arr'])
+    #     del(report_results["res_arr"])
+    #     a = report_results["thrts_included_msg"].split("of")
+    #     report_results["thrts_included_msg"] = a
+
+    #     results_complete = {
+    #         "state": report_results
+    #     }
+    #     # return json.dumps(report_results, indent=4)
+
+    # else:
+    #     results_state = model.get_threat_report2(id, request.args)
+    #     results_aoi = model.get_threat_report2(id, request.args, 'aoi')
+    #     results_5k = model.get_threat_report2(id, request.args, '5k')
+    #     results_12k = model.get_threat_report2(id, request.args, '12k')
+
+    #     results_state['samplesize'] = len(results_state['res_arr'])
+    #     del(results_state["res_arr"])
+    #     a = results_state["thrts_included_msg"].split("of")
+    #     results_state["thrts_included_msg"] = a
+
+    #     results_aoi['samplesize'] = len(results_aoi['res_arr'])
+    #     del(results_aoi["res_arr"])
+    #     a = results_aoi["thrts_included_msg"].split("of")
+    #     results_aoi["thrts_included_msg"] = a
+
+    #     results_5k['samplesize'] = len(results_5k['res_arr'])
+    #     del(results_5k["res_arr"])
+    #     a = results_5k["thrts_included_msg"].split("of")
+    #     results_5k["thrts_included_msg"] = a
+
+    #     results_12k['samplesize'] = len(results_12k['res_arr'])
+    #     del(results_12k["res_arr"])
+    #     a = results_12k["thrts_included_msg"].split("of")
+    #     results_12k["thrts_included_msg"] = a
+
+    #     results_complete = {
+    #         "state": results_state,
+    #         "aoi": results_aoi,
+    #         "5k": results_5k,
+    #         "12k": results_12k
+    #     }
+
+    # fieldnames = [
+    #     "Report Year",
+    #     "Summary",
+    #     "# swds",
+    #     "DTC",
+    #     "MTC",
+    #     "Occr",
+    #     "CTC mean",
+    #     "CTC sd",
+    #     "CTC min",
+    #     "CTC max"
+    # ]
+
+    # with tempfile.NamedTemporaryFile(
+    #     delete=False,
+    #     suffix=".csv",
+    #     dir='/tmp',
+    #     prefix='ncthreats'
+    # ) as temp:
+    #     csvwriter = csv.DictWriter(temp, fieldnames=fieldnames)
+    #     csvwriter.writeheader()
+    #     for summary in results_complete:
+    #         row = {}
+    #         row["Report Year"] = results_complete[summary]['year']
+    #         row["Summary"] = summary
+    #         row["# swds"] = results_complete[summary]["samplesize"]
+    #         row["DTC"] = results_complete[summary]["thrts_included_msg"][0].strip()
+    #         row["MTC"] = results_complete[summary]["thrts_included_msg"][1].strip()
+    #         row["Occr"] = results_complete[summary]["other_stats"]['comp_occ']
+    #         row["CTC mean"] = results_complete[summary]["threat_summary"][0][1]
+    #         row["CTC sd"] = results_complete[summary]["threat_summary"][0][2]
+    #         row["CTC min"] = results_complete[summary]["threat_summary"][0][3]
+    #         row["CTC max"] = results_complete[summary]["threat_summary"][0][4]
+
+    #         csvwriter.writerow(row)
+
+    # headers = dict()
+    # headers['Location'] = url_for('get_ssheet', fname=temp.name[5:])
+    # return ('', 201, headers)
 
 
 
@@ -915,7 +1040,7 @@ def report_batch(id):
 
     year = results_aoi['year']
     logger.debug(request.args)
-    logger.debug(batch_results)
+    # logger.debug(batch_results)
     logger.debug(year)
     return render_template(
                 'report_batch.html',

@@ -16,6 +16,14 @@
   <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
   <script>window.html5 || document.write('<script src="js/vendor/html5shiv.js"><\/script>')</script>
 <![endif]-->
+  <style>
+hr {
+  /*color: black;*/
+  background-color:black;
+  height: 2px;
+}
+  </style>
+}
 </head>
 <body>
 
@@ -25,7 +33,7 @@
     <h4>Year {{year}}</h4>
   </div>
   {% for key, value in results.iteritems() %}
-  <h2>Polygon for: {{ key|e }}</h2>
+  <h2>Polygon name: {{ key|e }}</h2>
 
   <h2 >Summary for AOI</h2>
   <h4 >Number of Sub-watersheds: {{value.samplesize.aoi}}</h4>
@@ -185,6 +193,7 @@
     </tr>
     {% endfor %}
   </table>
+  <hr>
   {% endfor %}
 </div>
 
