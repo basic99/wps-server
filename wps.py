@@ -686,11 +686,16 @@ def report(id):
             [results_12k['res_arr'][x] for x in results_12k['res_arr']]
         )
 
+        tmp_name = siteutils.aoi_spreadsheet(id, request.args)
+        link_ssht = url_for('get_ssheet', fname=tmp_name[5:])
+
+
         return render_template(
             'reporta2.html',
             year=results_aoi['year'],
             col_hdrs=col_hdrs,
             res_arr=res_arr,
+            link_ssht=link_ssht,
             samplesize_aoi=samplesize,
             samplesize_5k=samplesize_5k,
             samplesize_12k=samplesize_12k,
@@ -709,7 +714,8 @@ def report(id):
             other_stats_aoi=results_aoi['other_stats'],
             other_stats_5k=results_5k['other_stats'],
             other_stats_12k=results_12k['other_stats'],
-            other_stats_state=results_state['other_stats']
+            other_stats_state=results_state['other_stats'],
+
         )
 
 
