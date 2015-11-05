@@ -547,5 +547,145 @@ def aoi_spreadsheet(id, query):
     return temp.name
 
 
-def batch_spreadsheet(id, query):
-    pass
+def batch_spreadsheet(id, query_str):
+    logger.debug("batch_spreadsheet")
+    query = "select * from batch where batch_id = %s"
+    batch_results = {}
+    with g.db.cursor(cursor_factory=psycopg2.extras.DictCursor) as cur:
+        cur.execute(query, (id, ))
+        for row in cur:
+            name = row['name']
+            aoi_id = row['resource'].split("/")[-1]
+            logger.debug(name)
+            logger.debug(aoi_id)
+
+            results_aoi = model.get_threat_report2(aoi_id, query_str, 'aoi')
+            results_5k = model.get_threat_report2(aoi_id, query_str, '5k')
+            results_12k = model.get_threat_report2(aoi_id, query_str, '12k')
+
+            results_aoi['samplesize'] = len(results_aoi['res_arr'])
+            del(results_aoi["res_arr"])
+            a = results_aoi["thrts_included_msg"].split("of")
+            results_aoi["thrts_included_msg"] = a
+
+            results_5k['samplesize'] = len(results_5k['res_arr'])
+            del(results_5k["res_arr"])
+            a = results_5k["thrts_included_msg"].split("of")
+            results_5k["thrts_included_msg"] = a
+
+            results_12k['samplesize'] = len(results_12k['res_arr'])
+            del(results_12k["res_arr"])
+            a = results_12k["thrts_included_msg"].split("of")
+            results_12k["thrts_included_msg"] = a
+
+            batch_results[name] = {}
+            batch_results[name]['aoi'] = results_aoi
+            batch_results[name]['5k'] = results_5k
+            batch_results[name]['12k'] = results_12k
+            # batch_results[name]['samplesize'] = samplesize
+
+    results = []
+    for polygon in batch_results:
+        for summary in batch_results[polygon]:
+            row = {}
+            row["Report Year"] = batch_results[polygon][summary]['year']
+            row['Polygon'] = polygon
+            row["Summary"] = summary
+            row["# swds"] = batch_results[polygon][summary]["samplesize"]
+            row["DTC"] = batch_results[polygon][summary]["thrts_included_msg"][0].strip()
+            row["MTC"] = batch_results[polygon][summary]["thrts_included_msg"][1].strip()
+            row["Occr"] = batch_results[polygon][summary]["other_stats"]['comp_occ']
+            row["CTC mean"] = batch_results[polygon][summary]["threat_summary"][0][1]
+            row["CTC sd"] = batch_results[polygon][summary]["threat_summary"][0][2]
+            row["CTC min"] = batch_results[polygon][summary]["threat_summary"][0][3]
+            row["CTC max"] = batch_results[polygon][summary]["threat_summary"][0][4]
+
+            results.append(row)
+
+    fieldnames = [
+        "Report Year",
+        "Polygon",
+        "Summary",
+        "# swds",
+        "DTC",
+        "MTC",
+        "Occr",
+        "CTC mean",
+        "CTC sd",
+        "CTC min",
+        "CTC max"
+    ]
+    with tempfile.NamedTemporaryFile(
+        delete=False,
+        suffix=".csv",
+        dir='/tmp',
+        prefix='ncthreats'
+    ) as temp:
+        csvwriter = csv.DictWriter(temp, fieldnames=fieldnames)
+        csvwriter.writeheader()
+        csvwriter.writerows(results)
+        temp_name1 = temp.name
+
+    ############################################################
+    # start ss 2
+    #######################################################
+
+    fieldnames = [
+        "Report Year",
+        'Polygon',
+        "Summary",
+        "Threat Name",
+        "Occurence",
+        "Severity",
+        "Severity s.d.",
+        "Severity min.",
+        "Severity max."
+    ]
+
+    results = []
+    for polygon in batch_results:
+        for summary in batch_results[polygon]:
+
+            rept_rank = batch_results[polygon][summary]['report_rank']
+            for threat in rept_rank:
+                row = {}
+                # logger.debug(threat)
+                row["Report Year"] = batch_results[polygon][summary]['year']
+                row['Polygon'] = polygon
+                row["Summary"] = summary
+                row["Threat Name"] = threat[0]
+                row["Occurence"] = threat[1]
+                row["Severity"] = threat[2]
+                row["Severity s.d."] = threat[3]
+                row["Severity min."] = threat[4]
+                row["Severity max."] = threat[5]
+
+                results.append(row)
+    with tempfile.NamedTemporaryFile(
+        delete=False,
+        suffix=".csv",
+        dir='/tmp',
+        prefix='ncthreats'
+    ) as temp:
+        csvwriter = csv.DictWriter(temp, fieldnames=fieldnames)
+        csvwriter.writeheader()
+        csvwriter.writerows(results)
+        temp_name2 = temp.name
+
+    logger.debug(temp_name1)
+    logger.debug(temp_name2)
+
+    with tempfile.NamedTemporaryFile(
+        delete=False,
+        suffix=".zip",
+        dir='/tmp',
+        prefix='ncthreats'
+    ) as temp:
+
+        zf = zipfile.ZipFile(temp, mode='w')
+        zf.write(temp_name1, "spreadsheet1.csv")
+        zf.write(temp_name2, "spreadsheet2.csv")
+        zf.write("/var/www/html/pages/README.txt", "README.txt")
+        zf.close()
+
+    return temp.name
