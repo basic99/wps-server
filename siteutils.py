@@ -13,6 +13,10 @@ import smtplib
 import statistics
 import collections
 import math
+import model
+import tempfile
+import csv
+import zipfile
 
 
 cwd = os.path.dirname(os.path.realpath(__file__))
@@ -361,12 +365,12 @@ def make_report_threats_summary(
     occurences = []
     severity = []
     for i, threat in enumerate(rank_data):
-        logger.debug(threat)
-        logger.debug(model_cols[i + 1])
+        # logger.debug(threat)
+        # logger.debug(model_cols[i + 1])
         report_row = [model_cols[i + 1]]
         cnts = summary_params_list[model_cols[i + 1]]
         mean = statistics.mean(cnts)
-        logger.debug(mean)
+        # logger.debug(mean)
         if mean > 0:
             thrts_present += 1
         occurences.append(mean)
@@ -403,3 +407,145 @@ def make_report_threats_summary(
         "thrts_included_msg": thrts_included_msg
 
     }
+
+
+def aoi_spreadsheet(id, query):
+    pass
+    logger.debug("aoi_spreadsheet")
+    if id == 0:
+        report_results = model.get_threat_report2(id, query)
+        report_results['samplesize'] = len(report_results['res_arr'])
+        del(report_results["res_arr"])
+        a = report_results["thrts_included_msg"].split("of")
+        report_results["thrts_included_msg"] = a
+
+        results_complete = {
+            "state": report_results
+        }
+        # return json.dumps(report_results, indent=4)
+
+    else:
+        results_state = model.get_threat_report2(id, query)
+        results_aoi = model.get_threat_report2(id, query, 'aoi')
+        results_5k = model.get_threat_report2(id, query, '5k')
+        results_12k = model.get_threat_report2(id, query, '12k')
+
+        results_state['samplesize'] = len(results_state['res_arr'])
+        del(results_state["res_arr"])
+        a = results_state["thrts_included_msg"].split("of")
+        results_state["thrts_included_msg"] = a
+
+        results_aoi['samplesize'] = len(results_aoi['res_arr'])
+        del(results_aoi["res_arr"])
+        a = results_aoi["thrts_included_msg"].split("of")
+        results_aoi["thrts_included_msg"] = a
+
+        results_5k['samplesize'] = len(results_5k['res_arr'])
+        del(results_5k["res_arr"])
+        a = results_5k["thrts_included_msg"].split("of")
+        results_5k["thrts_included_msg"] = a
+
+        results_12k['samplesize'] = len(results_12k['res_arr'])
+        del(results_12k["res_arr"])
+        a = results_12k["thrts_included_msg"].split("of")
+        results_12k["thrts_included_msg"] = a
+
+        results_complete = {
+            "state": results_state,
+            "aoi": results_aoi,
+            "5k": results_5k,
+            "12k": results_12k
+        }
+
+    fieldnames = [
+        "Report Year",
+        "Summary",
+        "# swds",
+        "DTC",
+        "MTC",
+        "Occr",
+        "CTC mean",
+        "CTC sd",
+        "CTC min",
+        "CTC max"
+    ]
+
+    with tempfile.NamedTemporaryFile(
+        delete=False,
+        suffix=".csv",
+        dir='/tmp',
+        prefix='ncthreats'
+    ) as temp:
+        csvwriter = csv.DictWriter(temp, fieldnames=fieldnames)
+        csvwriter.writeheader()
+        for summary in results_complete:
+            row = {}
+            row["Report Year"] = results_complete[summary]['year']
+            row["Summary"] = summary
+            row["# swds"] = results_complete[summary]["samplesize"]
+            row["DTC"] = results_complete[summary]["thrts_included_msg"][0].strip()
+            row["MTC"] = results_complete[summary]["thrts_included_msg"][1].strip()
+            row["Occr"] = results_complete[summary]["other_stats"]['comp_occ']
+            row["CTC mean"] = results_complete[summary]["threat_summary"][0][1]
+            row["CTC sd"] = results_complete[summary]["threat_summary"][0][2]
+            row["CTC min"] = results_complete[summary]["threat_summary"][0][3]
+            row["CTC max"] = results_complete[summary]["threat_summary"][0][4]
+
+            csvwriter.writerow(row)
+        temp_name1 = temp.name
+
+    ##################################################################
+    # start ssheet2
+    ##################################################################
+
+    fieldnames = [
+        "Report Year",
+        "Summary",
+        "Threat Name",
+        "Occurence",
+        "Severity",
+        "Severity s.d.",
+        "Severity min.",
+        "Severity max."
+    ]
+
+    with tempfile.NamedTemporaryFile(
+        delete=False,
+        suffix=".csv",
+        dir='/tmp',
+        prefix='ncthreats'
+    ) as temp:
+        csvwriter = csv.DictWriter(temp, fieldnames=fieldnames)
+        csvwriter.writeheader()
+        for summary in results_complete:
+            row = {}
+            for rept_rank in results_complete[summary]['report_rank']:
+                row["Report Year"] = results_complete[summary]['year']
+                row["Summary"] = summary
+                row["Threat Name"] = rept_rank[0]
+                row["Occurence"] = rept_rank[1]
+                row["Severity"] = rept_rank[2]
+                row["Severity s.d."] = rept_rank[3]
+                row["Severity min."] = rept_rank[4]
+                row["Severity max."] = rept_rank[5]
+                csvwriter.writerow(row)
+
+        temp_name2 = temp.name
+
+    with tempfile.NamedTemporaryFile(
+        delete=False,
+        suffix=".zip",
+        dir='/tmp',
+        prefix='ncthreats'
+    ) as temp:
+        zf = zipfile.ZipFile(temp, mode='w')
+        zf.write(temp_name1, "spreadsheet1.csv")
+        zf.write(temp_name2, "spreadsheet2.csv")
+        zf.write("/var/www/html/pages/README.txt", "README.txt")
+        zf.close()
+
+    return temp.name
+
+
+def batch_spreadsheet(id, query):
+    pass
