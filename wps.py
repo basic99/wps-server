@@ -755,14 +755,16 @@ def report_batch(id):
             batch_results[name]['12k'] = results_12k
             batch_results[name]['samplesize'] = samplesize
 
-
     year = results_aoi['year']
+    tmp_name = siteutils.batch_spreadsheet(id, request.args)
+    link_ssht = url_for('get_ssheet', fname=tmp_name[5:])
     logger.debug(request.args)
     # logger.debug(batch_results)
     logger.debug(year)
     return render_template(
                 'report_batch.html',
                 year=year,
+                link_ssht=link_ssht,
                 results=batch_results
                 )
 
