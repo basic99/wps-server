@@ -455,7 +455,7 @@ def get_threat_report2(id, formdata, mode='state'):
                 #     except KeyError:
                 #         pass
                 #     continue
-                if float(row[1]) > float(formvals['urbangrth']):
+                if float(row[2]) > float(formvals['urbangrth']):
                     above = 1
                     # rank = int(row[1])
                 else:
