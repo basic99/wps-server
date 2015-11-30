@@ -14,7 +14,7 @@ import siteutils
 
 cwd = os.path.dirname(os.path.realpath(__file__))
 logger = logging.getLogger(__name__)
-logger.setLevel(logging.DEBUG)
+logger.setLevel(logging.INFO)
 fh = logging.FileHandler(cwd + '/logs/logs.log')
 formatter = logging.Formatter(
     '%(asctime)s - %(name)s, %(lineno)s - %(levelname)s - %(message)s',
@@ -212,12 +212,11 @@ def get_threat_report2(id, formdata, mode='state'):
 
     model_length = 0
 
-
-
     # add habitat in in model
     if 'frst' in formvals:
         rank_data['frst'] = []
-        query = "select huc_12, frst%sdt from lcscen_%s" % (
+        query = "select huc_12, frst%ssv, frst%sdt from lcscen_%s" % (
+            year[2:],
             year[2:],
             scenario
         )
@@ -245,7 +244,7 @@ def get_threat_report2(id, formdata, mode='state'):
                 #     except KeyError:
                 #         pass
                 #     continue
-                if float(row[1]) > float(formvals['frst']):
+                if float(row[2]) > float(formvals['frst']):
                     above = 1
                     # rank = int(row[2])
                 else:
@@ -273,7 +272,8 @@ def get_threat_report2(id, formdata, mode='state'):
     if 'ftwt' in formvals:
         rank_data['ftwt'] = []
 
-        query = "select huc_12, ftwt%sdt from lcscen_%s" % (
+        query = "select huc_12, ftwt%ssv, ftwt%sdt from lcscen_%s" % (
+                year[2:],
                 year[2:],
                 scenario
         )
@@ -296,7 +296,7 @@ def get_threat_report2(id, formdata, mode='state'):
                 #     except KeyError:
                 #         pass
                 #     continue
-                if float(row[1]) > float(formvals['ftwt']):
+                if float(row[2]) > float(formvals['ftwt']):
                     above = 1
                     # rank = int(row[1])
                 else:
@@ -310,10 +310,13 @@ def get_threat_report2(id, formdata, mode='state'):
                 except KeyError:
                     pass
 
+
+
     if 'hbwt' in formvals:
         rank_data['hbwt'] = []
 
-        query = "select huc_12, hbwt%sdt from lcscen_%s" % (
+        query = "select huc_12, hbwt%ssv, hbwt%sdt from lcscen_%s" % (
+                year[2:],
                 year[2:],
                 scenario
         )
@@ -335,7 +338,7 @@ def get_threat_report2(id, formdata, mode='state'):
                 #         pass
                 #     continue
                 # logger.debug(row)
-                if float(row[1]) > float(formvals['hbwt']):
+                if float(row[2]) > float(formvals['hbwt']):
                     above = 1
                     # rank = int(row[1])
                 else:
@@ -348,10 +351,13 @@ def get_threat_report2(id, formdata, mode='state'):
                 except KeyError:
                     pass
 
+
+
     if 'open' in formvals:
         rank_data['open'] = []
 
-        query = "select huc_12, open%sdt from lcscen_%s" % (
+        query = "select huc_12, open%ssv, open%sdt from lcscen_%s" % (
+                year[2:],
                 year[2:],
                 scenario
         )
@@ -373,7 +379,7 @@ def get_threat_report2(id, formdata, mode='state'):
                 #         pass
                 #     continue
                 # logger.debug(row)
-                if float(row[1]) > float(formvals['open']):
+                if float(row[2]) > float(formvals['open']):
                     above = 1
                     # rank = int(row[1])
                 else:
@@ -386,10 +392,13 @@ def get_threat_report2(id, formdata, mode='state'):
                 except KeyError:
                     pass
 
+
+
     if 'shrb' in formvals:
         rank_data['shrb'] = []
 
-        query = "select huc_12, shrb%sdt from lcscen_%s" % (
+        query = "select huc_12, shrb%ssv, shrb%sdt from lcscen_%s" % (
+                year[2:],
                 year[2:],
                 scenario
         )
@@ -411,7 +420,7 @@ def get_threat_report2(id, formdata, mode='state'):
                 #         pass
                 #     continue
                 # logger.debug(row)
-                if float(row[1]) > float(formvals['shrb']):
+                if float(row[2]) > float(formvals['shrb']):
                     above = 1
                     # rank = int(row[1])
                 else:
@@ -424,11 +433,15 @@ def get_threat_report2(id, formdata, mode='state'):
                 except KeyError:
                     pass
 
+
+
     # add urban growth if included
     if 'urbangrth' in formvals:
         rank_data['urbangrth'] = []
 
-        query = "select huc_12, urb%sdt from urban" % year[2:]
+        query = "select huc_12, urb%ssv, urb%sdt from urban" % (
+            year[2:], year[2:]
+        )
         logger.debug(query)
         # model_wts.append(float(formvals['urbangrth']))
         model_cols.append("Urban Growth - limit(%s)" % formvals['urbangrth'])
@@ -459,7 +472,9 @@ def get_threat_report2(id, formdata, mode='state'):
     if 'firesup' in formvals:
         rank_data['firesup'] = []
 
-        query = "select huc_12, fsupp%sdt from fsupp" % year[2:]
+        query = "select huc_12, fsupp%ssv, fsupp%sdt from fsupp" % (
+            year[2:], year[2:]
+        )
         # logger.debug(query)
         # model_wts.append(float(formvals['firesup']))
         model_length += 1
@@ -473,7 +488,7 @@ def get_threat_report2(id, formdata, mode='state'):
                 #     except KeyError:
                 #         pass
                 #     continue
-                if float(row[1]) > float(formvals['firesup']):
+                if float(row[2]) > float(formvals['firesup']):
                     above = 1
                     # rank = int(row[1])
                 else:
@@ -490,7 +505,9 @@ def get_threat_report2(id, formdata, mode='state'):
     if 'hiway' in formvals:
         rank_data['hiway'] = []
 
-        query = "select huc_12, rds%sdt from DCLRds" % year[2:]
+        query = "select huc_12, rds%ssv, rds%sdt from DCLRds" % (
+            year[2:], year[2:]
+        )
         # model_wts.append(float(formvals['hiway']))
         model_length += 1
         model_cols.append("Highway - limit(%s)" % formvals['hiway'])
@@ -505,7 +522,7 @@ def get_threat_report2(id, formdata, mode='state'):
                 #     continue
                 # logger.debug(row)
                 # hucs_dict[row[0]].append(int(row[1]))
-                if float(row[1]) > float(formvals['hiway']):
+                if float(row[2]) > float(formvals['hiway']):
                     above = 1
                 else:
                     above = 0
@@ -520,7 +537,9 @@ def get_threat_report2(id, formdata, mode='state'):
     if 'slr_up' in formvals:
         rank_data['slr_up'] = []
 
-        query = "select huc_12, up%sdt from SLRup" % year[2:]
+        query = "select huc_12, up%ssv, up%sdt from SLRup" % (
+            year[2:], year[2:]
+        )
         # model_wts.append(float(formvals['slr_up']))
         model_length += 1
         model_cols.append(
@@ -530,7 +549,7 @@ def get_threat_report2(id, formdata, mode='state'):
             cur.execute(query)
             for row in cur:
 
-                if float(row[1]) > float(formvals['slr_up']):
+                if float(row[2]) > float(formvals['slr_up']):
                     above = 1
                 else:
                     above = 0
@@ -545,19 +564,19 @@ def get_threat_report2(id, formdata, mode='state'):
     if 'slr_lc' in formvals:
         rank_data['slr_lc'] = []
 
-        query = "select huc_12, lc%sdt from SLRlc" % year[2:]
+        query = "select huc_12, lc%ssv, lc%sdt from SLRlc" % (
+            year[2:], year[2:]
+        )
         # model_wts.append(float(formvals['slr_lc']))
         model_length += 1
         model_cols.append(
             "Sea Level rise landcover change - limit(%s)" % formvals['slr_lc']
         )
-        # logger.debug(formvals['slr_lc'])
-        # logger.debug(query)
         with g.db.cursor() as cur:
             cur.execute(query)
             for row in cur:
 
-                if float(row[1]) > float(formvals['slr_lc']):
+                if float(row[2]) > float(formvals['slr_lc']):
                     above = 1
                 else:
                     above = 0
@@ -573,7 +592,7 @@ def get_threat_report2(id, formdata, mode='state'):
     if 'triassic' in formvals:
         rank_data['triassic'] = []
 
-        query = "select huc_12, triassic_dt from Triassic"
+        query = "select huc_12, triassic_sv, triassic_dt from Triassic"
         # model_wts.append(float(formvals['triassic']))
         model_length += 1
         model_cols.append(
@@ -583,7 +602,7 @@ def get_threat_report2(id, formdata, mode='state'):
             cur.execute(query)
             for row in cur:
 
-                if float(row[1]) > float(formvals['triassic']):
+                if float(row[2]) > float(formvals['triassic']):
                     above = 1
                 else:
                     above = 0
@@ -599,7 +618,7 @@ def get_threat_report2(id, formdata, mode='state'):
     if 'wind' in formvals:
         rank_data['wind'] = []
 
-        query = "select huc_12, WPC_dt from WPC"
+        query = "select huc_12, WPC_sv, WPC_dt from WPC"
         # model_wts.append(float(formvals['wind']))
         model_length += 1
         model_cols.append(
@@ -609,7 +628,7 @@ def get_threat_report2(id, formdata, mode='state'):
             cur.execute(query)
             for row in cur:
 
-                if float(row[1]) > float(formvals['wind']):
+                if float(row[2]) > float(formvals['wind']):
                     above = 1
                 else:
                     above = 0
@@ -625,7 +644,7 @@ def get_threat_report2(id, formdata, mode='state'):
     if 'manure' in formvals:
         rank_data['manure'] = []
 
-        query = "select huc_12, manu_dt from Manu"
+        query = "select huc_12, manu_sv, manu_dt from Manu"
         # model_wts.append(float(formvals['manure']))
         model_length += 1
         model_cols.append(
@@ -635,7 +654,7 @@ def get_threat_report2(id, formdata, mode='state'):
             cur.execute(query)
             for row in cur:
 
-                if float(row[1]) > float(formvals['manure']):
+                if float(row[2]) > float(formvals['manure']):
                     above = 1
                 else:
                     above = 0
@@ -651,7 +670,7 @@ def get_threat_report2(id, formdata, mode='state'):
     if 'nitrofrt' in formvals:
         rank_data['nitrofrt'] = []
 
-        query = "select huc_12, fert_dt from Fert"
+        query = "select huc_12, fert_sv, fert_dt from Fert"
         # model_wts.append(float(formvals['nitrofrt']))
         model_length += 1
         model_cols.append(
@@ -661,7 +680,7 @@ def get_threat_report2(id, formdata, mode='state'):
             cur.execute(query)
             for row in cur:
 
-                if float(row[1]) > float(formvals['nitrofrt']):
+                if float(row[2]) > float(formvals['nitrofrt']):
                     above = 1
                 else:
                     above = 0
@@ -677,7 +696,7 @@ def get_threat_report2(id, formdata, mode='state'):
     if 'totnitro' in formvals:
         rank_data['totnitro'] = []
 
-        query = "select huc_12, tdnt_dt from TDNT"
+        query = "select huc_12, tdnt_sv, tdnt_dt from TDNT"
         # model_wts.append(float(formvals['totnitro']))
         model_length += 1
         model_cols.append(
@@ -687,7 +706,7 @@ def get_threat_report2(id, formdata, mode='state'):
             cur.execute(query)
             for row in cur:
 
-                if float(row[1]) > float(formvals['totnitro']):
+                if float(row[2]) > float(formvals['totnitro']):
                     above = 1
                 else:
                     above = 0
@@ -703,7 +722,7 @@ def get_threat_report2(id, formdata, mode='state'):
     if 'totsulf' in formvals:
         rank_data['totsulf'] = []
 
-        query = "select huc_12, tdst_dt from TDST"
+        query = "select huc_12, tdst_sv, tdst_dt from TDST"
         logger.debug(query)
         # model_wts.append(float(formvals['totsulf']))
         model_length += 1
@@ -714,7 +733,7 @@ def get_threat_report2(id, formdata, mode='state'):
             cur.execute(query)
             for row in cur:
 
-                if float(row[1]) > float(formvals['totsulf']):
+                if float(row[2]) > float(formvals['totsulf']):
                     above = 1
                 else:
                     above = 0
@@ -730,7 +749,7 @@ def get_threat_report2(id, formdata, mode='state'):
     if 'insectdisease' in formvals:
         rank_data['insectdisease'] = []
 
-        query = "select huc_12, FHlth_dt from FHlth"
+        query = "select huc_12, FHlth_sv, FHlth_dt from FHlth"
         # model_wts.append(float(formvals['insectdisease']))
         model_length += 1
         model_cols.append(
@@ -740,7 +759,7 @@ def get_threat_report2(id, formdata, mode='state'):
             cur.execute(query)
             for row in cur:
 
-                if float(row[1]) > float(formvals['insectdisease']):
+                if float(row[2]) > float(formvals['insectdisease']):
                     above = 1
                 else:
                     above = 0
@@ -756,7 +775,7 @@ def get_threat_report2(id, formdata, mode='state'):
     if 'ndams' in formvals:
         rank_data['ndams'] = []
 
-        query = "select huc_12, nid_dt from NID"
+        query = "select huc_12, nid_sv, nid_dt from NID"
         logger.debug(query)
         # model_wts.append(float(formvals['ndams']))
         model_length += 1
@@ -767,7 +786,7 @@ def get_threat_report2(id, formdata, mode='state'):
             cur.execute(query)
             for row in cur:
 
-                if float(row[1]) > float(formvals['ndams']):
+                if float(row[2]) > float(formvals['ndams']):
                     above = 1
                 else:
                     above = 0
@@ -786,7 +805,7 @@ def get_threat_report2(id, formdata, mode='state'):
     if 'impairbiota' in formvals:
         rank_data['impairbiota'] = []
 
-        query = "select huc_12, BioImpLen_dt from BioImpLen"
+        query = "select huc_12, BioImpLen_sv, BioImpLen_dt from BioImpLen"
         logger.debug(query)
         # model_wts.append(float(formvals['impairbiota']))
         model_length += 1
@@ -797,7 +816,7 @@ def get_threat_report2(id, formdata, mode='state'):
             cur.execute(query)
             for row in cur:
 
-                if float(row[1]) > float(formvals['impairbiota']):
+                if float(row[2]) > float(formvals['impairbiota']):
                     above = 1
                 else:
                     above = 0
@@ -813,7 +832,7 @@ def get_threat_report2(id, formdata, mode='state'):
     if 'impairmetal' in formvals:
         rank_data['impairmetal'] = []
 
-        query = "select huc_12, MetImpLen_dt from MetImpLen"
+        query = "select huc_12, MetImpLen_sv, MetImpLen_dt from MetImpLen"
         logger.debug(query)
         # model_wts.append(float(formvals['impairmetal']))
         model_length += 1
@@ -824,7 +843,7 @@ def get_threat_report2(id, formdata, mode='state'):
             cur.execute(query)
             for row in cur:
 
-                if float(row[1]) > float(formvals['impairmetal']):
+                if float(row[2]) > float(formvals['impairmetal']):
                     above = 1
                 else:
                     above = 0
@@ -1149,7 +1168,7 @@ def preview_map(data):
     with g.db.cursor() as cur:
         cur.execute(query1)
         for row in cur:
-            logger.debug(row)
+            # logger.debug(row)
             if row[0] in hucs:
                 # logger.debug(row[0])
                 # results_dict[row[0]] = float(row[1])
