@@ -154,6 +154,7 @@ def get_threat_report2(id, formdata, mode='state'):
     # create dict w/ key huc12 and val empty list
     hucs_dict = collections.OrderedDict()
     rank_data = collections.OrderedDict()
+    dt_data = collections.OrderedDict()
 
     if int(id) == 0 or mode == 'state':
         # could use any table here
@@ -215,6 +216,7 @@ def get_threat_report2(id, formdata, mode='state'):
     # add habitat in in model
     if 'frst' in formvals:
         rank_data['frst'] = []
+        dt_data['frst'] = []
         query = "select huc_12, frst%ssv, frst%sdt from lcscen_%s" % (
             year[2:],
             year[2:],
@@ -256,6 +258,7 @@ def get_threat_report2(id, formdata, mode='state'):
 
                     # must follow this line to get hucs correct
                     rank_data['frst'].append(float(row[1]))
+                    dt_data['frst'].append(float(row[2]))
                 except KeyError:
                     pass
         # pct_arr = []
@@ -271,6 +274,7 @@ def get_threat_report2(id, formdata, mode='state'):
 
     if 'ftwt' in formvals:
         rank_data['ftwt'] = []
+        dt_data['ftwt'] = []
 
         query = "select huc_12, ftwt%ssv, ftwt%sdt from lcscen_%s" % (
                 year[2:],
@@ -307,6 +311,8 @@ def get_threat_report2(id, formdata, mode='state'):
                     hucs_dict[row[0]].append(above)
                     hucs_dict_sv[row[0]].append(float(row[1]))
                     rank_data['ftwt'].append(float(row[1]))
+                    dt_data['ftwt'].append(float(row[2]))
+
                 except KeyError:
                     pass
 
@@ -314,6 +320,7 @@ def get_threat_report2(id, formdata, mode='state'):
 
     if 'hbwt' in formvals:
         rank_data['hbwt'] = []
+        dt_data['hbwt'] = []
 
         query = "select huc_12, hbwt%ssv, hbwt%sdt from lcscen_%s" % (
                 year[2:],
@@ -348,6 +355,8 @@ def get_threat_report2(id, formdata, mode='state'):
                     hucs_dict[row[0]].append(above)
                     hucs_dict_sv[row[0]].append(float(row[1]))
                     rank_data['hbwt'].append(float(row[1]))
+                    dt_data['hbwt'].append(float(row[2]))
+
                 except KeyError:
                     pass
 
@@ -355,6 +364,7 @@ def get_threat_report2(id, formdata, mode='state'):
 
     if 'open' in formvals:
         rank_data['open'] = []
+        dt_data['open'] = []
 
         query = "select huc_12, open%ssv, open%sdt from lcscen_%s" % (
                 year[2:],
@@ -389,6 +399,8 @@ def get_threat_report2(id, formdata, mode='state'):
                     hucs_dict[row[0]].append(above)
                     hucs_dict_sv[row[0]].append(float(row[1]))
                     rank_data['open'].append(float(row[1]))
+                    dt_data['open'].append(float(row[2]))
+
                 except KeyError:
                     pass
 
@@ -396,6 +408,7 @@ def get_threat_report2(id, formdata, mode='state'):
 
     if 'shrb' in formvals:
         rank_data['shrb'] = []
+        dt_data['shrb'] = []
 
         query = "select huc_12, shrb%ssv, shrb%sdt from lcscen_%s" % (
                 year[2:],
@@ -430,6 +443,8 @@ def get_threat_report2(id, formdata, mode='state'):
                     hucs_dict[row[0]].append(above)
                     hucs_dict_sv[row[0]].append(float(row[1]))
                     rank_data['shrb'].append(float(row[1]))
+                    dt_data['shrb'].append(float(row[2]))
+
                 except KeyError:
                     pass
 
@@ -438,6 +453,7 @@ def get_threat_report2(id, formdata, mode='state'):
     # add urban growth if included
     if 'urbangrth' in formvals:
         rank_data['urbangrth'] = []
+        dt_data['urbangrth'] = []
 
         query = "select huc_12, urb%ssv, urb%sdt from urban" % (
             year[2:], year[2:]
@@ -465,12 +481,15 @@ def get_threat_report2(id, formdata, mode='state'):
                     hucs_dict[row[0]].append(above)
                     hucs_dict_sv[row[0]].append(float(row[1]))
                     rank_data['urbangrth'].append(float(row[1]))
+                    dt_data['urbangrth'].append(float(row[2]))
+
                 except KeyError:
                     pass
 
     # add fire suppression
     if 'firesup' in formvals:
         rank_data['firesup'] = []
+        dt_data['firesup'] = []
 
         query = "select huc_12, fsupp%ssv, fsupp%sdt from fsupp" % (
             year[2:], year[2:]
@@ -498,12 +517,15 @@ def get_threat_report2(id, formdata, mode='state'):
                     hucs_dict[row[0]].append(above)
                     hucs_dict_sv[row[0]].append(float(row[1]))
                     rank_data['firesup'].append(float(row[1]))
+                    dt_data['firesup'].append(float(row[2]))
+
                 except KeyError:
                     pass
 
     # add highway
     if 'hiway' in formvals:
         rank_data['hiway'] = []
+        dt_data['hiway'] = []
 
         query = "select huc_12, rds%ssv, rds%sdt from DCLRds" % (
             year[2:], year[2:]
@@ -530,12 +552,15 @@ def get_threat_report2(id, formdata, mode='state'):
                     hucs_dict[row[0]].append(above)
                     hucs_dict_sv[row[0]].append(float(row[1]))
                     rank_data['hiway'].append(float(row[1]))
+                    dt_data['hiway'].append(float(row[2]))
+
                 except KeyError:
                     pass
 
     # add slr up
     if 'slr_up' in formvals:
         rank_data['slr_up'] = []
+        dt_data['slr_up'] = []
 
         query = "select huc_12, up%ssv, up%sdt from SLRup" % (
             year[2:], year[2:]
@@ -557,12 +582,15 @@ def get_threat_report2(id, formdata, mode='state'):
                     hucs_dict[row[0]].append(above)
                     hucs_dict_sv[row[0]].append(float(row[1]))
                     rank_data['slr_up'].append(float(row[1]))
+                    dt_data['slr_up'].append(float(row[2]))
+
                 except KeyError:
                     pass
 
     # add sea level land cover
     if 'slr_lc' in formvals:
         rank_data['slr_lc'] = []
+        dt_data['slr_lc'] = []
 
         query = "select huc_12, lc%ssv, lc%sdt from SLRlc" % (
             year[2:], year[2:]
@@ -584,6 +612,8 @@ def get_threat_report2(id, formdata, mode='state'):
                     hucs_dict[row[0]].append(above)
                     hucs_dict_sv[row[0]].append(float(row[1]))
                     rank_data['slr_lc'].append(float(row[1]))
+                    dt_data['slr_lc'].append(float(row[2]))
+
 
                 except KeyError:
                     pass
@@ -591,6 +621,7 @@ def get_threat_report2(id, formdata, mode='state'):
     # add triassic
     if 'triassic' in formvals:
         rank_data['triassic'] = []
+        dt_data['triassic'] = []
 
         query = "select huc_12, triassic_sv, triassic_dt from Triassic"
         # model_wts.append(float(formvals['triassic']))
@@ -610,6 +641,8 @@ def get_threat_report2(id, formdata, mode='state'):
                     hucs_dict[row[0]].append(above)
                     hucs_dict_sv[row[0]].append(float(row[1]))
                     rank_data['triassic'].append(float(row[1]))
+                    dt_data['triassic'].append(float(row[2]))
+
 
                 except KeyError:
                     pass
@@ -617,6 +650,7 @@ def get_threat_report2(id, formdata, mode='state'):
     # add wind power
     if 'wind' in formvals:
         rank_data['wind'] = []
+        dt_data['wind'] = []
 
         query = "select huc_12, WPC_sv, WPC_dt from WPC"
         # model_wts.append(float(formvals['wind']))
@@ -636,6 +670,8 @@ def get_threat_report2(id, formdata, mode='state'):
                     hucs_dict[row[0]].append(above)
                     hucs_dict_sv[row[0]].append(float(row[1]))
                     rank_data['wind'].append(float(row[1]))
+                    dt_data['wind'].append(float(row[2]))
+
 
                 except KeyError:
                     pass
@@ -643,6 +679,7 @@ def get_threat_report2(id, formdata, mode='state'):
     # add manure
     if 'manure' in formvals:
         rank_data['manure'] = []
+        dt_data['manure'] = []
 
         query = "select huc_12, manu_sv, manu_dt from Manu"
         # model_wts.append(float(formvals['manure']))
@@ -662,6 +699,8 @@ def get_threat_report2(id, formdata, mode='state'):
                     hucs_dict[row[0]].append(above)
                     hucs_dict_sv[row[0]].append(float(row[1]))
                     rank_data['manure'].append(float(row[1]))
+                    dt_data['manure'].append(float(row[2]))
+
 
                 except KeyError:
                     pass
@@ -669,6 +708,7 @@ def get_threat_report2(id, formdata, mode='state'):
     # add nitrogen
     if 'nitrofrt' in formvals:
         rank_data['nitrofrt'] = []
+        dt_data['nitrofrt'] = []
 
         query = "select huc_12, fert_sv, fert_dt from Fert"
         # model_wts.append(float(formvals['nitrofrt']))
@@ -688,6 +728,8 @@ def get_threat_report2(id, formdata, mode='state'):
                     hucs_dict[row[0]].append(above)
                     hucs_dict_sv[row[0]].append(float(row[1]))
                     rank_data['nitrofrt'].append(float(row[1]))
+                    dt_data['nitrofrt'].append(float(row[2]))
+
 
                 except KeyError:
                     pass
@@ -695,6 +737,7 @@ def get_threat_report2(id, formdata, mode='state'):
     # add total nitrogen
     if 'totnitro' in formvals:
         rank_data['totnitro'] = []
+        dt_data['totnitro'] = []
 
         query = "select huc_12, tdnt_sv, tdnt_dt from TDNT"
         # model_wts.append(float(formvals['totnitro']))
@@ -714,6 +757,8 @@ def get_threat_report2(id, formdata, mode='state'):
                     hucs_dict[row[0]].append(above)
                     hucs_dict_sv[row[0]].append(float(row[1]))
                     rank_data['totnitro'].append(float(row[1]))
+                    dt_data['totnitro'].append(float(row[2]))
+
 
                 except KeyError:
                     pass
@@ -721,6 +766,7 @@ def get_threat_report2(id, formdata, mode='state'):
     # add total sulphur
     if 'totsulf' in formvals:
         rank_data['totsulf'] = []
+        dt_data['totsulf'] = []
 
         query = "select huc_12, tdst_sv, tdst_dt from TDST"
         logger.debug(query)
@@ -741,6 +787,8 @@ def get_threat_report2(id, formdata, mode='state'):
                     hucs_dict[row[0]].append(above)
                     hucs_dict_sv[row[0]].append(float(row[1]))
                     rank_data['totsulf'].append(float(row[1]))
+                    dt_data['totsulf'].append(float(row[2]))
+
 
                 except KeyError:
                     pass
@@ -748,6 +796,7 @@ def get_threat_report2(id, formdata, mode='state'):
     # add forest health
     if 'insectdisease' in formvals:
         rank_data['insectdisease'] = []
+        dt_data['insectdisease'] = []
 
         query = "select huc_12, FHlth_sv, FHlth_dt from FHlth"
         # model_wts.append(float(formvals['insectdisease']))
@@ -767,6 +816,8 @@ def get_threat_report2(id, formdata, mode='state'):
                     hucs_dict[row[0]].append(above)
                     hucs_dict_sv[row[0]].append(float(row[1]))
                     rank_data['insectdisease'].append(float(row[1]))
+                    dt_data['insectdisease'].append(float(row[2]))
+
 
                 except KeyError:
                     pass
@@ -774,6 +825,7 @@ def get_threat_report2(id, formdata, mode='state'):
     # add number of dams
     if 'ndams' in formvals:
         rank_data['ndams'] = []
+        dt_data['ndams'] = []
 
         query = "select huc_12, nid_sv, nid_dt from NID"
         logger.debug(query)
@@ -794,9 +846,11 @@ def get_threat_report2(id, formdata, mode='state'):
                     hucs_dict[row[0]].append(above)
                     hucs_dict_sv[row[0]].append(float(row[1]))
                     rank_data['ndams'].append(float(row[1]))
+                    dt_data['ndams'].append(float(row[2]))
+
 
                 except KeyError:
-                    logger.debug(row[0])
+                    # logger.debug(row[0])
                     # hucs_dict[row[0]].append(0)
                     # hucs_dict_sv[row[0]].append(0)
                     pass
@@ -804,6 +858,7 @@ def get_threat_report2(id, formdata, mode='state'):
     # add impaired biota
     if 'impairbiota' in formvals:
         rank_data['impairbiota'] = []
+        dt_data['impairbiota'] = []
 
         query = "select huc_12, BioImpLen_sv, BioImpLen_dt from BioImpLen"
         logger.debug(query)
@@ -824,6 +879,8 @@ def get_threat_report2(id, formdata, mode='state'):
                     hucs_dict[row[0]].append(above)
                     hucs_dict_sv[row[0]].append(float(row[1]))
                     rank_data['impairbiota'].append(float(row[1]))
+                    dt_data['impairbiota'].append(float(row[2]))
+
 
                 except KeyError:
                     pass
@@ -831,6 +888,7 @@ def get_threat_report2(id, formdata, mode='state'):
     # add impaired metals
     if 'impairmetal' in formvals:
         rank_data['impairmetal'] = []
+        dt_data['impairmetal'] = []
 
         query = "select huc_12, MetImpLen_sv, MetImpLen_dt from MetImpLen"
         logger.debug(query)
@@ -851,6 +909,8 @@ def get_threat_report2(id, formdata, mode='state'):
                     hucs_dict[row[0]].append(above)
                     hucs_dict_sv[row[0]].append(float(row[1]))
                     rank_data['impairmetal'].append(float(row[1]))
+                    dt_data['impairmetal'].append(float(row[2]))
+
 
                 except KeyError:
                     pass
@@ -872,7 +932,7 @@ def get_threat_report2(id, formdata, mode='state'):
             model_cols,
             hucs_dict,
             rank_data,
-            mean_pct_areas
+            dt_data
         )
 
     report_rank = threats_summ_dict['report_rank']

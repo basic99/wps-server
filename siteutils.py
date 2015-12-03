@@ -315,13 +315,13 @@ def make_composite_threat_count(hucs_dict, hucs_dict_ps, model_length):
 
 
 def make_report_threats_summary(
-            model_cols, hucs_dict, rank_data, mean_pct_areas
+            model_cols, hucs_dict, rank_data, dt_data
         ):
     """
     model_cols -list of column headers for AOI Threat Summary by HUC12
     hucs_dict -dict of huc12 - list with first item huc and rest threats 0/1
     rank_data -dict of threat name, eg firesup - list of threats ps percents
-    mean_pct_areas - not used presently
+    dt_data - same as rank_data but for dt as opposed to sv
 
     returns:
     report_rank - occurence and severity stats per threat
@@ -331,7 +331,6 @@ def make_report_threats_summary(
 
 
     """
-
     summary_params_list = collections.OrderedDict()
     for idx, model_col in enumerate(model_cols):
         if idx != 0:
@@ -365,7 +364,7 @@ def make_report_threats_summary(
     occurences = []
     severity = []
     for i, threat in enumerate(rank_data):
-        # logger.debug(threat)
+        logger.debug(threat)
         # logger.debug(model_cols[i + 1])
         report_row = [model_cols[i + 1]]
         cnts = summary_params_list[model_cols[i + 1]]
@@ -390,8 +389,10 @@ def make_report_threats_summary(
         #     thrts_present += 1
         report_row.append(row_max)
         try:
-            report_row.append(mean_pct_areas[threat])
+            dt_mean = statistics.mean(dt_data[threat])
+            report_row.append(int(dt_mean * 100) / 100.0)
         except KeyError:
+            logger.debug(threat)
             report_row.append('-')
 
         # add row to report
