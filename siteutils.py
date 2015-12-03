@@ -358,6 +358,29 @@ def make_report_threats_summary(
 
     #     report.append(report_row)
 
+    dt_labels = {
+        "frst": "% lost since 2000",
+        "ftwt": "% lost since 2000",
+        "hbwt": "% lost since 2000",
+        "open": "% lost since 2000",
+        "shrb": "% lost since 2000",
+        "urbangrth": "% area",
+        "firesup": "urban density",
+        "hiway": "meters/hectares",
+        "slr_up": "% lost since 2000",
+        "slr_lc": "% lost since 2000",
+        "triassic": "% area",
+        "wind": "wind power class",
+        "manure": "kg/ha/yr",
+        "nitrofrt": "kg/ha/yr",
+        "totnitro": "kg/ha/yr",
+        "totsulf": "kg/ha/yr",
+        "insectdisease": "% area impacted",
+        "ndams": "n",
+        "impairbiota": "km*stream density",
+        "impairmetal": "km*stream density"
+    }
+
 
     # if formvals['mode'] != 'single':
     thrts_present = 0
@@ -390,7 +413,8 @@ def make_report_threats_summary(
         report_row.append(row_max)
         try:
             dt_mean = statistics.mean(dt_data[threat])
-            report_row.append(int(dt_mean * 100) / 100.0)
+            dt_text = str(int(dt_mean * 100) / 100.0) + " " + dt_labels[threat]
+            report_row.append(dt_text)
         except KeyError:
             logger.debug(threat)
             report_row.append('-')
