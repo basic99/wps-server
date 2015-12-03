@@ -649,12 +649,16 @@ def report(id):
         logger.debug(col_hdrs)
         samplesize = len(res_arr)
 
+        tmp_name = siteutils.aoi_spreadsheet(id, request.args)
+        link_ssht = url_for('get_ssheet', fname=tmp_name[5:])
+
         return render_template(
             'reporta.html',
             col_hdrs=col_hdrs,
             res_arr=res_arr,
             year=report_results['year'],
             samplesize=samplesize,
+            link_ssht=link_ssht,
             threats_summary_state=report_results['threat_summary'],
             thrts_msg_state=report_results["thrts_included_msg"],
             report_rank_state=report_results['report_rank'],
