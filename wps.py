@@ -663,9 +663,7 @@ def report(id):
             thrts_msg_state=report_results["thrts_included_msg"],
             report_rank_state=report_results['report_rank'],
             other_stats_state=report_results['other_stats']
-
-
-            )
+        )
     else:
         results_state = model.get_threat_report2(id, request.args)
         results_aoi = model.get_threat_report2(id, request.args, 'aoi')
@@ -693,7 +691,6 @@ def report(id):
         tmp_name = siteutils.aoi_spreadsheet(id, request.args)
         link_ssht = url_for('get_ssheet', fname=tmp_name[5:])
 
-
         return render_template(
             'reporta2.html',
             year=results_aoi['year'],
@@ -718,8 +715,7 @@ def report(id):
             other_stats_aoi=results_aoi['other_stats'],
             other_stats_5k=results_5k['other_stats'],
             other_stats_12k=results_12k['other_stats'],
-            other_stats_state=results_state['other_stats'],
-
+            other_stats_state=results_state['other_stats']
         )
 
 
