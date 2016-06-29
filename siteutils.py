@@ -564,8 +564,8 @@ def aoi_spreadsheet(id, query):
         prefix='ncthreats'
     ) as temp:
         zf = zipfile.ZipFile(temp, mode='w')
-        zf.write(temp_name1, "spreadsheet1.csv")
-        zf.write(temp_name2, "spreadsheet2.csv")
+        zf.write(temp_name1, "Summary.csv")
+        zf.write(temp_name2, "Thread_Data.csv")
         zf.write("/var/www/html/pages/README.txt", "README.txt")
         zf.close()
 
@@ -708,8 +708,8 @@ def batch_spreadsheet(id, query_str):
     ) as temp:
 
         zf = zipfile.ZipFile(temp, mode='w')
-        zf.write(temp_name1, "spreadsheet1.csv")
-        zf.write(temp_name2, "spreadsheet2.csv")
+        zf.write(temp_name1, "Summary.csv")
+        zf.write(temp_name2, "Threat_Data.csv")
         zf.write("/var/www/html/pages/README.txt", "README.txt")
         zf.close()
 
