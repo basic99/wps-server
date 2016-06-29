@@ -14,7 +14,7 @@ import siteutils
 
 cwd = os.path.dirname(os.path.realpath(__file__))
 logger = logging.getLogger(__name__)
-logger.setLevel(logging.INFO)
+logger.setLevel(logging.DEBUG)
 fh = logging.FileHandler(cwd + '/logs/logs.log')
 formatter = logging.Formatter(
     '%(asctime)s - %(name)s, %(lineno)s - %(levelname)s - %(message)s',
@@ -497,7 +497,7 @@ def get_threat_report2(id, formdata, mode='state'):
         # logger.debug(query)
         # model_wts.append(float(formvals['firesup']))
         model_length += 1
-        model_cols.append("Fire Suppresion - limit(%s)" % formvals['firesup'])
+        model_cols.append("Fire Suppression - limit(%s)" % formvals['firesup'])
         with g.db.cursor() as cur:
             cur.execute(query)
             for row in cur:
