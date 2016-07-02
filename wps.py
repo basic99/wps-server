@@ -34,6 +34,7 @@ import siteutils
 import siteprivate
 import re
 import zipfile
+import collections
 
 # from gevent import monkey
 # monkey.patch_all()
@@ -721,8 +722,8 @@ def report(id):
 
 @app.route('/batch/<int:id>/report', methods=['GET', ])
 def report_batch(id):
-    query = "select * from batch where batch_id = %s"
-    batch_results = {}
+    query = "select * from batch where batch_id = %s order by name"
+    batch_results = collections.OrderedDict()
     with g.db.cursor(cursor_factory=psycopg2.extras.DictCursor) as cur:
         cur.execute(query, (id, ))
         for row in cur:
