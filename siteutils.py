@@ -527,7 +527,7 @@ def aoi_spreadsheet(id, query):
         "Report Year",
         "Summary",
         "Threat Name",
-        "Occurence",
+        "Occurrence",
         "Severity",
         "Severity s.d.",
         "Severity min.",
@@ -548,7 +548,7 @@ def aoi_spreadsheet(id, query):
                 row["Report Year"] = results_complete[summary]['year']
                 row["Summary"] = summary
                 row["Threat Name"] = rept_rank[0]
-                row["Occurence"] = rept_rank[1]
+                row["Occurrence"] = rept_rank[1]
                 row["Severity"] = rept_rank[2]
                 row["Severity s.d."] = rept_rank[3]
                 row["Severity min."] = rept_rank[4]
@@ -565,7 +565,7 @@ def aoi_spreadsheet(id, query):
     ) as temp:
         zf = zipfile.ZipFile(temp, mode='w')
         zf.write(temp_name1, "Summary.csv")
-        zf.write(temp_name2, "Thread_Data.csv")
+        zf.write(temp_name2, "ThreatData.csv")
         zf.write("/var/www/html/pages/README.txt", "README.txt")
         zf.close()
 
@@ -660,7 +660,7 @@ def batch_spreadsheet(id, query_str):
         'Polygon',
         "Summary",
         "Threat Name",
-        "Occurence",
+        "Occurrence",
         "Severity",
         "Severity s.d.",
         "Severity min.",
@@ -679,7 +679,7 @@ def batch_spreadsheet(id, query_str):
                 row['Polygon'] = polygon
                 row["Summary"] = summary
                 row["Threat Name"] = threat[0]
-                row["Occurence"] = threat[1]
+                row["Occurrence"] = threat[1]
                 row["Severity"] = threat[2]
                 row["Severity s.d."] = threat[3]
                 row["Severity min."] = threat[4]
@@ -709,7 +709,7 @@ def batch_spreadsheet(id, query_str):
 
         zf = zipfile.ZipFile(temp, mode='w')
         zf.write(temp_name1, "Summary.csv")
-        zf.write(temp_name2, "Threat_Data.csv")
+        zf.write(temp_name2, "ThreatData.csv")
         zf.write("/var/www/html/pages/README.txt", "README.txt")
         zf.close()
 
