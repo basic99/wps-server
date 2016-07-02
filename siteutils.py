@@ -476,10 +476,10 @@ def aoi_spreadsheet(id, query):
         results_12k["thrts_included_msg"] = a
 
         results_complete = collections.OrderedDict([
-            ("state", results_state),
             ("aoi", results_aoi),
             ("5k", results_5k),
-            ("12k", results_12k)
+            ("12k", results_12k),
+            ("state", results_state)
         ])
         # {
         #     "state": results_state,
