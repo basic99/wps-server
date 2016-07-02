@@ -21,7 +21,7 @@ import zipfile
 
 cwd = os.path.dirname(os.path.realpath(__file__))
 logger = logging.getLogger(__name__)
-logger.setLevel(logging.DEBUG)
+logger.setLevel(logging.INFO)
 fh = logging.FileHandler(cwd + '/logs/logs.log')
 formatter = logging.Formatter(
     '%(asctime)s - %(name)s, %(lineno)s - %(levelname)s - %(message)s',
@@ -580,14 +580,14 @@ def aoi_spreadsheet(id, query):
 
 def batch_spreadsheet(id, query_str):
     logger.debug("batch_spreadsheet")
-    query = "select * from batch where batch_id = %s"
-    batch_results = {}
+    query = "select * from batch where batch_id = %s order by name"
+    batch_results = collections.OrderedDict()
     with g.db.cursor(cursor_factory=psycopg2.extras.DictCursor) as cur:
         cur.execute(query, (id, ))
         for row in cur:
             name = row['name']
             aoi_id = row['resource'].split("/")[-1]
-            logger.debug(name)
+            logger.info(name)
             logger.debug(aoi_id)
 
             results_aoi = model.get_threat_report2(aoi_id, query_str, 'aoi')
