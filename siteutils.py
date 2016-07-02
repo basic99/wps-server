@@ -609,7 +609,7 @@ def batch_spreadsheet(id, query_str):
             a = results_12k["thrts_included_msg"].split("of")
             results_12k["thrts_included_msg"] = a
 
-            batch_results[name] = {}
+            batch_results[name] = collections.OrderedDict()
             batch_results[name]['aoi'] = results_aoi
             batch_results[name]['5k'] = results_5k
             batch_results[name]['12k'] = results_12k
