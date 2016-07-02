@@ -475,12 +475,18 @@ def aoi_spreadsheet(id, query):
         a = results_12k["thrts_included_msg"].split("of")
         results_12k["thrts_included_msg"] = a
 
-        results_complete = {
-            "state": results_state,
-            "aoi": results_aoi,
-            "5k": results_5k,
-            "12k": results_12k
-        }
+        results_complete = collections.OrderedDict([
+            ("state", results_state),
+            ("aoi", results_aoi),
+            ("5k", results_5k),
+            ("12k", results_12k)
+        ])
+        # {
+        #     "state": results_state,
+        #     "aoi": results_aoi,
+        #     "5k": results_5k,
+        #     "12k": results_12k
+        # }
 
     fieldnames = [
         "Report Year",
