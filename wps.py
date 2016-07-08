@@ -362,8 +362,14 @@ def make_pdf():
     """Create PDF resource and return in location header. """
     # try http://flask.pocoo.org/snippets/68/
     htmlseg = request.form["htmlseg"].encode('ascii', 'ignore')
-    with open("/tmp/test.html", "wb") as fp:
-        fp.write(htmlseg)
+    htmlseg_lgd = request.form["htmlseg_lgd"].encode('ascii', 'ignore')
+    with tempfile.NamedTemporaryFile(delete=False, suffix=".svg") as temp:
+        temp.write(htmlseg_lgd)
+        temp.flush()
+        lgd_file = temp.name
+    logger.debug(lgd_file)
+    # with open("/tmp/test.html", "wb") as fp:
+    #     fp.write(htmlseg)
     cmd1 = "/usr/local/wkhtmltox/bin/wkhtmltopdf"
     fname = tempfile.NamedTemporaryFile(
         delete=False, suffix=".pdf", dir='/tmp', prefix='ncthreats'
