@@ -368,6 +368,7 @@ def make_pdf():
         temp.flush()
         lgd_file = temp.name
     logger.debug(lgd_file)
+    lgd_file = "http://localhost/images/threat_legend.png"
     svg_fragment = '<image xlink:href="%s" x="50" y="400" width="220" height="220"/></svg>' % lgd_file
     logger.debug(svg_fragment)
     htmlseg = htmlseg.replace("</svg>", svg_fragment)
