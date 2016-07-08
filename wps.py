@@ -368,8 +368,11 @@ def make_pdf():
         temp.flush()
         lgd_file = temp.name
     logger.debug(lgd_file)
-    # with open("/tmp/test.html", "wb") as fp:
-    #     fp.write(htmlseg)
+    svg_fragment = '<image xlink:href="%s" x="50" y="400" width="220" height="220"/></svg>' % lgd_file
+    logger.debug(svg_fragment)
+    htmlseg = htmlseg.replace("</svg>", svg_fragment)
+    with open("/tmp/test.html", "wb") as fp:
+        fp.write(htmlseg_lgd)
     cmd1 = "/usr/local/wkhtmltox/bin/wkhtmltopdf"
     fname = tempfile.NamedTemporaryFile(
         delete=False, suffix=".pdf", dir='/tmp', prefix='ncthreats'
@@ -377,6 +380,7 @@ def make_pdf():
     with tempfile.NamedTemporaryFile(delete=False, suffix=".html") as temp:
         temp.write(htmlseg)
         temp.flush()
+    logger.debug(temp.name)
     subprocess.call([
         cmd1, '-O', "Portrait",
         temp.name, fname.name,
