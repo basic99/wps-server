@@ -361,19 +361,28 @@ def get_ssheet(fname):
 def make_pdf():
     """Create PDF resource and return in location header. """
     # try http://flask.pocoo.org/snippets/68/
+    legend_files = {
+        "water:bioimplen": "imp_bio.png"
+    }
     htmlseg = request.form["htmlseg"].encode('ascii', 'ignore')
-    htmlseg_lgd = request.form["htmlseg_lgd"].encode('ascii', 'ignore')
-    with tempfile.NamedTemporaryFile(delete=False, suffix=".svg") as temp:
-        temp.write(htmlseg_lgd)
-        temp.flush()
-        lgd_file = temp.name
-    logger.debug(lgd_file)
-    lgd_file = "http://localhost/images/threat_legend.png"
-    svg_fragment = '<image xlink:href="%s" x="50" y="400" width="220" height="220"/></svg>' % lgd_file
-    logger.debug(svg_fragment)
-    htmlseg = htmlseg.replace("</svg>", svg_fragment)
-    with open("/tmp/test.html", "wb") as fp:
-        fp.write(htmlseg_lgd)
+    # htmlseg_lgd = request.form["htmlseg_lgd"].encode('ascii', 'ignore')
+    # with tempfile.NamedTemporaryFile(delete=False, suffix=".svg") as temp:
+    #     temp.write(htmlseg_lgd)
+    #     temp.flush()
+    #     lgd_file = temp.name
+    # logger.debug(lgd_file)
+    # with open("/tmp/test.html", "wb") as fp:
+    #     fp.write(htmlseg_lgd)
+    if "indiv_layer" in request.form:
+        logger.debug(request.form["indiv_layer"])
+        indiv_layer = request.form["indiv_layer"]
+
+
+        lgd_file = "http://localhost/images/legends/%s" % legend_files[indiv_layer]
+        svg_fragment = '<image xlink:href="%s" x="50" y="400" width="220" height="220"/></svg>' % lgd_file
+        logger.debug(svg_fragment)
+        htmlseg = htmlseg.replace("</svg>", svg_fragment)
+
     cmd1 = "/usr/local/wkhtmltox/bin/wkhtmltopdf"
     fname = tempfile.NamedTemporaryFile(
         delete=False, suffix=".pdf", dir='/tmp', prefix='ncthreats'
