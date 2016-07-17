@@ -386,6 +386,8 @@ def make_pdf():
     htmlseg = request.form["htmlseg"].encode('ascii', 'ignore')
     is_composite = request.form["is_composite"]
     logger.debug(is_composite)
+    logger.debug(request.form["legend_print"])
+    legend_print = request.form["legend_print"]
 
     # this is to create new svg
     # htmlseg_lgd = request.form["htmlseg_lgd"].encode('ascii', 'ignore')
@@ -396,7 +398,8 @@ def make_pdf():
     # logger.debug(lgd_file)
     # with open("/tmp/test.html", "wb") as fp:
     #     fp.write(htmlseg_lgd)
-    if "indiv_layer" in request.form:
+    if legend_print == "individual":
+        logger.debug("individula print")
         logger.debug(request.form["indiv_layer"])
         indiv_layer = request.form["indiv_layer"].split(":")[0]
         if indiv_layer == "nutrient":
@@ -406,8 +409,8 @@ def make_pdf():
         logger.debug(svg_fragment)
         htmlseg = htmlseg.replace("</svg>", svg_fragment)
 
-    elif is_composite:
-        logger.debug(is_composite)
+    elif legend_print == "model":
+        logger.debug("model print")
         lgd_file = "http://localhost/images/threat_legend2.png"
         svg_fragment = '<image xlink:href="%s" x="30" y="450" width="220" height="220"/></svg>' % lgd_file
         logger.debug(svg_fragment)
