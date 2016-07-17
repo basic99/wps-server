@@ -362,9 +362,30 @@ def make_pdf():
     """Create PDF resource and return in location header. """
     # try http://flask.pocoo.org/snippets/68/
     legend_files = {
-        "water:bioimplen": "imp_bio.png"
+        "water:bioimplen": "imp_bio.png",
+        "water:metimplen": "imp_metal.png",
+        "frst": "frst.png",
+        "ftwt": "ftwt.png",
+        "hbwt": "ftwt.png",
+        "open": "open.png",
+        "shrb": "shrb.png",
+        "urban": "urban.png",
+        "fire": "fire.png",
+        "trans": "trans.png",
+        "manu": "manu.png",
+        "fert": "syn_nitro.png",
+        "td_n_t": "tot_nitro.png",
+        "td_s_t": "tot_sulf.png",
+        "water": "nd.png",
+        "frsthlth": "frsthlth.png",
+        "energydev": "energy.png",
+        "wind": "wind.png",
+        "slr_up": "slr_up.png",
+        "slr_lc": "slr_lc.png"
     }
     htmlseg = request.form["htmlseg"].encode('ascii', 'ignore')
+
+    # this is to create new svg
     # htmlseg_lgd = request.form["htmlseg_lgd"].encode('ascii', 'ignore')
     # with tempfile.NamedTemporaryFile(delete=False, suffix=".svg") as temp:
     #     temp.write(htmlseg_lgd)
@@ -375,11 +396,14 @@ def make_pdf():
     #     fp.write(htmlseg_lgd)
     if "indiv_layer" in request.form:
         logger.debug(request.form["indiv_layer"])
-        indiv_layer = request.form["indiv_layer"]
+        indiv_layer = request.form["indiv_layer"].split(":")[0]
+        if indiv_layer == "nutrient":
+            indiv_layer = request.form["indiv_layer"].split(":")[1]
+
 
 
         lgd_file = "http://localhost/images/legends/%s" % legend_files[indiv_layer]
-        svg_fragment = '<image xlink:href="%s" x="50" y="400" width="220" height="220"/></svg>' % lgd_file
+        svg_fragment = '<image xlink:href="%s" x="30" y="500" width="220" height="220"/></svg>' % lgd_file
         logger.debug(svg_fragment)
         htmlseg = htmlseg.replace("</svg>", svg_fragment)
 
