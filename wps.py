@@ -384,8 +384,6 @@ def make_pdf():
         "slr_lc": "slr_lc.png"
     }
     htmlseg = request.form["htmlseg"].encode('ascii', 'ignore')
-    is_composite = request.form["is_composite"]
-    logger.debug(is_composite)
     logger.debug(request.form["legend_print"])
     legend_print = request.form["legend_print"]
 
