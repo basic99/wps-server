@@ -384,6 +384,8 @@ def make_pdf():
         "slr_lc": "slr_lc.png"
     }
     htmlseg = request.form["htmlseg"].encode('ascii', 'ignore')
+    is_composite = request.form["is_composite"]
+    logger.debug(is_composite)
 
     # this is to create new svg
     # htmlseg_lgd = request.form["htmlseg_lgd"].encode('ascii', 'ignore')
@@ -399,11 +401,15 @@ def make_pdf():
         indiv_layer = request.form["indiv_layer"].split(":")[0]
         if indiv_layer == "nutrient":
             indiv_layer = request.form["indiv_layer"].split(":")[1]
-
-
-
         lgd_file = "http://localhost/images/legends/%s" % legend_files[indiv_layer]
-        svg_fragment = '<image xlink:href="%s" x="30" y="500" width="220" height="220"/></svg>' % lgd_file
+        svg_fragment = '<image xlink:href="%s" x="30" y="400" width="220" height="220"/></svg>' % lgd_file
+        logger.debug(svg_fragment)
+        htmlseg = htmlseg.replace("</svg>", svg_fragment)
+
+    elif is_composite:
+        logger.debug(is_composite)
+        lgd_file = "http://localhost/images/threat_legend2.png"
+        svg_fragment = '<image xlink:href="%s" x="30" y="450" width="220" height="220"/></svg>' % lgd_file
         logger.debug(svg_fragment)
         htmlseg = htmlseg.replace("</svg>", svg_fragment)
 
