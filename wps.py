@@ -409,7 +409,7 @@ def make_pdf():
 
     elif legend_print == "model":
         logger.debug("model print")
-        lgd_file = "http://localhost/images/threat_legend2.png"
+        lgd_file = "http://localhost/images/threat_legend.png"
         svg_fragment = '<image xlink:href="%s" x="30" y="450" width="220" height="220"/></svg>' % lgd_file
         logger.debug(svg_fragment)
         htmlseg = htmlseg.replace("</svg>", svg_fragment)
