@@ -384,8 +384,16 @@ def make_pdf():
         "slr_lc": "slr_lc.png"
     }
     htmlseg = request.form["htmlseg"].encode('ascii', 'ignore')
+
     logger.debug(request.form["legend_print"])
     legend_print = request.form["legend_print"]
+
+    # pattern = re.compile("<img class=\"olTileImage olImageLoadError^>*>")
+    htmlseg = re.sub(
+        "<img class=\"olTileImage olImageLoadError[^>]*>",
+        "",
+        htmlseg
+    )
 
     # this is to create new svg
     # htmlseg_lgd = request.form["htmlseg_lgd"].encode('ascii', 'ignore')
@@ -394,8 +402,8 @@ def make_pdf():
     #     temp.flush()
     #     lgd_file = temp.name
     # logger.debug(lgd_file)
-    # with open("/tmp/test.html", "wb") as fp:
-    #     fp.write(htmlseg_lgd)
+    with open("/tmp/test.html", "wb") as fp:
+        fp.write(htmlseg)
     if legend_print == "individual":
         logger.debug("individula print")
         logger.debug(request.form["indiv_layer"])
