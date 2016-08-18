@@ -422,6 +422,7 @@ def make_pdf():
         logger.debug(svg_fragment)
         htmlseg = htmlseg.replace("</svg>", svg_fragment)
 
+    # https://github.com/wkhtmltopdf/wkhtmltopdf/issues/2037#issuecomment-62019521
     cmd1 = "/usr/local/wkhtmltox/bin/wkhtmltopdf"
     fname = tempfile.NamedTemporaryFile(
         delete=False, suffix=".pdf", dir='/tmp', prefix='ncthreats'
