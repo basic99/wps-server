@@ -1,0 +1,1 @@
+you can edit this file in /var/www/wsgi/wps-server/templates/README.txt

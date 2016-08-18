@@ -21,7 +21,7 @@ import zipfile
 
 cwd = os.path.dirname(os.path.realpath(__file__))
 logger = logging.getLogger(__name__)
-logger.setLevel(logging.INFO)
+logger.setLevel(logging.DEBUG)
 fh = logging.FileHandler(cwd + '/logs/logs.log')
 formatter = logging.Formatter(
     '%(asctime)s - %(name)s, %(lineno)s - %(levelname)s - %(message)s',
@@ -572,7 +572,7 @@ def aoi_spreadsheet(id, query):
         zf = zipfile.ZipFile(temp, mode='w')
         zf.write(temp_name1, "Summary.csv")
         zf.write(temp_name2, "ThreatData.csv")
-        zf.write("/var/www/html/pages/README.txt", "README.txt")
+        zf.write("/var/www/wsgi/wps-server/templates/README.txt", "README.txt")
         zf.close()
 
     return temp.name
@@ -716,7 +716,7 @@ def batch_spreadsheet(id, query_str):
         zf = zipfile.ZipFile(temp, mode='w')
         zf.write(temp_name1, "Summary.csv")
         zf.write(temp_name2, "ThreatData.csv")
-        zf.write("/var/www/html/pages/README.txt", "README.txt")
+        zf.write("/var/www/wsgi/wps-server/templates/README.txt", "README.txt")
         zf.close()
 
     return temp.name
