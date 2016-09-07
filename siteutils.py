@@ -387,7 +387,7 @@ def make_report_threats_summary(
     occurences = []
     severity = []
     for i, threat in enumerate(rank_data):
-        logger.debug(threat)
+        # logger.debug(threat)
         # logger.debug(model_cols[i + 1])
         report_row = [model_cols[i + 1]]
         cnts = summary_params_list[model_cols[i + 1]]
@@ -537,7 +537,8 @@ def aoi_spreadsheet(id, query):
         "Severity",
         "Severity s.d.",
         "Severity min.",
-        "Severity max."
+        "Severity max.",
+        "Data Mean"
     ]
 
     with tempfile.NamedTemporaryFile(
@@ -559,6 +560,7 @@ def aoi_spreadsheet(id, query):
                 row["Severity s.d."] = rept_rank[3]
                 row["Severity min."] = rept_rank[4]
                 row["Severity max."] = rept_rank[5]
+                row["Data Mean"] = rept_rank[6]
                 csvwriter.writerow(row)
 
         temp_name2 = temp.name
