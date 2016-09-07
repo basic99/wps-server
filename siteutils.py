@@ -672,7 +672,8 @@ def batch_spreadsheet(id, query_str):
         "Severity",
         "Severity s.d.",
         "Severity min.",
-        "Severity max."
+        "Severity max.",
+        "Data Mean"
     ]
 
     results = []
@@ -692,6 +693,8 @@ def batch_spreadsheet(id, query_str):
                 row["Severity s.d."] = threat[3]
                 row["Severity min."] = threat[4]
                 row["Severity max."] = threat[5]
+                row["Data Mean"] = rept_rank[6]
+
 
                 results.append(row)
     with tempfile.NamedTemporaryFile(
