@@ -26,10 +26,13 @@
     <h4><a href='{{link_ssht}}'>spreadsheet</a> </h4>
   </div>
 
+<div style="float:left">
   <h2 >Summary for AOI</h2>
   <h4 >Number of Sub-watersheds: {{samplesize_aoi}}</h4>
   <h4 >Distinct Threat Count:{{thrts_msg_aoi}}</h4>
   <h4>Occurrence Rating: {{other_stats_aoi.comp_occ}}%</h4>
+  </div>
+  <img class="bullseye" src="{{url_for('static', filename='img/bulls_eye_AOI.png')}}" />
    <table class="table table-striped">
     <tr>
       <th></th>
@@ -66,10 +69,14 @@
     {% endfor %}
   </table>
 
+<div style="float:left">
     <h2 >Summary w/in 5 km Neighborhood</h2>
   <h4 >Number of Sub-watersheds: {{samplesize_5k}}</h4>
   <h4 >Total Distinct Threat Count:{{thrts_msg_5k}}</h4>
   <h4>Occurrence Rating: {{other_stats_5k.comp_occ}}%</h4>
+  </div>
+  <img class="bullseye" src="{{url_for('static', filename='img/bulls_eye_5k.png')}}" />
+
    <table class="table table-striped">
     <tr>
       <th></th>
@@ -106,10 +113,13 @@
     {% endfor %}
   </table>
 
+<div style="float:left">
     <h2 >Summary w/in 12 km Neighborhood</h2>
   <h4 >Number of Sub-watersheds: {{samplesize_12k}}</h4>
   <h4 >Total Distinct Threat Count:{{thrts_msg_12k}}</h4>
   <h4>Occurrence Rating: {{other_stats_12k.comp_occ}}%</h4>
+  </div>
+  <img class="bullseye" src="{{url_for('static', filename='img/bulls_eye_12k.png')}}" />
    <table class="table table-striped">
     <tr>
       <th></th>

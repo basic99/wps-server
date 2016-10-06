@@ -22,3 +22,8 @@ body {
     margin-top: 20px;
 }
 
+.bullseye {
+    position: absolute;
+    right: 200px;
+}
+
