@@ -36,10 +36,13 @@ hr {
   {% for key, value in results.iteritems() %}
   <h2>Polygon name: {{ key|e }}</h2>
 
+  <div style="float:left">
   <h2 >Summary for AOI</h2>
   <h4 >Number of Sub-watersheds: {{value.samplesize.aoi}}</h4>
   <h4 >Distinct Threat Count: {{value.aoi.thrts_included_msg}}</h4>
   <h4>Occurrence Rating: {{value.aoi.other_stats.comp_occ}}%</h4>
+  </div>
+  <img class="bullseye" src="{{url_for('static', filename='img/bulls_eye_AOI.png')}}" />
 
   <table class="table table-striped">
     <tr>
@@ -88,10 +91,15 @@ hr {
     {% endfor %}
   </table>
 
+
+  <div style="float:left">
   <h2 >Summary w/in 5 km Neighborhood</h2>
   <h4 >Number of Sub-watersheds: {{value.samplesize['5k']}}</h4>
   <h4 >Distinct Threat Count: {{value['5k'].thrts_included_msg}}</h4>
   <h4>Occurrence Rating: {{value['5k'].other_stats.comp_occ}}%</h4>
+  </div>
+  <img class="bullseye" src="{{url_for('static', filename='img/bulls_eye_5k.png')}}" />
+
 
   <table class="table table-striped">
     <tr>
@@ -140,10 +148,14 @@ hr {
     {% endfor %}
   </table>
 
+<div style="float:left">
   <h2 >Summary w/in 12 km Neighborhood</h2>
   <h4 >Number of Sub-watersheds: {{value.samplesize['12k']}}</h4>
   <h4 >Distinct Threat Count: {{value['12k'].thrts_included_msg}}</h4>
   <h4>Occurrence Rating: {{value['12k'].other_stats.comp_occ}}%</h4>
+  </div>
+  <img class="bullseye" src="{{url_for('static', filename='img/bulls_eye_12k.png')}}" />
+
 
   <table class="table table-striped">
     <tr>

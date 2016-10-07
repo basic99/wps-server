@@ -352,6 +352,9 @@ class NCHuc12():
                 huc12s.append(row[0])
 
             huc12_str = ", ".join(huc12s)
+            logger.debug("total hucs in aoi is %s" % len(set(huc12s)))
+            logger.debug("total hucs in aoi and 5k is %s" % len(set(self.buff_list5)))
+            logger.debug("total hucs in aoi and 12k is %s" % len(set(self.buff_list12)))
             buffer5k_str = ", ".join(
                 list(set(self.buff_list5) - set(huc12s))
             )
