@@ -1034,7 +1034,20 @@ def limit_preview_map():
         'colors': colors
     })
 
+@app.route('/coa_map', methods=['POST', ])
+def coa_map():
+    keycode = request.form.get("keycode")
+    logger.debug(keycode.replace(".", "_"))
+    col_name = "UR_" + keycode.replace(".", "_")
+    logger.debug(col_name)
+    query = "select HUC12RNG, %s from coa_UnprRatioAllSpp" % col_name
+    logger.debug(query)
 
+
+
+    return json.dumps({
+        "test": "success"
+    })
 
 if __name__ == '__main__':
     app.run(debug=True)
