@@ -1034,14 +1034,23 @@ def limit_preview_map():
         'colors': colors
     })
 
+
 @app.route('/coa_map', methods=['POST', ])
 def coa_map():
     keycode = request.form.get("keycode")
-    logger.debug(keycode.replace(".", "_"))
     col_name = "UR_" + keycode.replace(".", "_")
-    logger.debug(col_name)
     query = "select HUC12RNG, %s from coa_UnprRatioAllSpp" % col_name
     logger.debug(query)
+    ratio_list = []
+
+    with g.db.cursor() as cur:
+        cur.execute(query)
+        for rec in cur:
+            ratio_list.append(rec[1])
+            # aoi_list.append({
+            #     "name": rec[2],
+            #     "url": rec[3]
+            # })
 
 
 
