@@ -1046,11 +1046,10 @@ def coa_map():
     with g.db.cursor() as cur:
         cur.execute(query)
         for rec in cur:
-            ratio_list.append(rec[1])
-            # aoi_list.append({
-            #     "name": rec[2],
-            #     "url": rec[3]
-            # })
+            if rec[1] > 0:
+                ratio_list.append(rec[1])
+    logger.debug(min(ratio_list))
+    logger.debug(max(ratio_list))
 
 
 
