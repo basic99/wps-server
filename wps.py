@@ -1058,6 +1058,7 @@ def coa_map():
     logger.debug(num_zeros)
     logger.debug(min_val)
     logger.debug(max_val)
+    val_range = max_val - min_val
 
     # assigne categories to huc12
     huc12_cats = {}
@@ -1065,14 +1066,17 @@ def coa_map():
         cur.execute(query)
         for rec in cur:
             if rec[1] > 0:
-                ratio_list.append(rec[1])
+                cat = int(round(((rec[1] - min_val) / val_range) * 10)) + 1
             else:
-                num_zeros += 1
+                cat = 0
+            # logger.debug(cat)
+            huc12_cats[rec[0]] = cat
 
 
 
     return json.dumps({
-        "test": "success"
+        "test": "success",
+        "huc12_cats": huc12_cats
     })
 
 if __name__ == '__main__':
