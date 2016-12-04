@@ -1042,14 +1042,32 @@ def coa_map():
     query = "select HUC12RNG, %s from coa_UnprRatioAllSpp" % col_name
     logger.debug(query)
     ratio_list = []
+    num_zeros = 0
 
+    # first get min and max values
     with g.db.cursor() as cur:
         cur.execute(query)
         for rec in cur:
             if rec[1] > 0:
                 ratio_list.append(rec[1])
-    logger.debug(min(ratio_list))
-    logger.debug(max(ratio_list))
+            else:
+                num_zeros += 1
+
+    min_val = min(ratio_list)
+    max_val = max(ratio_list)
+    logger.debug(num_zeros)
+    logger.debug(min_val)
+    logger.debug(max_val)
+
+    # assigne categories to huc12
+    huc12_cats = {}
+    with g.db.cursor() as cur:
+        cur.execute(query)
+        for rec in cur:
+            if rec[1] > 0:
+                ratio_list.append(rec[1])
+            else:
+                num_zeros += 1
 
 
 
