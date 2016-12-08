@@ -1041,7 +1041,7 @@ def coa_map():
     col_name = "UR_" + keycode.replace(".", "_")
     ecoregion_code = keycode[0]
     logger.debug(ecoregion_code)
-    query = "select HUC12RNG, %s from coa_UnprRatioAllSpp" % col_name
+    query = "select HUC12RNG, %s from coa_UnprRatioSGCNSpp" % col_name
     logger.debug(query)
     ratio_list = []
     ratio_dict = {}
