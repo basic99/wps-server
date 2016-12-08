@@ -1042,6 +1042,7 @@ def coa_map():
     query = "select HUC12RNG, %s from coa_UnprRatioAllSpp" % col_name
     logger.debug(query)
     ratio_list = []
+    ratio_dict = {}
     num_zeros = 0
 
     # first get min and max values
@@ -1052,6 +1053,18 @@ def coa_map():
                 ratio_list.append(rec[1])
             else:
                 num_zeros += 1
+            ratio_dict[rec[0]] = rec[1]
+
+    dict_sorted = collections.OrderedDict(sorted(ratio_dict.items(), key=lambda t: t[1], reverse=True))
+
+    for cnt, huc in enumerate(dict_sorted):
+        logger.debug(huc)
+        logger.debug(dict_sorted[huc])
+        if cnt > 5:
+            break
+
+
+
 
     min_val = min(ratio_list)
     max_val = max(ratio_list)
