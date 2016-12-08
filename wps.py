@@ -1039,13 +1039,26 @@ def limit_preview_map():
 def coa_map():
     keycode = request.form.get("keycode")
     col_name = "UR_" + keycode.replace(".", "_")
+    ecoregion_code = keycode[0]
+    logger.debug(ecoregion_code)
     query = "select HUC12RNG, %s from coa_UnprRatioAllSpp" % col_name
     logger.debug(query)
     ratio_list = []
     ratio_dict = {}
     num_zeros = 0
 
-    # first get min and max values
+    # get list of hucs in ecoregion
+    huc12s = []
+    with g.db.cursor() as cur:
+        cur.execute(
+            "select huc12 from coa_ecohuc where ecoregion = %s",
+            (ecoregion_code,)
+        )
+        for rec in cur:
+            huc12s.append(rec[0])
+
+    #  get min and max ratio values
+    # create dict of huc/ratio
     with g.db.cursor() as cur:
         cur.execute(query)
         for rec in cur:
@@ -1055,16 +1068,19 @@ def coa_map():
                 num_zeros += 1
             ratio_dict[rec[0]] = rec[1]
 
-    dict_sorted = collections.OrderedDict(sorted(ratio_dict.items(), key=lambda t: t[1], reverse=True))
+    dict_sorted = collections.OrderedDict(
+        sorted(ratio_dict.items(), key=lambda t: t[1], reverse=True)
+    )
 
-    for cnt, huc in enumerate(dict_sorted):
-        logger.debug(huc)
-        logger.debug(dict_sorted[huc])
-        if cnt > 5:
-            break
-
-
-
+    cnt = 0
+    top_five = []
+    for huc in dict_sorted:
+        if huc in huc12s:
+            cnt += 1
+            top_five.append(huc)
+            if cnt > 4:
+                break
+    logger.debug(top_five)
 
     min_val = min(ratio_list)
     max_val = max(ratio_list)
@@ -1085,12 +1101,12 @@ def coa_map():
             # logger.debug(cat)
             huc12_cats[rec[0]] = cat
 
-
-
     return json.dumps({
         "test": "success",
-        "huc12_cats": huc12_cats
+        "huc12_cats": huc12_cats,
+        "top_five": top_five
     })
+
 
 if __name__ == '__main__':
     app.run(debug=True)
