@@ -1084,7 +1084,7 @@ def coa_map():
             thrt_val = dict_sorted[huc]
             cat = int(round(((thrt_val - min_val) / val_range) * 10)) + 1
             top_five.append((huc, cat))
-            if cnt > 1:
+            if cnt > 4:
                 break
 
     logger.debug(top_five)
