@@ -118,7 +118,7 @@ class NCHuc12():
             for huc in self.aoi_list:
                 cur.execute(
                     query_str, (huc + "%",)
-                    )
+                )
                 recs = cur.fetchall()
                 for rec in recs:
                     the_geom = rec['wkb_geometry']
@@ -128,7 +128,7 @@ class NCHuc12():
                          the_geom, date_added)
                          values (%s, %s, %s, now()) """,
                         (huc12, ident, the_geom)
-                        )
+                    )
 
     def gethucsfromcache(self, ident, layer):
         """Get list of huc12s for predefined county and bcr. """
@@ -236,6 +236,10 @@ class NCHuc12():
                         logger.debug("huc8")
                         file_name_5kbuf = 'data/huc8cache_5k.json'
                         file_name_12kbuf = 'data/huc8cache_12k.json'
+                    elif len(self.aoi_list[0]) == 12:
+                        logger.debug("huc8")
+                        file_name_5kbuf = 'data/huc12cache_5k.json'
+                        file_name_12kbuf = 'data/huc12cache_12k.json'
                     else:
                         logger.debug("huc10")
                         file_name_5kbuf = 'data/huc10cache_5k.json'
