@@ -1072,22 +1072,25 @@ def coa_map():
         sorted(ratio_dict.items(), key=lambda t: t[1], reverse=True)
     )
 
+    min_val = min(ratio_list)
+    max_val = max(ratio_list)
+    val_range = max_val - min_val
+
     cnt = 0
     top_five = []
     for huc in dict_sorted:
         if huc in huc12s:
             cnt += 1
-            top_five.append(huc)
-            if cnt > 4:
+            thrt_val = dict_sorted[huc]
+            cat = int(round(((thrt_val - min_val) / val_range) * 10)) + 1
+            top_five.append((huc, cat))
+            if cnt > 1:
                 break
-    logger.debug(top_five)
 
-    min_val = min(ratio_list)
-    max_val = max(ratio_list)
+    logger.debug(top_five)
     logger.debug(num_zeros)
     logger.debug(min_val)
     logger.debug(max_val)
-    val_range = max_val - min_val
 
     # assigne categories to huc12
     huc12_cats = {}
