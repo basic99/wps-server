@@ -113,7 +113,7 @@ def post_aoi():
     """
     # pt_lon = request.form.get('point_buffer[lon]')
     # pt_lat = request.form.get('point_buffer[lat]')
-    # logger.debug(pt_lon)
+    logger.debug(request.form)
     huc = nchuc12.NCHuc12()
     huc.gml = request.form['gml']
     huc.pt_lon = request.form.get('point_buffer[lon]')
