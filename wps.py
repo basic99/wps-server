@@ -1110,6 +1110,20 @@ def coa_map():
         "top_five": top_five
     })
 
+@app.route('/coa_model', methods=['POST', ])
+def coa_model():
+    keycode = request.form.get("keycode")
+    logger.debug(keycode)
+    query = "select * from coa_keythreats where KeyCode = %s"
+    with g.db.cursor(cursor_factory=psycopg2.extras.RealDictCursor) as cur:
+        cur.execute(query, (keycode,))
+        rec = cur.fetchone()
+    logger.debug(rec)
+
+    return json.dumps({
+        "test": "success",
+        "row": rec
+    })
 
 if __name__ == '__main__':
     app.run(debug=True)
