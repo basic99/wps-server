@@ -475,7 +475,7 @@ def shptojson():
     subprocess.call([
         cmd1, "-f", "GeoJSON", "-t_srs", "EPSG:3857",
         shp_dir + "/shape.json", shp_dir
-        ])
+    ])
 
     return send_from_directory(shp_dir, "shape.json")
 
