@@ -473,7 +473,7 @@ def shptojson():
             temp.flush()
 
     subprocess.call([
-        cmd1, "-f", "GeoJSON", "-t_srs", "EPSG:900913",
+        cmd1, "-f", "GeoJSON", "-t_srs", "EPSG:3857",
         shp_dir + "/shape.json", shp_dir
         ])
 
