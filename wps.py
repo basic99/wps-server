@@ -1126,13 +1126,13 @@ def coa_model():
     })
 
 
-@app.route('/qry_tool', methods=['POST', ])
+@app.route('/qry_tool', methods=['GET', ])
 def qry_tool():
-    keycode = request.form.get("community")
-    lon = request.form.get('pt_lon')
-    lat = request.form.get('pt_lat')
+    keycode = request.args.get("community")
+    lon = request.args.get('pt_lon')
+    lat = request.args.get('pt_lat')
     logger.debug(keycode)
-    logger.debug(request.form)
+    logger.debug(request.args)
 
     query = """
 select sppcode_gap, comname_gap, sciname_gap, ProtAc, UnprotAc, PredHabAc,
@@ -1150,8 +1150,9 @@ and coa_spphabmatrixsgcn."""
 
     with g.db.cursor(cursor_factory=psycopg2.extras.RealDictCursor) as cur:
         cur.execute(query, (huc12,))
-        rec = cur.fetchone()
-    logger.debug(rec)
+        for cnt, row in enumerate(cur):
+            logger.debug(row)
+        logger.debug("rows returned %s" % cnt)
 
     return json.dumps({
         "test": "success",
