@@ -1125,5 +1125,23 @@ def coa_model():
         "row": rec
     })
 
+
+@app.route('/qry_tool', methods=['POST', ])
+def qry_tool():
+    keycode = request.form.get("community")
+    lon = request.form.get('pt_lon')
+    lat = request.form.get('pt_lat')
+    logger.debug(keycode)
+    logger.debug(request.form)
+
+    retval = siteutils.qrypttojson(lon, lat, 'huc_12')
+    huc12 = json.loads(retval)['the_huc']
+
+    return json.dumps({
+        "test": "success",
+        "huc12": huc12
+    })
+
+
 if __name__ == '__main__':
     app.run(debug=True)
