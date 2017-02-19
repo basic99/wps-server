@@ -1134,8 +1134,24 @@ def qry_tool():
     logger.debug(keycode)
     logger.debug(request.form)
 
+    query = """
+select sppcode_gap, comname_gap, sciname_gap, ProtAc, UnprotAc, PredHabAc,
+PercUnprot, UnprRatio, strProtAc, strUnprotAc, strPredHabAc, strPercUnprot
+from coa_spphabmatrixsgcn, coa_SppHucProtData
+where coa_SppHabMatrixSGCN.SppCode_GAP = coa_SppHucProtData.strUC
+and coa_SppHucProtData.huc12 = %s
+and coa_spphabmatrixsgcn."""
+
+    query += keycode.replace(".", "_") + " is not null;"
+
+    logger.debug(query)
     retval = siteutils.qrypttojson(lon, lat, 'huc_12')
     huc12 = json.loads(retval)['the_huc']
+
+    with g.db.cursor(cursor_factory=psycopg2.extras.RealDictCursor) as cur:
+        cur.execute(query, (huc12,))
+        rec = cur.fetchone()
+    logger.debug(rec)
 
     return json.dumps({
         "test": "success",
