@@ -30,11 +30,14 @@
 
    <table class="table table-striped">
     <tr>
+      <th>Common Name</th>
+      <th>Scientific Name</th>
+      <th>Protected Acres</th>
+      <th>Unprotected Acres</th>
+      <th>Total Acres</th>
+      <th>Percent Unprotected</th>
       <th></th>
-      <th>Mean</th>
-      <th>Standard Deviation</th>
-      <th>Minumum value</th>
-      <th>Maximum value</th>
+
     </tr>
     {%for res_row in report_rows%}
     <tr>
@@ -44,14 +47,6 @@
     </tr>
     {% endfor %}
   </table>
-
-
-
-
-
-  <h2 style="text-align: center;">Summary  by HUC12</h2>
-
-
 
 </div>
 

@@ -1135,8 +1135,8 @@ def qry_tool():
     logger.debug(request.args)
 
     query = """
-select sppcode_gap, comname_gap, sciname_gap,
-strProtAc, strUnprotAc, strPredHabAc, strPercUnprot
+select comname_gap, sciname_gap, strProtAc,
+strUnprotAc, strPredHabAc, strPercUnprot
 from coa_spphabmatrixsgcn, coa_SppHucProtData
 where coa_SppHabMatrixSGCN.SppCode_GAP = coa_SppHucProtData.strUC
 and coa_SppHucProtData.huc12 = %s
@@ -1148,7 +1148,7 @@ and coa_spphabmatrixsgcn."""
     retval = siteutils.qrypttojson(lon, lat, 'huc_12')
     huc12 = json.loads(retval)['the_huc']
     report_rows = []
-    with g.db.cursor(cursor_factory=psycopg2.extras.RealDictCursor) as cur:
+    with g.db.cursor() as cur:
         cur.execute(query, (huc12,))
         for cnt, row in enumerate(cur):
             logger.debug(row)
