@@ -1,0 +1,219 @@
+<!DOCTYPE html>
+<html class="no-js">
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+  <title></title>
+  <meta name="description" content="">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  <link rel="stylesheet" href="{{url_for('static', filename='css/bootstrap.min.css')}}">
+  <style></style>
+  <link rel="stylesheet" href="{{url_for('static', filename='css/bootstrap-theme.min.css')}}">
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/main.css') }}">
+
+  <!--[if lt IE 9]>
+  <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+  <script>window.html5 || document.write('<script src="js/vendor/html5shiv.js"><\/script>')</script>
+<![endif]-->
+  <style>
+hr {
+  /*color: black;*/
+  background-color:black;
+  height: 2px;
+}
+  </style>
+
+</head>
+<body>
+
+<div class="container">
+  <div class="well">
+    <h2>Report</h2>
+    <h4>Year {{year}}</h4>
+    <h4>Associated SCGN Species</h4>
+    <h4><a href='{{link_ssht}}'>spreadsheet</a> </h4>
+  </div>
+  {% for key, value in results.iteritems() %}
+  <h2>Polygon name: {{ key|e }}</h2>
+
+  <div style="float:left">
+  <h2 >Summary for AOI</h2>
+  <h4 >Number of Sub-watersheds: {{value.samplesize.aoi}}</h4>
+  <h4 >Distinct Threat Count: {{value.aoi.thrts_included_msg}}</h4>
+  <h4>Occurrence Rating: {{value.aoi.other_stats.comp_occ}}%</h4>
+  </div>
+  <img class="bullseye" src="{{url_for('static', filename='img/bulls_eye_AOI.png')}}" />
+
+  <table class="table table-striped">
+    <tr>
+      <th></th>
+      <th>Mean</th>
+      <th>S.D.</th>
+      <th>Min.</th>
+      <th>Max</th>
+    </tr>
+    {%for res_row in value.aoi.threat_summary%}
+    <tr>
+      {% for res in res_row%}
+      <td >{{res}}</td>
+      {% endfor %}
+    </tr>
+    {% endfor %}
+  </table>
+
+  <table class="table table-striped">
+    <tr>
+      <th></th>
+      <th>
+        Occurrence
+        <br>(0 -1)</th>
+      <th>
+        Severity
+        <br>(0 -1)</th>
+      <th>
+        Severity
+        <br>S.D.</th>
+      <th>
+        Severity
+        <br>Min.</th>
+      <th>
+        Severity
+        <br>Max.</th>
+      <th>
+        Data Mean</th>
+    </tr>
+    {%for res_row in value.aoi.report_rank%}
+    <tr>
+      {% for res in res_row%}
+      <td >{{res}}</td>
+      {% endfor %}
+    </tr>
+    {% endfor %}
+  </table>
+
+
+  <div style="float:left">
+  <h2 >Summary w/in 5 km Neighborhood</h2>
+  <h4 >Number of Sub-watersheds: {{value.samplesize['5k']}}</h4>
+  <h4 >Distinct Threat Count: {{value['5k'].thrts_included_msg}}</h4>
+  <h4>Occurrence Rating: {{value['5k'].other_stats.comp_occ}}%</h4>
+  </div>
+  <img class="bullseye" src="{{url_for('static', filename='img/bulls_eye_5k.png')}}" />
+
+
+  <table class="table table-striped">
+    <tr>
+      <th></th>
+      <th>Mean</th>
+      <th>S.D.</th>
+      <th>Min.</th>
+      <th>Max</th>
+    </tr>
+    {%for res_row in value['5k'].threat_summary%}
+    <tr>
+      {% for res in res_row%}
+      <td >{{res}}</td>
+      {% endfor %}
+    </tr>
+    {% endfor %}
+  </table>
+
+  <table class="table table-striped">
+    <tr>
+      <th></th>
+      <th>
+        Occurrence
+        <br>(0 -1)</th>
+      <th>
+        Severity
+        <br>(0 -1)</th>
+      <th>
+        Severity
+        <br>S.D.</th>
+      <th>
+        Severity
+        <br>Min.</th>
+      <th>
+        Severity
+        <br>Max.</th>
+      <th>
+        Data Mean</th>
+    </tr>
+    {%for res_row in value['5k'].report_rank%}
+    <tr>
+      {% for res in res_row%}
+      <td >{{res}}</td>
+      {% endfor %}
+    </tr>
+    {% endfor %}
+  </table>
+
+<div style="float:left">
+  <h2 >Summary w/in 12 km Neighborhood</h2>
+  <h4 >Number of Sub-watersheds: {{value.samplesize['12k']}}</h4>
+  <h4 >Distinct Threat Count: {{value['12k'].thrts_included_msg}}</h4>
+  <h4>Occurrence Rating: {{value['12k'].other_stats.comp_occ}}%</h4>
+  </div>
+  <img class="bullseye" src="{{url_for('static', filename='img/bulls_eye_12k.png')}}" />
+
+
+  <table class="table table-striped">
+    <tr>
+      <th></th>
+      <th>Mean</th>
+      <th>S.D.</th>
+      <th>Min.</th>
+      <th>Max</th>
+    </tr>
+    {%for res_row in value['12k'].threat_summary%}
+    <tr>
+      {% for res in res_row%}
+      <td >{{res}}</td>
+      {% endfor %}
+    </tr>
+    {% endfor %}
+  </table>
+
+  <table class="table table-striped">
+    <tr>
+      <th></th>
+      <th>
+        Occurrence
+        <br>(0 -1)</th>
+      <th>
+        Severity
+        <br>(0 -1)</th>
+      <th>
+        Severity
+        <br>S.D.</th>
+      <th>
+        Severity
+        <br>Min.</th>
+      <th>
+        Severity
+        <br>Max.</th>
+      <th>
+        Data Mean</th>
+    </tr>
+    {%for res_row in value['12k'].report_rank%}
+    <tr>
+      {% for res in res_row%}
+      <td >{{res}}</td>
+      {% endfor %}
+    </tr>
+    {% endfor %}
+  </table>
+  <hr>
+  {% endfor %}
+</div>
+
+<!-- /container -->
+<script src="//ajax.googleapis.com/ajax/libs/jquery/1.11.0/jquery.min.js"></script>
+<script>window.jQuery || document.write("<script src=\"{{url_for('static', filename='js/vendor/jquery-1.11.0.min.js')}}\"><\/script>")</script>
+
+<script src="{{url_for('static', filename='js/vendor/bootstrap.min.js')}}"></script>
+
+<script src="{{url_for('static', filename='js/main.js')}}"></script>
+</body>
+</html>

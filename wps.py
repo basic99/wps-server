@@ -566,7 +566,7 @@ def userpage(username):
         return "not logged in to this account"
 
 
-@app.route('/passwdchng',  methods=['POST', ])
+@app.route('/passwdchng', methods=['POST', ])
 def passwdchng():
     passwd = request.form['newpasswd'].strip()
     try:
@@ -577,7 +577,7 @@ def passwdchng():
         return json.dumps({'success': False})
 
 
-@app.route('/pttojson',  methods=['GET', ])
+@app.route('/pttojson', methods=['GET', ])
 def pttojson():
     """input layer and point, return geo and id """
     # pt_obj = request.form['pt_obj']
@@ -588,7 +588,8 @@ def pttojson():
 
     return siteutils.qrypttojson(lon, lat, layer)
 
-@app.route('/ptbufferjson',  methods=['GET', ])
+
+@app.route('/ptbufferjson', methods=['GET', ])
 def ptbufferjson():
     """input layer and point, return geo and id """
     # pt_obj = request.form['pt_obj']
@@ -600,7 +601,7 @@ def ptbufferjson():
     return siteutils.qryptbufferjson(lon, lat, ptradius)
 
 
-@app.route('/huc12_state',  methods=['GET', ])
+@app.route('/huc12_state', methods=['GET', ])
 def huc12_state():
     huc12s = []
     with g.db.cursor() as cur:
@@ -615,7 +616,7 @@ def huc12_state():
     return json.dumps(nchuc12.getgeojson(huc12_str))
 
 
-@app.route('/huc12_map',  methods=['GET', ])
+@app.route('/huc12_map', methods=['GET', ])
 def huc12_map():
     mymap_str = request.args.get("map", "")
 
@@ -685,7 +686,7 @@ def huc12_map():
     })
 
 
-@app.route('/map',  methods=['GET', ])
+@app.route('/map', methods=['GET', ])
 def map():
     # logger.debug(request.args)
     # logger.debug(len(request.args))
@@ -822,15 +823,23 @@ def report_batch(id):
     logger.debug(request.args)
     # logger.debug(batch_results)
     logger.debug(year)
-    return render_template(
-                'report_batch.html',
-                year=year,
-                link_ssht=link_ssht,
-                results=batch_results
-                )
+    if request.args['aoi_mode'] != 'coa':
+        return render_template(
+            'report_batch.html',
+            year=year,
+            link_ssht=link_ssht,
+            results=batch_results
+        )
+    else:
+        return render_template(
+            'report_coa.html',
+            year=year,
+            link_ssht=link_ssht,
+            results=batch_results
+        )
 
 
-@app.route('/ssheet',  methods=['GET', ])
+@app.route('/ssheet', methods=['GET', ])
 def ssheet():
     logger.debug(request.args)
     logger.debug(len(request.args))
@@ -1109,6 +1118,7 @@ def coa_map():
         "huc12_cats": huc12_cats,
         "top_five": top_five
     })
+
 
 @app.route('/coa_model', methods=['POST', ])
 def coa_model():
