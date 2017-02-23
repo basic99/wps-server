@@ -1135,8 +1135,8 @@ def qry_tool():
     logger.debug(request.args)
 
     query = """
-select sppcode_gap, comname_gap, sciname_gap, ProtAc, UnprotAc, PredHabAc,
-PercUnprot, UnprRatio, strProtAc, strUnprotAc, strPredHabAc, strPercUnprot
+select sppcode_gap, comname_gap, sciname_gap,
+strProtAc, strUnprotAc, strPredHabAc, strPercUnprot
 from coa_spphabmatrixsgcn, coa_SppHucProtData
 where coa_SppHabMatrixSGCN.SppCode_GAP = coa_SppHucProtData.strUC
 and coa_SppHucProtData.huc12 = %s
@@ -1147,17 +1147,25 @@ and coa_spphabmatrixsgcn."""
     logger.debug(query)
     retval = siteutils.qrypttojson(lon, lat, 'huc_12')
     huc12 = json.loads(retval)['the_huc']
-
+    report_rows = []
     with g.db.cursor(cursor_factory=psycopg2.extras.RealDictCursor) as cur:
         cur.execute(query, (huc12,))
         for cnt, row in enumerate(cur):
             logger.debug(row)
+            report_rows.append(row)
         logger.debug("rows returned %s" % cnt)
 
-    return json.dumps({
-        "test": "success",
-        "huc12": huc12
-    })
+    # return json.dumps({
+    #     "test": "success",
+    #     "huc12": huc12,
+    #     "report_rows": report_rows
+    # })
+
+    return render_template(
+        'query_coa.html',
+        huc12=huc12,
+        report_rows=report_rows
+    )
 
 
 if __name__ == '__main__':
