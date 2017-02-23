@@ -832,18 +832,20 @@ def report_batch(id):
         )
     else:
         reg_com = request.args['reg_com']
+        region = request.args['region'].replace("_", " ")
         logger.debug(reg_com)
         query = "select communityname from coa_keylist where keycode =%s"
         with g.db.cursor() as cur:
             cur.execute(query, (reg_com, ))
             com = cur.fetchone()
+        com_str = "%s - %s" % (region, com[0])
         logger.debug(com)
         return render_template(
             'report_coa.html',
             year=year,
             link_ssht=link_ssht,
             results=batch_results,
-            com=com[0]
+            com=com_str
         )
 
 
