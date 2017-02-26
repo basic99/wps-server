@@ -209,7 +209,7 @@ def get_threat_report2(id, formdata, mode='state'):
     except KeyError:
         year = '2010'
         pass
-    logger.info(formvals)
+    # logger.info(formvals)
 
     model_length = 0
 

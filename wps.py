@@ -823,7 +823,8 @@ def report_batch(id):
     logger.debug(request.args)
     # logger.debug(batch_results)
     logger.debug(year)
-    if request.args['aoi_mode'] != 'coa':
+    logger.debug(request.args.get('aoi_mode'))
+    if request.args.get('aoi_mode') != 'coa':
         return render_template(
             'report_batch.html',
             year=year,
@@ -840,6 +841,29 @@ def report_batch(id):
             com = cur.fetchone()
         com_str = "%s - %s" % (region, com[0])
         logger.debug(com)
+
+        query = """
+select comname_gap, sciname_gap, strProtAc,
+strUnprotAc, strPredHabAc, strPercUnprot
+from coa_spphabmatrixsgcn, coa_SppHucProtData
+where coa_SppHabMatrixSGCN.SppCode_GAP = coa_SppHucProtData.strUC
+and coa_SppHucProtData.huc12 = %s
+and coa_spphabmatrixsgcn."""
+
+        query += reg_com.replace(".", "_") + " is not null;"
+        logger.debug(query)
+        report_rows = []
+
+
+        for huc12 in batch_results:
+            logger.debug(huc12)
+            with g.db.cursor() as cur:
+                cur.execute(query, (huc12,))
+                for cnt, row in enumerate(cur):
+                    # logger.debug(row)
+                    report_rows.append(row)
+            batch_results[huc12]['scgn'] = report_rows
+
         return render_template(
             'report_coa.html',
             year=year,
