@@ -36,7 +36,27 @@ hr {
     <h4><a href='{{link_ssht}}'>spreadsheet</a> </h4>
   </div>
   {% for key, value in results.iteritems() %}
-  <h2>Polygon name: {{ key|e }}</h2>
+  <h2>Polygon name: {{ key}}</h2>
+
+     <table class="table table-striped">
+    <tr>
+      <th>Common Name</th>
+      <th>Scientific Name</th>
+      <th>Protected Acres</th>
+      <th>Unprotected Acres</th>
+      <th>Total Acres</th>
+      <th>Percent Unprotected</th>
+      <th></th>
+
+    </tr>
+    {%for res_row in value.scgn%}
+    <tr>
+      {% for res in res_row%}
+      <td >{{res}}</td>
+      {% endfor %}
+    </tr>
+    {% endfor %}
+  </table>
 
   <div style="float:left">
   <h2 >Summary for AOI</h2>

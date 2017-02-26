@@ -852,10 +852,9 @@ and coa_spphabmatrixsgcn."""
 
         query += reg_com.replace(".", "_") + " is not null;"
         logger.debug(query)
-        report_rows = []
-
 
         for huc12 in batch_results:
+            report_rows = []
             logger.debug(huc12)
             with g.db.cursor() as cur:
                 cur.execute(query, (huc12,))
