@@ -231,10 +231,10 @@ def get_threat_report2(id, formdata, mode='state'):
         # model_wts.append(float(formvals['frst']))
         model_length += 1
         model_col = "%s %s - limit(%s)" % (
-                col_names['frst'],
-                col_names[scenario],
-                formvals['frst']
-            )
+            col_names['frst'],
+            col_names[scenario],
+            formvals['frst']
+        )
         model_cols.append(model_col)
         with g.db.cursor() as cur:
             cur.execute(query)
