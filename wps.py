@@ -1174,10 +1174,16 @@ def qry_tool():
     keycode = request.args.get("community")
     lon = request.args.get('pt_lon')
     lat = request.args.get('pt_lat')
+    toolid = request.args.get('qry')
+    logger.debug(toolid)
     logger.debug(keycode)
     logger.debug(request.args)
+    retval = siteutils.qrypttojson(lon, lat, 'huc_12')
+    huc12 = json.loads(retval)['the_huc']
 
-    query = """
+    if toolid == '1':
+
+        query = """
 select comname_gap, sciname_gap, strProtAc,
 strUnprotAc, strPredHabAc, strPercUnprot
 from coa_spphabmatrixsgcn, coa_SppHucProtData
@@ -1185,30 +1191,35 @@ where coa_SppHabMatrixSGCN.SppCode_GAP = coa_SppHucProtData.strUC
 and coa_SppHucProtData.huc12 = %s
 and coa_spphabmatrixsgcn."""
 
-    query += keycode.replace(".", "_") + " is not null;"
+        query += keycode.replace(".", "_") + " is not null;"
+        logger.debug(query)
 
-    logger.debug(query)
-    retval = siteutils.qrypttojson(lon, lat, 'huc_12')
-    huc12 = json.loads(retval)['the_huc']
-    report_rows = []
-    with g.db.cursor() as cur:
-        cur.execute(query, (huc12,))
-        for cnt, row in enumerate(cur):
-            logger.debug(row)
-            report_rows.append(row)
-        logger.debug("rows returned %s" % cnt)
 
-    # return json.dumps({
-    #     "test": "success",
-    #     "huc12": huc12,
-    #     "report_rows": report_rows
-    # })
 
-    return render_template(
-        'query_coa.html',
-        huc12=huc12,
-        report_rows=report_rows
-    )
+        report_rows = []
+        with g.db.cursor() as cur:
+            cur.execute(query, (huc12,))
+            for cnt, row in enumerate(cur):
+                # logger.debug(row)
+                report_rows.append(row)
+            logger.debug("rows returned %s" % cnt)
+
+        # return json.dumps({
+        #     "test": "success",
+        #     "huc12": huc12,
+        #     "report_rows": report_rows
+        # })
+
+        return render_template(
+            'query_coa.html',
+            huc12=huc12,
+            report_rows=report_rows
+        )
+    else:
+        return render_template(
+            'query_coa.html',
+            huc12=huc12
+        )
 
 
 if __name__ == '__main__':
