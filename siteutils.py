@@ -308,15 +308,15 @@ def make_composite_threat_count(hucs_dict, hucs_dict_ps, model_length):
         thrt_counts_summary.append('na')
     thrt_counts_summary.append(min(threat_count))
     thrt_counts_summary.append(max(threat_count))
-    logger.debug(thrt_counts_summary)
+    # logger.debug(thrt_counts_summary)
     return {
         "thrt_counts_summary": thrt_counts_summary
     }
 
 
 def make_report_threats_summary(
-            model_cols, hucs_dict, rank_data, dt_data
-        ):
+    model_cols, hucs_dict, rank_data, dt_data
+):
     """
     model_cols -list of column headers for AOI Threat Summary by HUC12
     hucs_dict -dict of huc12 - list with first item huc and rest threats 0/1

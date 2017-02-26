@@ -1182,6 +1182,7 @@ def qry_tool():
     huc12 = json.loads(retval)['the_huc']
 
     if toolid == '1':
+        # for coa query
 
         query = """
 select comname_gap, sciname_gap, strProtAc,
@@ -1193,9 +1194,6 @@ and coa_spphabmatrixsgcn."""
 
         query += keycode.replace(".", "_") + " is not null;"
         logger.debug(query)
-
-
-
         report_rows = []
         with g.db.cursor() as cur:
             cur.execute(query, (huc12,))
@@ -1204,18 +1202,13 @@ and coa_spphabmatrixsgcn."""
                 report_rows.append(row)
             logger.debug("rows returned %s" % cnt)
 
-        # return json.dumps({
-        #     "test": "success",
-        #     "huc12": huc12,
-        #     "report_rows": report_rows
-        # })
-
         return render_template(
             'query_coa.html',
             huc12=huc12,
             report_rows=report_rows
         )
     else:
+        # for threat info query
         return render_template(
             'query_coa.html',
             huc12=huc12
