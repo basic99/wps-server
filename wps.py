@@ -1207,7 +1207,12 @@ and coa_spphabmatrixsgcn."""
             huc12=huc12,
             report_rows=report_rows
         )
-    else:
+    elif toolid == '2':
+        logger.debug("query threat info")
+        x = model.get_threat_report2(
+            -1, request.args, mode='huc12', huc12=huc12
+        )
+        logger.debug(x)
         # for threat info query
         return render_template(
             'query_coa.html',

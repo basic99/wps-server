@@ -141,7 +141,7 @@ col_names = {
 }
 
 
-def get_threat_report2(id, formdata, mode='state'):
+def get_threat_report2(id, formdata, mode='state', huc12=''):
     # logger.debug
     formvals = {}
     model_cols = ["huc"]
@@ -193,8 +193,11 @@ def get_threat_report2(id, formdata, mode='state'):
         for huc in hucs:
             hucs_dict[huc.strip()] = []
             hucs_dict[huc.strip()].append(huc.strip())
+    elif mode == 'huc12':
+        hucs_dict[huc12] = [huc12]
 
     hucs_dict_sv = copy.deepcopy(hucs_dict)
+    logger.debug(hucs_dict_sv)
 
     # read formdata into formvals excluding notinclude
     for formval in formdata:
