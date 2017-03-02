@@ -1213,9 +1213,16 @@ and coa_spphabmatrixsgcn."""
             -1, request.args, mode='huc12', huc12=huc12
         )
         logger.debug(x)
+        for y in x:
+            logger.debug(y)
+        x['col_hdrs'].append('Threat Count')
+        report = zip(x['col_hdrs'], x['res_arr'][huc12])
         # for threat info query
         return render_template(
-            'query_coa.html',
+            'query_threats.html',
+            # report_cols=x['col_hdrs'],
+            # report_vals=x['res_arr'][huc12],
+            report=report,
             huc12=huc12
         )
 
