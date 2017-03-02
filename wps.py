@@ -1212,18 +1212,24 @@ and coa_spphabmatrixsgcn."""
         x = model.get_threat_report2(
             -1, request.args, mode='huc12', huc12=huc12
         )
-        logger.debug(x)
-        for y in x:
-            logger.debug(y)
-        x['col_hdrs'].append('Threat Count')
-        report = zip(x['col_hdrs'], x['res_arr'][huc12])
+        # logger.debug(x)
+        # for y in x:
+        #     logger.debug(y)
+        # x['col_hdrs'].append('Threat Count')
+        datavals = ["blah"]
+        thrt_cnt = x['res_arr'][huc12].pop()
+        for thrt in x['report_rank']:
+            logger.debug(thrt[-1])
+            datavals.append(thrt[-1])
+        report = zip(x['col_hdrs'], datavals, x['res_arr'][huc12])[1:]
         # for threat info query
         return render_template(
             'query_threats.html',
             # report_cols=x['col_hdrs'],
             # report_vals=x['res_arr'][huc12],
             report=report,
-            huc12=huc12
+            huc12=huc12,
+            thrt_cnt=thrt_cnt
         )
 
 
