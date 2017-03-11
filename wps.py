@@ -1248,11 +1248,21 @@ and coa_spphabmatrixsgcn."""
         with g.db.cursor() as cur:
             cur.execute(qry, (lon, lat))
             rec = cur.fetchone()
+        try:
             logger.debug(rec[0])
+            return "<h3>%s</h3>" % rec[0]
+            # res = {
+            #     "man_area": rec[0]
+            # }
+            # return json.dumps(res)
+        except TypeError:
+            logger.debug("not managed area")
+            return "<h3>not managed area</h3>"
 
-        return render_template(
-            'query_threats.html'
-        )
+            # res = {
+            #     "man_area": "not managed area"
+            # }
+            # return json.dumps(res)
 
 
 if __name__ == '__main__':
