@@ -1231,6 +1231,25 @@ and coa_spphabmatrixsgcn."""
             huc12=huc12,
             thrt_cnt=thrt_cnt
         )
+    elif toolid == '3':
+        logger.debug("query managed area")
+        """
+        select man_desc from se_manage where ST_Contains
+        (wkb_geometry, ST_SetSRID(ST_Point(-8488393.0058056, 4267245.3329947)
+        ,4326));
+        """
+        qry = """select man_desc from se_manage where ST_Contains \
+        (wkb_geometry, ST_SetSRID(ST_Point(%s, %s) \
+        ,4326));
+        """
+        with g.db.cursor() as cur:
+            cur.execute(qry, (lon, lat))
+            rec = cur.fetchone()
+            logger.debug(rec[0])
+
+        return render_template(
+            'query_threats.html'
+        )
 
 
 if __name__ == '__main__':
