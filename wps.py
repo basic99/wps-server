@@ -1178,8 +1178,11 @@ def qry_tool():
     logger.debug(toolid)
     logger.debug(keycode)
     logger.debug(request.args)
-    retval = siteutils.qrypttojson(lon, lat, 'huc_12')
-    huc12 = json.loads(retval)['the_huc']
+    try:
+        retval = siteutils.qrypttojson(lon, lat, 'huc_12')
+        huc12 = json.loads(retval)['the_huc']
+    except TypeError:
+        pass
 
     if toolid == '1':
         # for coa query
