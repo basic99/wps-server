@@ -1227,16 +1227,18 @@ and coa_spphabmatrixsgcn."""
         x = model.get_threat_report2(
             -1, request.args, mode='huc12', huc12=huc12
         )
-        # logger.debug(x)
+
         # for y in x:
         #     logger.debug(y)
         # x['col_hdrs'].append('Threat Count')
         datavals = ["blah"]
+        occurvals = ["blah"]
         thrt_cnt = x['res_arr'][huc12].pop()
         for thrt in x['report_rank']:
             logger.debug(thrt[-1])
             datavals.append(thrt[-1])
-        report = zip(x['col_hdrs'], datavals, x['res_arr'][huc12])[1:]
+            occurvals.append(thrt[1])
+        report = zip(x['col_hdrs'], datavals, occurvals, x['res_arr'][huc12])[1:]
 
         query = "select subwatersh from huc12nc where huc_12 = %s"
         with g.db.cursor() as cur:
@@ -1252,6 +1254,7 @@ and coa_spphabmatrixsgcn."""
             huc12=huc12,
             thrt_cnt=thrt_cnt,
             subwatersh=subwatersh
+
         )
     elif toolid == '3':
         logger.debug("query managed area")

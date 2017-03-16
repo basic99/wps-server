@@ -33,12 +33,13 @@
 <table>
 <tr>
   <th>Threat name (data threshold)</th>
-  <th>Data</th>
-  <th>Severity value</th>
+  <th>Occurence</th>
+  <th>Severity</th>
+  <th>Data Mean</th>
   </tr>
 {%for res_row in report%}
 <tr>
-  <td>{{res_row[0]}} </td><td> {{res_row[1]}} </td><td> {{res_row[2]}} </td>
+<td>{{res_row[0]}} </td><td>{{res_row[2]}}</td><td> {{res_row[3]}} </td><td> {{res_row[1]}} </td>
   </tr>
 
 {% endfor %}

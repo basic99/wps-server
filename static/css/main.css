@@ -27,7 +27,7 @@ body {
     right: 200px;
 }
 
-td {
+td, th {
     padding-right: 20px;
 }
 
