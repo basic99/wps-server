@@ -839,7 +839,7 @@ def report_batch(id):
         with g.db.cursor() as cur:
             cur.execute(query, (reg_com, ))
             com = cur.fetchone()
-        com_str = "%s - %s" % (region, com[0])
+        com_str = "%s / %s" % (region, com[0])
         logger.debug(com)
 
         query = """
