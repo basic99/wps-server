@@ -1237,7 +1237,7 @@ and coa_spphabmatrixsgcn."""
         for thrt in x['report_rank']:
             logger.debug(thrt[-1])
             datavals.append(thrt[-1])
-            occurvals.append(thrt[1])
+            occurvals.append(int(thrt[1]))
         report = zip(x['col_hdrs'], datavals, occurvals, x['res_arr'][huc12])[1:]
 
         query = "select subwatersh from huc12nc where huc_12 = %s"
