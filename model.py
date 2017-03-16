@@ -233,7 +233,7 @@ def get_threat_report2(id, formdata, mode='state', huc12=''):
         logger.debug(query)
         # model_wts.append(float(formvals['frst']))
         model_length += 1
-        model_col = "%s %s - limit(%s)" % (
+        model_col = "%s %s - (%s)" % (
             col_names['frst'],
             col_names[scenario],
             formvals['frst']
@@ -289,7 +289,7 @@ def get_threat_report2(id, formdata, mode='state', huc12=''):
         logger.debug(query)
         model_length += 1
         model_cols.append(
-            "%s %s - limit(%s)" % (
+            "%s %s - (%s)" % (
                 col_names['ftwt'],
                 col_names[scenario],
                 formvals['ftwt'])
@@ -333,7 +333,7 @@ def get_threat_report2(id, formdata, mode='state', huc12=''):
         # model_wts.append(float(formvals['hbwt']))
         model_length += 1
         model_cols.append(
-            "%s %s - limit(%s)" % (
+            "%s %s - (%s)" % (
                 col_names['hbwt'],
                 col_names[scenario],
                 formvals['hbwt'])
@@ -377,7 +377,7 @@ def get_threat_report2(id, formdata, mode='state', huc12=''):
         # model_wts.append(float(formvals['open']))
         model_length += 1
         model_cols.append(
-            "%s %s - limit(%s)" % (
+            "%s %s - (%s)" % (
                 col_names['open'],
                 col_names[scenario],
                 formvals['open'])
@@ -421,7 +421,7 @@ def get_threat_report2(id, formdata, mode='state', huc12=''):
         # model_wts.append(float(formvals['shrb']))
         model_length += 1
         model_cols.append(
-            "%s %s - limit(%s)" % (
+            "%s %s - (%s)" % (
                 col_names['shrb'],
                 col_names[scenario],
                 formvals['shrb'])
@@ -463,7 +463,7 @@ def get_threat_report2(id, formdata, mode='state', huc12=''):
         )
         logger.debug(query)
         # model_wts.append(float(formvals['urbangrth']))
-        model_cols.append("Urban Growth - limit(%s)" % formvals['urbangrth'])
+        model_cols.append("Urban Growth - (%s)" % formvals['urbangrth'])
         model_length += 1
         with g.db.cursor() as cur:
             cur.execute(query)
@@ -500,7 +500,7 @@ def get_threat_report2(id, formdata, mode='state', huc12=''):
         # logger.debug(query)
         # model_wts.append(float(formvals['firesup']))
         model_length += 1
-        model_cols.append("Fire Suppression - limit(%s)" % formvals['firesup'])
+        model_cols.append("Fire Suppression - (%s)" % formvals['firesup'])
         with g.db.cursor() as cur:
             cur.execute(query)
             for row in cur:
@@ -535,7 +535,7 @@ def get_threat_report2(id, formdata, mode='state', huc12=''):
         )
         # model_wts.append(float(formvals['hiway']))
         model_length += 1
-        model_cols.append("Highway - limit(%s)" % formvals['hiway'])
+        model_cols.append("Highway - (%s)" % formvals['hiway'])
         with g.db.cursor() as cur:
             cur.execute(query)
             for row in cur:
@@ -571,7 +571,7 @@ def get_threat_report2(id, formdata, mode='state', huc12=''):
         # model_wts.append(float(formvals['slr_up']))
         model_length += 1
         model_cols.append(
-            "Sea Level rise Upland change - limit(%s)" % formvals['slr_up']
+            "Sea Level rise Upland change - (%s)" % formvals['slr_up']
         )
         with g.db.cursor() as cur:
             cur.execute(query)
@@ -601,7 +601,7 @@ def get_threat_report2(id, formdata, mode='state', huc12=''):
         # model_wts.append(float(formvals['slr_lc']))
         model_length += 1
         model_cols.append(
-            "Sea Level rise landcover change - limit(%s)" % formvals['slr_lc']
+            "Sea Level rise landcover change - (%s)" % formvals['slr_lc']
         )
         with g.db.cursor() as cur:
             cur.execute(query)
@@ -630,7 +630,7 @@ def get_threat_report2(id, formdata, mode='state', huc12=''):
         # model_wts.append(float(formvals['triassic']))
         model_length += 1
         model_cols.append(
-            "Triassic Basin - limit(%s)" % formvals['triassic']
+            "Triassic Basin - (%s)" % formvals['triassic']
         )
         with g.db.cursor() as cur:
             cur.execute(query)
@@ -659,7 +659,7 @@ def get_threat_report2(id, formdata, mode='state', huc12=''):
         # model_wts.append(float(formvals['wind']))
         model_length += 1
         model_cols.append(
-            "Wind Power - limit(%s)" % formvals['wind']
+            "Wind Power - (%s)" % formvals['wind']
         )
         with g.db.cursor() as cur:
             cur.execute(query)
@@ -688,7 +688,7 @@ def get_threat_report2(id, formdata, mode='state', huc12=''):
         # model_wts.append(float(formvals['manure']))
         model_length += 1
         model_cols.append(
-            "Manure Application - limit(%s)" % formvals['manure']
+            "Manure Application - (%s)" % formvals['manure']
         )
         with g.db.cursor() as cur:
             cur.execute(query)
@@ -717,7 +717,7 @@ def get_threat_report2(id, formdata, mode='state', huc12=''):
         # model_wts.append(float(formvals['nitrofrt']))
         model_length += 1
         model_cols.append(
-            "Synthetic Nitrogen - limit(%s)" % formvals['nitrofrt']
+            "Synthetic Nitrogen - (%s)" % formvals['nitrofrt']
         )
         with g.db.cursor() as cur:
             cur.execute(query)
@@ -746,7 +746,7 @@ def get_threat_report2(id, formdata, mode='state', huc12=''):
         # model_wts.append(float(formvals['totnitro']))
         model_length += 1
         model_cols.append(
-            "Total Nitrogen - limit(%s)" % formvals['totnitro']
+            "Total Nitrogen - (%s)" % formvals['totnitro']
         )
         with g.db.cursor() as cur:
             cur.execute(query)
@@ -776,7 +776,7 @@ def get_threat_report2(id, formdata, mode='state', huc12=''):
         # model_wts.append(float(formvals['totsulf']))
         model_length += 1
         model_cols.append(
-            "Total Sulfur - limit(%s)" % formvals['totsulf']
+            "Total Sulfur - (%s)" % formvals['totsulf']
         )
         with g.db.cursor() as cur:
             cur.execute(query)
@@ -805,7 +805,7 @@ def get_threat_report2(id, formdata, mode='state', huc12=''):
         # model_wts.append(float(formvals['insectdisease']))
         model_length += 1
         model_cols.append(
-            "Forest health - limit(%s)" % formvals['insectdisease']
+            "Forest health - (%s)" % formvals['insectdisease']
         )
         with g.db.cursor() as cur:
             cur.execute(query)
@@ -835,7 +835,7 @@ def get_threat_report2(id, formdata, mode='state', huc12=''):
         # model_wts.append(float(formvals['ndams']))
         model_length += 1
         model_cols.append(
-            "# of dams - limit(%s)" % formvals['ndams']
+            "# of dams - (%s)" % formvals['ndams']
         )
         with g.db.cursor() as cur:
             cur.execute(query)
@@ -868,7 +868,7 @@ def get_threat_report2(id, formdata, mode='state', huc12=''):
         # model_wts.append(float(formvals['impairbiota']))
         model_length += 1
         model_cols.append(
-            "Impaired biota - limit(%s)" % formvals['impairbiota']
+            "Impaired biota - (%s)" % formvals['impairbiota']
         )
         with g.db.cursor() as cur:
             cur.execute(query)
