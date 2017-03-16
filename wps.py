@@ -1204,11 +1204,23 @@ and coa_spphabmatrixsgcn."""
                 # logger.debug(row)
                 report_rows.append(row)
             logger.debug("rows returned %s" % cnt)
+        query = "select region, communityname from coa_keylist where keycode = %s"
+        with g.db.cursor() as cur:
+            cur.execute(query, (keycode,))
+            commrow = cur.fetchone()
+        logger.debug(commrow)
+        query = "select subwatersh from huc12nc where huc_12 = %s"
+        with g.db.cursor() as cur:
+            cur.execute(query, (huc12,))
+            subwatersh = cur.fetchone()
+        logger.debug(subwatersh)
 
         return render_template(
             'query_coa.html',
             huc12=huc12,
-            report_rows=report_rows
+            report_rows=report_rows,
+            commrow=commrow,
+            subwatersh=subwatersh
         )
     elif toolid == '2':
         logger.debug("query threat info")
@@ -1225,6 +1237,12 @@ and coa_spphabmatrixsgcn."""
             logger.debug(thrt[-1])
             datavals.append(thrt[-1])
         report = zip(x['col_hdrs'], datavals, x['res_arr'][huc12])[1:]
+
+        query = "select subwatersh from huc12nc where huc_12 = %s"
+        with g.db.cursor() as cur:
+            cur.execute(query, (huc12,))
+            subwatersh = cur.fetchone()
+        logger.debug(subwatersh)
         # for threat info query
         return render_template(
             'query_threats.html',
@@ -1232,7 +1250,8 @@ and coa_spphabmatrixsgcn."""
             # report_vals=x['res_arr'][huc12],
             report=report,
             huc12=huc12,
-            thrt_cnt=thrt_cnt
+            thrt_cnt=thrt_cnt,
+            subwatersh=subwatersh
         )
     elif toolid == '3':
         logger.debug("query managed area")
