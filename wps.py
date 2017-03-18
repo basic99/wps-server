@@ -1287,5 +1287,21 @@ and coa_spphabmatrixsgcn."""
             # return json.dumps(res)
 
 
+@app.route('/ncwrc_basins_map', methods=['POST', ])
+def ncwrc_basins_map():
+    basin = request.form.get("basin")
+    logger.debug(basin)
+    huc12s = []
+    query = "select huc12rng from ncwrc_priorities where priorityty = 'Tier 1' and riverbasin = %s"
+    with g.db.cursor() as cur:
+        cur.execute(query, (basin, ))
+        for rec in cur:
+            logger.debug(rec[0])
+            huc12s.append(rec[0].strip())
+
+    return json.dumps({
+        "huc12s": huc12s
+    })
+
 if __name__ == '__main__':
     app.run(debug=True)
