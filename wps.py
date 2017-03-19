@@ -1156,8 +1156,13 @@ def coa_map():
 @app.route('/coa_model', methods=['POST', ])
 def coa_model():
     keycode = request.form.get("keycode")
+    tbl = request.form.get("tbl")
     logger.debug(keycode)
-    query = "select * from coa_keythreats where KeyCode = %s"
+    logger.debug(tbl)
+    if tbl == 'coa':
+        query = "select * from coa_keythreats where KeyCode = %s"
+    elif tbl == 'basins':
+        query = "select * from coa_keythreats_basins where KeyCode = %s"
     with g.db.cursor(cursor_factory=psycopg2.extras.RealDictCursor) as cur:
         cur.execute(query, (keycode,))
         rec = cur.fetchone()
@@ -1292,7 +1297,7 @@ def ncwrc_basins_map():
     basin = request.form.get("basin")
     logger.debug(basin)
     huc12s = []
-    query = "select huc12rng from ncwrc_priorities where priorityty = 'Tier 1' and riverbasin = %s"
+    query = "select huc12rng from ncwrc_priorities where priorityty != '' and riverbasin = %s"
     with g.db.cursor() as cur:
         cur.execute(query, (basin, ))
         for rec in cur:
