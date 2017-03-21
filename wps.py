@@ -824,7 +824,9 @@ def report_batch(id):
     # logger.debug(batch_results)
     logger.debug(year)
     logger.debug(request.args.get('aoi_mode'))
-    meta = request.args.get("basins_meta", "")
+    meta1 = request.args.get("basins_meta1", "")
+    meta2 = request.args.get("basins_meta2", "")
+    meta = (meta1, meta2)
     if request.args.get('aoi_mode') != 'coa':
         return render_template(
             'report_batch.html',
