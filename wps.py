@@ -113,23 +113,23 @@ def post_aoi():
     """
     # pt_lon = request.form.get('point_buffer[lon]')
     # pt_lat = request.form.get('point_buffer[lat]')
-    logger.debug(request.form)
+    # logger.debug(request.form)
     huc = nchuc12.NCHuc12()
     huc.gml = request.form['gml']
     huc.pt_lon = request.form.get('point_buffer[lon]')
     huc.pt_lat = request.form.get('point_buffer[lat]')
     huc.ptbuffer_km = request.form.get('ptradius')
-    logger.debug(huc.ptbuffer_km)
+    # logger.debug(huc.ptbuffer_km)
     # huc.aoi_list = request.form.getlist('aoi_list[]')
     huc.aoi_list = request.form.get('aoi_list').split(":")
-    logger.debug(huc.aoi_list)
+    # logger.debug(huc.aoi_list)
     huc.predef_type = request.form['predef_type']
     huc.sel_type = request.form['sel_type']
     try:
         huc.referer = request.environ['HTTP_REFERER']
     except:
         pass
-    logger.debug(huc.aoi_list)
+    # logger.debug(huc.aoi_list)
 
     new_aoi = huc.execute()
 
@@ -1277,7 +1277,7 @@ and coa_spphabmatrixsgcn."""
             rec = cur.fetchone()
         try:
             logger.debug(rec[0])
-            return "<h3>%s</h3>" % rec[0]
+            return "<h3>Management Designation: %s</h3>" % rec[0]
             # res = {
             #     "man_area": rec[0]
             # }
@@ -1295,11 +1295,29 @@ and coa_spphabmatrixsgcn."""
 @app.route('/ncwrc_basins_map', methods=['POST', ])
 def ncwrc_basins_map():
     basin = request.form.get("basin")
-    logger.debug(basin)
+    tier1 = request.form.get('tier1')
+    tier2 = request.form.get('tier2')
+    rivbuff = request.form.get('rivbuff')
+    if tier1 == 'true':
+        tier1 = "Tier 1"
+    else:
+        tier1 = "xxx"
+    if tier2 == 'true':
+        tier2 = "Tier 2"
+    else:
+        tier2 = "xxx"
+    if rivbuff == 'true':
+        rivbuff = "1km River Buffer"
+    else:
+        rivbuff = "xxx"
+    logger.debug(tier1)
     huc12s = []
-    query = "select huc12rng from ncwrc_priorities where priorityty != '' and riverbasin = %s"
+    query = """
+select huc12rng from ncwrc_priorities where (priorityty = %s \
+or priorityty = %s or priorityty = %s) and  riverbasin = %s
+"""
     with g.db.cursor() as cur:
-        cur.execute(query, (basin, ))
+        cur.execute(query, (tier1, tier2, rivbuff, basin))
         for rec in cur:
             logger.debug(rec[0])
             huc12s.append(rec[0].strip())
