@@ -824,16 +824,20 @@ def report_batch(id):
     # logger.debug(batch_results)
     logger.debug(year)
     logger.debug(request.args.get('aoi_mode'))
+    meta = request.args.get("basins_meta", "")
     if request.args.get('aoi_mode') != 'coa':
         return render_template(
             'report_batch.html',
             year=year,
             link_ssht=link_ssht,
-            results=batch_results
+            results=batch_results,
+            meta=meta
         )
     else:
-        reg_com = request.args['reg_com']
-        region = request.args['region'].replace("_", " ")
+        # reg_com = request.args['reg_com']
+        # region = request.args['region'].replace("_", " ")
+        reg_com = request.args.get('reg_com', "")
+        region = request.args.get('region', "").replace("_", "")
         logger.debug(reg_com)
         query = "select communityname from coa_keylist where keycode =%s"
         with g.db.cursor() as cur:
