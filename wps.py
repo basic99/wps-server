@@ -1183,6 +1183,11 @@ def coa_model():
 @app.route('/qry_tool', methods=['GET', ])
 def qry_tool():
     keycode = request.args.get("community")
+
+    if len(keycode) == 0:
+        return "no community selected"
+
+
     lon = request.args.get('pt_lon')
     lat = request.args.get('pt_lat')
     toolid = request.args.get('qry')
@@ -1196,6 +1201,27 @@ def qry_tool():
         pass
 
     if toolid == '1':
+        basins = [
+            'Broad',
+            'Cape Fear',
+            'Catawba',
+            'Chowan',
+            'French Broad',
+            'Hiwassee',
+            'Little Tennessee',
+            'Lumber',
+            'Neuse',
+            'New',
+            'Pasquotank',
+            'Roanoke',
+            'Savannah',
+            'Tar - Pamlico',
+            'Watauga',
+            'White Oak',
+            'Yadkin - PeeDee'
+        ]
+        if keycode in basins:
+            return "no community selected"
         # for coa query
 
         query = """
