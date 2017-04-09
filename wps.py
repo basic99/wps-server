@@ -1184,16 +1184,15 @@ def coa_model():
 def qry_tool():
     keycode = request.args.get("community")
 
-    if len(keycode) == 0:
-        return "no community selected"
-
-
     lon = request.args.get('pt_lon')
     lat = request.args.get('pt_lat')
     toolid = request.args.get('qry')
     logger.debug(toolid)
     logger.debug(keycode)
     logger.debug(request.args)
+
+    if len(keycode) == 0 and int(toolid) != 3:
+        return "no community selected"
     try:
         retval = siteutils.qrypttojson(lon, lat, 'huc_12')
         huc12 = json.loads(retval)['the_huc']
