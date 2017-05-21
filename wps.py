@@ -1191,7 +1191,7 @@ def qry_tool():
     logger.debug(keycode)
     logger.debug(request.args)
 
-    if len(keycode) == 0 and int(toolid) != 3:
+    if len(keycode) == 0 and int(toolid) == 1:
         return "no community selected"
     try:
         retval = siteutils.qrypttojson(lon, lat, 'huc_12')
