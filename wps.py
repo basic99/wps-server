@@ -1360,9 +1360,16 @@ or priorityty = %s or priorityty = %s) and  riverbasin = %s
 
 if __name__ == '__main__':
     """
+    debug server
     cd /usr/local/pythonenvs/ncthreatsenv/bin
     source activate
     python wps.py
+
+    production server
+    su
+    supervisorctl
+    restart wps-server
+
 
     """
     app.run(debug=True)
