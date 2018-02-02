@@ -1357,5 +1357,12 @@ or priorityty = %s or priorityty = %s) and  riverbasin = %s
         "huc12s": huc12s
     })
 
+
 if __name__ == '__main__':
+    """
+    cd /usr/local/pythonenvs/ncthreatsenv/bin
+    source activate
+    python wps.py
+
+    """
     app.run(debug=True)
