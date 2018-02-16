@@ -1,21 +1,24 @@
 # How to use the code with Docker
 
+The Dockerfile is in the root directory. Run Docker from there.
+The (cloned) source code is copied into the Docker image.
 
-# get the siteprivate.py file to the . dir
+Before you do that, create the `siteprivate.py` file to the repository
+directory (current directory). However, make sure you don't add it to
+the repository.
+
+Further, add parameter `host='0.0.0.0'` to the `app.run()` call. To
+avoid *Connection reset by peer* when accessing the side from outside
+of the container. Do not commit the `host='0.0.0.0'` change.
 
 Build:
 
+```
 docker build -t wps-server .
-
+```
 
 Run:
 
-docker run -it -v /usr/local/pythonenvs/ncthreatsenv/:/usr/local/pythonenvs/ncthreatsenv/ -p5001:5000 --rm wps-server /bin/bash
-
-Run inside
-
-cd /usr/local/pythonenvs/ncthreatsenv/bin
-source activate
-cd /var/www/wsgi/wps-server
-python wps.py
-
+```
+docker run -it -p 5001:5000 --rm wps-server
+```
