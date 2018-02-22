@@ -75,13 +75,16 @@ app = Flask(__name__)
 app.wsgi_app = ReverseProxied(app.wsgi_app)
 # app.config.from_object(__name__)
 
+# needs to be used for production server
 # app.config.update(dict(
 #     CONNECT_STR='dbname=ncthreats user=postgres'
 # ))
 
+# set up of a user in db
 # grant all on all tables in schema public to vashek;
 # grant all on all sequences in schema public to vashek;
 
+# change to the public ip to get conn to local db server
 app.config.update(dict(
     CONNECT_STR='dbname=ncthreats user=vashek password=secret host=127.0.0.1'
 ))

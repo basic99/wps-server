@@ -2,13 +2,14 @@ FROM ubuntu:trusty
 
 RUN apt-get update -y
 RUN apt-get install -y \
-    python-psycopg2 \
+    libpq-dev \
+    python-dev \
     python-flask \
     python-numpy \
     python-pip
 RUN apt-get clean
 
-RUN pip install statistics
+RUN pip install statistics psycopg2
 
 ADD . /var/www/wsgi/wps-server/
 
