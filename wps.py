@@ -74,8 +74,16 @@ class ReverseProxied(object):
 app = Flask(__name__)
 app.wsgi_app = ReverseProxied(app.wsgi_app)
 # app.config.from_object(__name__)
+
+# app.config.update(dict(
+#     CONNECT_STR='dbname=ncthreats user=postgres'
+# ))
+
+# grant all on all tables in schema public to vashek;
+# grant all on all sequences in schema public to vashek;
+
 app.config.update(dict(
-    DATABASE='ncthreats'
+    CONNECT_STR='dbname=ncthreats user=vashek password=secret host=127.0.0.1'
 ))
 
 # set the secret key.  keep this really secret:
@@ -83,7 +91,11 @@ app.secret_key = siteprivate.secret_key
 
 
 def connect_db():
-    return psycopg2.connect(database=app.config['DATABASE'], user="postgres")
+    logger.debug(app.config['CONNECT_STR'])
+    return psycopg2.connect(
+        app.config['CONNECT_STR']
+    )
+
 
 
 @app.before_request
@@ -136,7 +148,7 @@ def post_aoi():
     resource = url_for(
         'resource_aoi',
         id=new_aoi[0]
-        )
+    )
     headers = dict()
     headers['Location'] = resource
     # headers['Content-Type'] = 'application/json'
@@ -145,9 +157,10 @@ def post_aoi():
         json.dumps({
             'extent': new_aoi[1],
             'geojson': new_aoi[2]
-            }),
+        }),
         201, headers
-        )
+    )
+
 
 @app.route('/batch', methods=['POST', ])
 def post_batch():
@@ -603,6 +616,7 @@ def ptbufferjson():
 
 @app.route('/huc12_state', methods=['GET', ])
 def huc12_state():
+    logger.debug("test")
     huc12s = []
     with g.db.cursor() as cur:
         query = "select  huc_12 from huc12nc"
@@ -1363,6 +1377,7 @@ if __name__ == '__main__':
     debug server
     cd /usr/local/pythonenvs/ncthreatsenv/bin
     source activate
+    cd /var/www/wsgi/wps-server
     python wps.py
 
     production server
