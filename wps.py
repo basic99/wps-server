@@ -86,7 +86,7 @@ app.wsgi_app = ReverseProxied(app.wsgi_app)
 
 # change to the public ip to get conn to local db server
 app.config.update(dict(
-    CONNECT_STR='dbname=ncthreats user=vashek password=secret host=127.0.0.1'
+    CONNECT_STR='dbname=postgres user=postgres password=mysecretpassword host=db'
 ))
 
 # set the secret key.  keep this really secret:
